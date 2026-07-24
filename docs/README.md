@@ -30,3 +30,10 @@ The API test collection is available at:
 5. **Market Data & Valuation**:
    - `GET /api/market/price/:symbol`
    - `GET /api/portfolio/value/:portfolioId`
+
+---
+
+## Socket.IO Events Documentation
+
+Detailed specifications for WebSocket connection authentication and real-time events are documented in:
+[`socket-events.md`](./socket-events.md)
