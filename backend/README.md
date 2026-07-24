@@ -1,6 +1,6 @@
 # MarketPulse Backend
 
-Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, RBAC, & Portfolio Management
+Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, RBAC, Portfolio Management, & Live Market Data
 
 ---
 
@@ -20,7 +20,9 @@ backend/
 │   │   ├── dbCheck.controller.ts       # Database connection check handler
 │   │   ├── health.controller.ts        # Health check handler
 │   │   ├── holding.controller.ts       # Holding management handlers (add, delete)
+│   │   ├── market.controller.ts        # Live stock price quote handler
 │   │   ├── portfolio.controller.ts     # Portfolio CRUD handlers (create, list, delete)
+│   │   ├── portfolioValue.controller.ts# Real-time portfolio valuation handler
 │   │   └── transaction.controller.ts   # BUY/SELL transaction handlers with weighted avg price
 │   ├── lib/
 │   │   └── prisma.ts                   # Prisma client singleton
@@ -33,11 +35,14 @@ backend/
 │   │   ├── dbCheck.routes.ts           # Database check route
 │   │   ├── health.routes.ts            # Health check route
 │   │   ├── holding.routes.ts           # Holding & Transaction routes
-│   │   ├── portfolio.routes.ts         # Portfolio routes
+│   │   ├── market.routes.ts            # Market price quote routes
+│   │   ├── portfolio.routes.ts         # Portfolio routes & Valuation route
 │   │   └── profile.routes.ts           # Protected user profile route
 │   ├── schemas/
 │   │   ├── auth.schema.ts              # Zod auth validation schemas
 │   │   └── portfolio.schema.ts         # Zod portfolio, holding, & transaction schemas
+│   ├── services/
+│   │   └── market.service.ts           # Market data service (Finnhub API with fallback)
 │   ├── app.ts                          # Express app setup & route registration
 │   └── index.ts                        # Entry point - loads env & starts server
 ├── seed-admin.ts                       # Admin user seed script
@@ -69,6 +74,7 @@ Environment variables:
 - `PORT`: Server port (default: `5000`)
 - `DATABASE_URL`: PostgreSQL connection string
 - `JWT_SECRET`: Secret key used for signing JWT tokens
+- `MARKET_API_KEY`: Finnhub API key for live stock quotes
 
 ### Database Setup & Prisma Commands
 
@@ -131,17 +137,21 @@ npm start
 | POST   | `/api/portfolios/:portfolioId/holdings`  | Owner Only     | Add holding to portfolio                          |
 | DELETE | `/api/holdings/:id`                      | Owner Only     | Delete holding                                    |
 | POST   | `/api/holdings/:holdingId/transactions`  | Owner Only     | Create BUY or SELL transaction                    |
+| GET    | `/api/market/price/:symbol`              | Protected      | Fetch real-time stock price (`{ symbol, currentPrice }`)|
+| GET    | `/api/portfolio/value/:portfolioId`      | Owner Only     | Get live portfolio value & holding market values  |
 
 ---
 
-## Transaction & Average Price Calculations
+## Market Data & Live Portfolio Valuation
 
-1. **BUY Transactions**:
-   - Increases holding `quantity`: `updatedQuantity = currentQuantity + newQuantity`.
-   - Recalculates weighted average cost basis:
-     $$\text{New Average Price} = \frac{(\text{Current Quantity} \times \text{Current Avg Price}) + (\text{BUY Quantity} \times \text{BUY Price})}{\text{Updated Quantity}}$$
-2. **SELL Transactions**:
-   - Decreases holding `quantity`: `updatedQuantity = currentQuantity - sellQuantity`.
-   - Validates that `sellQuantity <= currentQuantity`. Returns HTTP `400` if selling more than available.
-   - Selling shares does not modify the weighted cost basis of remaining shares (`averagePrice` remains unchanged).
-   - If `quantity` becomes `0`, the holding entry remains in the database (retains transaction history).
+1. **Stock Price Quote (`GET /api/market/price/:symbol`)**:
+   - Validates stock ticker symbol format.
+   - Fetches live stock quote from Finnhub API (or fallback provider).
+   - Returns `{ symbol, currentPrice }`.
+   - Handles rate limits (`503 Service Unavailable`) and invalid symbols (`400 Bad Request`).
+
+2. **Portfolio Valuation (`GET /api/portfolio/value/:portfolioId`)**:
+   - Verifies portfolio ownership.
+   - For each holding, fetches real-time market price.
+   - Calculates `marketValue = quantity * currentPrice`.
+   - Sums all holding market values to return `totalValue`.
