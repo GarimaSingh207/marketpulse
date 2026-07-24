@@ -1,6 +1,6 @@
 # MarketPulse Backend
 
-Node.js + Express + TypeScript API with PostgreSQL & Prisma ORM
+Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, & JWT Authentication
 
 ---
 
@@ -11,19 +11,26 @@ backend/
 ├── prisma/
 │   ├── migrations/
 │   │   └── 20260724211400_init/
-│   │       └── migration.sql    # Initial database migration
-│   └── schema.prisma            # Prisma data models & relational schema
+│   │       └── migration.sql       # Initial database migration
+│   └── schema.prisma               # Prisma data models & relational schema
 ├── src/
 │   ├── controllers/
-│   │   ├── dbCheck.controller.ts # Database connection check handler
-│   │   └── health.controller.ts  # Health check handler
+│   │   ├── auth.controller.ts      # Register, login, and profile handlers
+│   │   ├── dbCheck.controller.ts   # Database connection check handler
+│   │   └── health.controller.ts    # Health check handler
 │   ├── lib/
-│   │   └── prisma.ts            # Prisma client singleton
+│   │   └── prisma.ts               # Prisma client singleton
+│   ├── middleware/
+│   │   └── auth.middleware.ts      # JWT Bearer token authentication middleware
 │   ├── routes/
-│   │   ├── dbCheck.routes.ts     # Database check route
-│   │   └── health.routes.ts      # Health check route
-│   ├── app.ts                    # Express app setup
-│   └── index.ts                  # Entry point - starts the server
+│   │   ├── auth.routes.ts          # Auth routes (/register, /login)
+│   │   ├── dbCheck.routes.ts       # Database check route
+│   │   ├── health.routes.ts        # Health check route
+│   │   └── profile.routes.ts       # Protected user profile route
+│   ├── schemas/
+│   │   └── auth.schema.ts          # Zod validation schemas
+│   ├── app.ts                      # Express app setup & route registration
+│   └── index.ts                    # Entry point - loads env & starts server
 ├── package.json
 ├── tsconfig.json
 ├── .env
@@ -43,7 +50,7 @@ npm install
 
 ### Set up environment variables
 
-Copy the example env file and set your PostgreSQL connection string:
+Copy the example env file and set your credentials:
 
 ```bash
 cp .env.example .env
@@ -51,7 +58,8 @@ cp .env.example .env
 
 Environment variables:
 - `PORT`: Server port (default: `5000`)
-- `DATABASE_URL`: PostgreSQL connection string (e.g. `postgresql://username:password@localhost:5432/marketpulse?schema=public`)
+- `DATABASE_URL`: PostgreSQL connection string
+- `JWT_SECRET`: Secret key used for signing JWT tokens
 
 ### Database Setup & Prisma Commands
 
@@ -60,9 +68,9 @@ Environment variables:
    npx prisma generate
    ```
 
-2. **Run Database Migrations**:
+2. **Sync Database Schema**:
    ```bash
-   npx prisma migrate dev --name init
+   npx prisma db push
    ```
 
 ---
@@ -93,32 +101,18 @@ npm start
 
 ## API Endpoints
 
-| Method | Endpoint         | Description                   |
-|--------|------------------|-------------------------------|
-| GET    | /api/health      | Server health check           |
-| GET    | /api/db-check    | Database connection status    |
+| Method | Endpoint          | Access      | Description                            |
+|--------|-------------------|-------------|----------------------------------------|
+| GET    | `/api/health`     | Public      | Server health check                    |
+| GET    | `/api/db-check`   | Public      | Database connection status             |
+| POST   | `/api/auth/register` | Public   | Register a new user (returns 201)      |
+| POST   | `/api/auth/login`    | Public   | Login user & return 24h JWT token      |
+| GET    | `/api/profile`    | Protected   | Retrieve authenticated user's profile  |
 
-### Health Check Response
+---
 
-```json
-{
-  "status": "ok",
-  "message": "MarketPulse backend is running"
-}
-```
+## Authentication Flow
 
-### Database Check Response
-
-Connected:
-```json
-{
-  "database": "connected"
-}
-```
-
-Disconnected:
-```json
-{
-  "database": "disconnected"
-}
-```
+1. **Register**: Send `POST /api/auth/register` with `{ name, email, password }`. Input is validated via Zod, password is hashed with `bcrypt`, and the user is saved with default role `USER`. Returns 201 Created without password.
+2. **Login**: Send `POST /api/auth/login` with `{ email, password }`. Verifies credentials with `bcrypt` and returns `{ token, user }` where `token` is a 24h JWT.
+3. **Protected Route Access**: Pass `Authorization: Bearer <TOKEN>` header on protected requests (e.g. `GET /api/profile`). Middleware decodes and verifies token before proceeding.
