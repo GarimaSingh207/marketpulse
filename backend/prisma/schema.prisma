@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TransactionType {
+  BUY
+  SELL
+}
+
+model User {
+  id         String      @id @default(cuid())
+  name       String
+  email      String      @unique
+  password   String
+  role       Role        @default(USER)
+  portfolios Portfolio[]
+  watchlists Watchlist[]
+}
+
+model Portfolio {
+  id       String    @id @default(cuid())
+  userId   String
+  name     String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  holdings Holding[]
+}
+
+model Holding {
+  id           String        @id @default(cuid())
+  portfolioId  String
+  symbol       String
+  quantity     Float
+  averagePrice Decimal
+  portfolio    Portfolio     @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        String          @id @default(cuid())
+  holdingId String
+  type      TransactionType
+  quantity  Float
+  price     Decimal
+  createdAt DateTime        @default(now())
+  holding   Holding         @relation(fields: [holdingId], references: [id], onDelete: Cascade)
+}
+
+model Watchlist {
+  id     String           @id @default(cuid())
+  userId String
+  name   String
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stocks WatchlistStock[]
+}
+
+model WatchlistStock {
+  id          String    @id @default(cuid())
+  watchlistId String
+  symbol      String
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+}
