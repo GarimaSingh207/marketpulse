@@ -1,6 +1,6 @@
 # MarketPulse Backend
 
-Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, RBAC, Portfolio Management, & Live Market Data
+Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, RBAC, Portfolio Management, Live Market Data, & Redis Caching
 
 ---
 
@@ -25,7 +25,8 @@ backend/
 │   │   ├── portfolioValue.controller.ts# Real-time portfolio valuation handler
 │   │   └── transaction.controller.ts   # BUY/SELL transaction handlers with weighted avg price
 │   ├── lib/
-│   │   └── prisma.ts                   # Prisma client singleton
+│   │   ├── prisma.ts                   # Prisma client singleton
+│   │   └── redis.ts                    # Redis (ioredis) client singleton
 │   ├── middleware/
 │   │   ├── auth.middleware.ts          # JWT Bearer token authentication middleware
 │   │   └── role.middleware.ts          # Role-Based Access Control (RBAC) middleware
@@ -42,7 +43,7 @@ backend/
 │   │   ├── auth.schema.ts              # Zod auth validation schemas
 │   │   └── portfolio.schema.ts         # Zod portfolio, holding, & transaction schemas
 │   ├── services/
-│   │   └── market.service.ts           # Market data service (Finnhub API with fallback)
+│   │   └── market.service.ts           # Market data service (Finnhub API with Redis 60s caching)
 │   ├── app.ts                          # Express app setup & route registration
 │   └── index.ts                        # Entry point - loads env & starts server
 ├── seed-admin.ts                       # Admin user seed script
@@ -75,6 +76,7 @@ Environment variables:
 - `DATABASE_URL`: PostgreSQL connection string
 - `JWT_SECRET`: Secret key used for signing JWT tokens
 - `MARKET_API_KEY`: Finnhub API key for live stock quotes
+- `REDIS_URL`: Redis connection URL (default: `redis://localhost:6379`)
 
 ### Database Setup & Prisma Commands
 
@@ -142,16 +144,12 @@ npm start
 
 ---
 
-## Market Data & Live Portfolio Valuation
+## Redis Caching Flow & Rules
 
-1. **Stock Price Quote (`GET /api/market/price/:symbol`)**:
-   - Validates stock ticker symbol format.
-   - Fetches live stock quote from Finnhub API (or fallback provider).
-   - Returns `{ symbol, currentPrice }`.
-   - Handles rate limits (`503 Service Unavailable`) and invalid symbols (`400 Bad Request`).
-
-2. **Portfolio Valuation (`GET /api/portfolio/value/:portfolioId`)**:
-   - Verifies portfolio ownership.
-   - For each holding, fetches real-time market price.
-   - Calculates `marketValue = quantity * currentPrice`.
-   - Sums all holding market values to return `totalValue`.
+1. **Cached Entities**: Stock quotes ONLY (`stock:<SYMBOL>`).
+2. **TTL**: 60 seconds (`EX 60`).
+3. **Lookup Sequence**:
+   - Checks Redis cache for key `stock:<SYMBOL>`.
+   - **Cache Hit**: Logs `CACHE HIT` and returns cached quote.
+   - **Cache Miss**: Logs `CACHE MISS`, fetches price from Finnhub, saves to Redis for 60 seconds, and returns price.
+4. **Resilience**: Invalid symbols, failed HTTP responses, database queries, and users are **NEVER** cached. If Redis is down, system falls back to fetching directly without crashing.
