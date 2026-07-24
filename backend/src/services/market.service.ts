@@ -5,6 +5,9 @@ export interface StockQuote {
   currentPrice: number;
 }
 
+/**
+ * Fetches real-time stock price quote using the Finnhub API.
+ */
 export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
   const formattedSymbol = symbol.trim().toUpperCase();
 
@@ -14,52 +17,32 @@ export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
   }
 
   const apiKey = process.env.MARKET_API_KEY;
-
-  // Primary Provider: Finnhub API (if configured and valid)
-  if (apiKey && apiKey !== "your_finnhub_api_key_here") {
-    try {
-      const response = await axios.get("https://finnhub.io/api/v1/quote", {
-        params: {
-          symbol: formattedSymbol,
-          token: apiKey,
-        },
-        timeout: 4000,
-      });
-
-      const data = response.data;
-      if (data && data.c && data.c !== 0) {
-        return {
-          symbol: formattedSymbol,
-          currentPrice: Number(data.c),
-        };
-      }
-    } catch (err: any) {
-      if (err.response && err.response.status === 429) {
-        throw { status: 503, message: "Market data rate limit exceeded. Please try again later." };
-      }
-    }
+  if (!apiKey) {
+    throw {
+      status: 503,
+      message: "Market data provider is currently unavailable (API key not configured)",
+    };
   }
 
-  // Fallback Provider: Yahoo Finance public API endpoint (No API key needed)
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${formattedSymbol}`;
-    const response = await axios.get(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
+    const response = await axios.get("https://finnhub.io/api/v1/quote", {
+      params: {
+        symbol: formattedSymbol,
+        token: apiKey,
       },
       timeout: 5000,
     });
 
-    const result = response.data?.chart?.result?.[0];
-    const price = result?.meta?.regularMarketPrice;
+    const data = response.data;
 
-    if (price === undefined || price === null || isNaN(price)) {
+    // Finnhub returns c == 0 or empty object for invalid/unknown ticker symbols
+    if (!data || data.c === undefined || data.c === 0) {
       throw { status: 400, message: `Invalid or unknown stock symbol: ${formattedSymbol}` };
     }
 
     return {
       symbol: formattedSymbol,
-      currentPrice: Number(price),
+      currentPrice: Number(data.c),
     };
   } catch (error: any) {
     if (error.status && error.message) {
@@ -67,11 +50,14 @@ export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
     }
 
     if (error.response) {
-      if (error.response.status === 404 || error.response.status === 400) {
-        throw { status: 400, message: `Invalid or unknown stock symbol: ${formattedSymbol}` };
+      if (error.response.status === 401) {
+        throw { status: 503, message: "Market data provider authentication failed (Invalid API key)" };
       }
       if (error.response.status === 429) {
         throw { status: 503, message: "Market data rate limit exceeded. Please try again later." };
+      }
+      if (error.response.status >= 500) {
+        throw { status: 503, message: "Market data provider is currently unavailable" };
       }
     }
 
@@ -79,6 +65,6 @@ export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
       throw { status: 503, message: "Market data service unreachable or timed out" };
     }
 
-    throw { status: 503, message: "Market data provider is currently unavailable" };
+    throw { status: 503, message: "Failed to fetch market data" };
   }
 };
