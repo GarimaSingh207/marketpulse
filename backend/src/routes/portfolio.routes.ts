@@ -4,6 +4,7 @@ import {
   getPortfolios,
   deletePortfolio,
 } from "../controllers/portfolio.controller";
+import { getPortfolioValue } from "../controllers/portfolioValue.controller";
 import { addHolding } from "../controllers/holding.controller";
 import { authenticateToken } from "../middleware/auth.middleware";
 
@@ -14,6 +15,7 @@ router.use(authenticateToken);
 
 router.post("/", createPortfolio);
 router.get("/", getPortfolios);
+router.get("/value/:portfolioId", getPortfolioValue);
 router.delete("/:id", deletePortfolio);
 router.post("/:portfolioId/holdings", addHolding);
 
