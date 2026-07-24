@@ -2,6 +2,7 @@ import { Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createPortfolioSchema } from "../schemas/portfolio.schema";
+import { getIO } from "../socket";
 
 export const createPortfolio = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -24,6 +25,14 @@ export const createPortfolio = async (req: AuthRequest, res: Response): Promise<
         holdings: true,
       },
     });
+
+    try {
+      getIO().to(`user:${userId}`).emit("portfolio:created", {
+        portfolioId: portfolio.id,
+        name: portfolio.name,
+        userId: portfolio.userId,
+      });
+    } catch (e) {}
 
     res.status(201).json(portfolio);
   } catch (error) {
@@ -74,6 +83,12 @@ export const deletePortfolio = async (req: AuthRequest, res: Response): Promise<
     await prisma.portfolio.delete({
       where: { id },
     });
+
+    try {
+      getIO().to(`user:${userId}`).emit("portfolio:deleted", {
+        portfolioId: id,
+      });
+    } catch (e) {}
 
     res.status(200).json({ message: "Portfolio deleted successfully" });
   } catch (error) {

@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createTransactionSchema } from "../schemas/portfolio.schema";
+import { getIO } from "../socket";
 
 export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -77,6 +78,27 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         },
       }),
     ]);
+
+    try {
+      getIO().to(`user:${userId}`).emit("transaction:created", {
+        transactionId: transaction.id,
+        holdingId: transaction.holdingId,
+        portfolioId: holding.portfolioId,
+        type: transaction.type,
+        quantity: transaction.quantity,
+        price: Number(transaction.price),
+        createdAt: transaction.createdAt,
+      });
+
+      getIO().to(`user:${userId}`).emit("portfolio:valueUpdated", {
+        portfolioId: holding.portfolioId,
+        updatedHolding: {
+          holdingId: updatedHolding.id,
+          quantity: updatedHolding.quantity,
+          averagePrice: Number(updatedHolding.averagePrice),
+        },
+      });
+    } catch (e) {}
 
     res.status(201).json({
       transaction,

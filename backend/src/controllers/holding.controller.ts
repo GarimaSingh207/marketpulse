@@ -2,6 +2,7 @@ import { Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createHoldingSchema } from "../schemas/portfolio.schema";
+import { getIO } from "../socket";
 
 export const addHolding = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -42,6 +43,16 @@ export const addHolding = async (req: AuthRequest, res: Response): Promise<void>
       },
     });
 
+    try {
+      getIO().to(`user:${userId}`).emit("holding:created", {
+        holdingId: holding.id,
+        portfolioId: holding.portfolioId,
+        symbol: holding.symbol,
+        quantity: holding.quantity,
+        averagePrice: Number(holding.averagePrice),
+      });
+    } catch (e) {}
+
     res.status(201).json(holding);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -73,6 +84,13 @@ export const deleteHolding = async (req: AuthRequest, res: Response): Promise<vo
     await prisma.holding.delete({
       where: { id },
     });
+
+    try {
+      getIO().to(`user:${userId}`).emit("holding:deleted", {
+        holdingId: id,
+        portfolioId: holding.portfolioId,
+      });
+    } catch (e) {}
 
     res.status(200).json({ message: "Holding deleted successfully" });
   } catch (error) {
