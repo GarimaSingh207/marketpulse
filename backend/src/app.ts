@@ -7,6 +7,7 @@ import profileRoutes from "./routes/profile.routes";
 import adminRoutes from "./routes/admin.routes";
 import portfolioRoutes from "./routes/portfolio.routes";
 import holdingRoutes from "./routes/holding.routes";
+import marketRoutes from "./routes/market.routes";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/portfolios", portfolioRoutes);
+app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/holdings", holdingRoutes);
+app.use("/api/market", marketRoutes);
 
 export default app;
