@@ -1,6 +1,6 @@
 # MarketPulse Backend
 
-Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, & JWT Authentication
+Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, & RBAC
 
 ---
 
@@ -15,14 +15,17 @@ backend/
 │   └── schema.prisma               # Prisma data models & relational schema
 ├── src/
 │   ├── controllers/
+│   │   ├── admin.controller.ts     # Admin user management handlers (list, delete)
 │   │   ├── auth.controller.ts      # Register, login, and profile handlers
 │   │   ├── dbCheck.controller.ts   # Database connection check handler
 │   │   └── health.controller.ts    # Health check handler
 │   ├── lib/
 │   │   └── prisma.ts               # Prisma client singleton
 │   ├── middleware/
-│   │   └── auth.middleware.ts      # JWT Bearer token authentication middleware
+│   │   ├── auth.middleware.ts      # JWT Bearer token authentication middleware
+│   │   └── role.middleware.ts      # Role-Based Access Control (RBAC) middleware
 │   ├── routes/
+│   │   ├── admin.routes.ts         # Admin routes (/users, /users/:id)
 │   │   ├── auth.routes.ts          # Auth routes (/register, /login)
 │   │   ├── dbCheck.routes.ts       # Database check route
 │   │   ├── health.routes.ts        # Health check route
@@ -31,6 +34,7 @@ backend/
 │   │   └── auth.schema.ts          # Zod validation schemas
 │   ├── app.ts                      # Express app setup & route registration
 │   └── index.ts                    # Entry point - loads env & starts server
+├── seed-admin.ts                   # Admin user seed script
 ├── package.json
 ├── tsconfig.json
 ├── .env
@@ -73,6 +77,12 @@ Environment variables:
    npx prisma db push
    ```
 
+3. **Seed Admin User**:
+   ```bash
+   npx tsx seed-admin.ts
+   ```
+   Creates `admin@example.com` (Password: `Admin123`, Role: `ADMIN`) if it does not already exist.
+
 ---
 
 ## Running the Server
@@ -101,18 +111,22 @@ npm start
 
 ## API Endpoints
 
-| Method | Endpoint          | Access      | Description                            |
-|--------|-------------------|-------------|----------------------------------------|
-| GET    | `/api/health`     | Public      | Server health check                    |
-| GET    | `/api/db-check`   | Public      | Database connection status             |
-| POST   | `/api/auth/register` | Public   | Register a new user (returns 201)      |
-| POST   | `/api/auth/login`    | Public   | Login user & return 24h JWT token      |
-| GET    | `/api/profile`    | Protected   | Retrieve authenticated user's profile  |
+| Method | Endpoint               | Access         | Description                                   |
+|--------|------------------------|----------------|-----------------------------------------------|
+| GET    | `/api/health`          | Public         | Server health check                           |
+| GET    | `/api/db-check`        | Public         | Database connection status                    |
+| POST   | `/api/auth/register`   | Public         | Register a new user (returns 201)             |
+| POST   | `/api/auth/login`      | Public         | Login user & return 24h JWT token             |
+| GET    | `/api/profile`         | Protected      | Retrieve authenticated user's profile         |
+| GET    | `/api/admin/users`     | Admin Only     | Retrieve all registered users (omits password)|
+| DELETE | `/api/admin/users/:id` | Admin Only     | Delete a user by ID (404 if not found)        |
 
 ---
 
-## Authentication Flow
+## Authentication & Role-Based Access Control (RBAC)
 
-1. **Register**: Send `POST /api/auth/register` with `{ name, email, password }`. Input is validated via Zod, password is hashed with `bcrypt`, and the user is saved with default role `USER`. Returns 201 Created without password.
-2. **Login**: Send `POST /api/auth/login` with `{ email, password }`. Verifies credentials with `bcrypt` and returns `{ token, user }` where `token` is a 24h JWT.
-3. **Protected Route Access**: Pass `Authorization: Bearer <TOKEN>` header on protected requests (e.g. `GET /api/profile`). Middleware decodes and verifies token before proceeding.
+1. **Authentication (`auth.middleware.ts`)**: Verifies `Authorization: Bearer <TOKEN>` header, decodes payload `{ id, email, role }`, and attaches it to `req.user`.
+2. **Authorization (`role.middleware.ts`)**: `authorizeRoles(...allowedRoles)` compares `req.user.role` against permitted roles.
+   - Missing token → `401 Unauthorized`
+   - Role mismatch (e.g., `USER` attempting to access Admin endpoints) → `403 Forbidden`
+   - Admin access (`ADMIN`) → Allowed access to `/api/admin/*` endpoints
