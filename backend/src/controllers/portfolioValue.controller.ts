@@ -17,9 +17,7 @@ export const getPortfolioValue = async (req: AuthRequest, res: Response): Promis
 
     const portfolio = await prisma.portfolio.findFirst({
       where: { id: portfolioId, userId },
-      include: {
-        holdings: true,
-      },
+      include: { holdings: true },
     });
 
     if (!portfolio) {
@@ -35,8 +33,8 @@ export const getPortfolioValue = async (req: AuthRequest, res: Response): Promis
       try {
         const quote = await fetchStockPrice(holding.symbol);
         currentPrice = quote.currentPrice;
-      } catch (err) {
-        // Fallback to average price if live market data is unreachable for a symbol
+      } catch {
+        // Fallback to average price if live market data is unavailable for a symbol
         currentPrice = Number(holding.averagePrice);
       }
 

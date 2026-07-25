@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createTransactionSchema } from "../schemas/portfolio.schema";
-import { getIO } from "../socket";
+import { emitUserEvent } from "../socket";
 
 export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -56,54 +56,41 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         return;
       }
       updatedQuantity = currentQuantity - quantity;
-      // Selling stock does not change the weighted average cost basis of remaining shares
+      // Selling does not change the weighted average cost basis of remaining shares
       updatedAveragePrice = holding.averagePrice;
     }
 
-    // Execute transaction creation and holding update inside Prisma transaction for consistency
+    // Execute transaction creation and holding update atomically
     const [transaction, updatedHolding] = await prisma.$transaction([
       prisma.transaction.create({
-        data: {
-          holdingId,
-          type,
-          quantity,
-          price,
-        },
+        data: { holdingId, type, quantity, price },
       }),
       prisma.holding.update({
         where: { id: holdingId },
-        data: {
-          quantity: updatedQuantity,
-          averagePrice: updatedAveragePrice,
-        },
+        data: { quantity: updatedQuantity, averagePrice: updatedAveragePrice },
       }),
     ]);
 
-    try {
-      getIO().to(`user:${userId}`).emit("transaction:created", {
-        transactionId: transaction.id,
-        holdingId: transaction.holdingId,
-        portfolioId: holding.portfolioId,
-        type: transaction.type,
-        quantity: transaction.quantity,
-        price: Number(transaction.price),
-        createdAt: transaction.createdAt,
-      });
-
-      getIO().to(`user:${userId}`).emit("portfolio:valueUpdated", {
-        portfolioId: holding.portfolioId,
-        updatedHolding: {
-          holdingId: updatedHolding.id,
-          quantity: updatedHolding.quantity,
-          averagePrice: Number(updatedHolding.averagePrice),
-        },
-      });
-    } catch (e) {}
-
-    res.status(201).json({
-      transaction,
-      holding: updatedHolding,
+    emitUserEvent(userId, "transaction:created", {
+      transactionId: transaction.id,
+      holdingId: transaction.holdingId,
+      portfolioId: holding.portfolioId,
+      type: transaction.type,
+      quantity: transaction.quantity,
+      price: Number(transaction.price),
+      createdAt: transaction.createdAt,
     });
+
+    emitUserEvent(userId, "portfolio:valueUpdated", {
+      portfolioId: holding.portfolioId,
+      updatedHolding: {
+        holdingId: updatedHolding.id,
+        quantity: updatedHolding.quantity,
+        averagePrice: Number(updatedHolding.averagePrice),
+      },
+    });
+
+    res.status(201).json({ transaction, holding: updatedHolding });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

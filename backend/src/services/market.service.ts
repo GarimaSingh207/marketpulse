@@ -1,12 +1,20 @@
 import axios from "axios";
+import redis from "../lib/redis";
 
 export interface StockQuote {
   symbol: string;
   currentPrice: number;
 }
 
+const CACHE_TTL_SECONDS = 60;
+
 /**
- * Fetches real-time stock price quote using the Finnhub API.
+ * Fetches a real-time stock price.
+ *
+ * Cache flow:
+ *   1. Check Redis for key `stock:<SYMBOL>`
+ *   2. If hit  → return cached value immediately
+ *   3. If miss → fetch from Finnhub, cache for 60 s, return value
  */
 export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
   const formattedSymbol = symbol.trim().toUpperCase();
@@ -14,6 +22,20 @@ export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
   // Validate ticker format (1-10 alphanumeric characters and dots)
   if (!/^[A-Z0-9.]{1,10}$/.test(formattedSymbol)) {
     throw { status: 400, message: "Invalid ticker symbol format" };
+  }
+
+  const cacheKey = `stock:${formattedSymbol}`;
+
+  // --- Redis cache check ---
+  try {
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      console.log(`CACHE HIT: ${cacheKey}`);
+      return JSON.parse(cached) as StockQuote;
+    }
+    console.log(`CACHE MISS: ${cacheKey}`);
+  } catch {
+    // Redis is down or unavailable — fall through to live fetch
   }
 
   const apiKey = process.env.MARKET_API_KEY;
@@ -40,10 +62,19 @@ export const fetchStockPrice = async (symbol: string): Promise<StockQuote> => {
       throw { status: 400, message: `Invalid or unknown stock symbol: ${formattedSymbol}` };
     }
 
-    return {
+    const quote: StockQuote = {
       symbol: formattedSymbol,
       currentPrice: Number(data.c),
     };
+
+    // --- Store in Redis for 60 seconds ---
+    try {
+      await redis.set(cacheKey, JSON.stringify(quote), "EX", CACHE_TTL_SECONDS);
+    } catch {
+      // Redis write failed — not fatal, continue without caching
+    }
+
+    return quote;
   } catch (error: any) {
     if (error.status && error.message) {
       throw error;

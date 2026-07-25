@@ -2,7 +2,7 @@ import { Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createPortfolioSchema } from "../schemas/portfolio.schema";
-import { getIO } from "../socket";
+import { emitUserEvent } from "../socket";
 
 export const createPortfolio = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -17,22 +17,15 @@ export const createPortfolio = async (req: AuthRequest, res: Response): Promise<
     const userId = req.user!.id;
 
     const portfolio = await prisma.portfolio.create({
-      data: {
-        name,
-        userId,
-      },
-      include: {
-        holdings: true,
-      },
+      data: { name, userId },
+      include: { holdings: true },
     });
 
-    try {
-      getIO().to(`user:${userId}`).emit("portfolio:created", {
-        portfolioId: portfolio.id,
-        name: portfolio.name,
-        userId: portfolio.userId,
-      });
-    } catch (e) {}
+    emitUserEvent(userId, "portfolio:created", {
+      portfolioId: portfolio.id,
+      name: portfolio.name,
+      userId: portfolio.userId,
+    });
 
     res.status(201).json(portfolio);
   } catch (error) {
@@ -48,9 +41,7 @@ export const getPortfolios = async (req: AuthRequest, res: Response): Promise<vo
       where: { userId },
       include: {
         holdings: {
-          include: {
-            transactions: true,
-          },
+          include: { transactions: true },
         },
       },
     });
@@ -71,24 +62,16 @@ export const deletePortfolio = async (req: AuthRequest, res: Response): Promise<
       return;
     }
 
-    const portfolio = await prisma.portfolio.findFirst({
-      where: { id, userId },
-    });
+    const portfolio = await prisma.portfolio.findFirst({ where: { id, userId } });
 
     if (!portfolio) {
       res.status(404).json({ message: "Portfolio not found" });
       return;
     }
 
-    await prisma.portfolio.delete({
-      where: { id },
-    });
+    await prisma.portfolio.delete({ where: { id } });
 
-    try {
-      getIO().to(`user:${userId}`).emit("portfolio:deleted", {
-        portfolioId: id,
-      });
-    } catch (e) {}
+    emitUserEvent(userId, "portfolio:deleted", { portfolioId: id });
 
     res.status(200).json({ message: "Portfolio deleted successfully" });
   } catch (error) {

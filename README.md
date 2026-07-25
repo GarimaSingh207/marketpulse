@@ -10,7 +10,7 @@ Full-Stack Financial Analytics Platform
 
 **Backend:** Node.js, Express, TypeScript, Prisma, PostgreSQL, Redis, Socket.IO
 
-**Security:** JWT, bcrypt
+**Security:** JWT, bcrypt, Helmet, express-rate-limit
 
 **Deployment:** Docker, Docker Compose, GitHub Actions, AWS (EC2, S3, IAM)
 
@@ -18,14 +18,16 @@ Full-Stack Financial Analytics Platform
 
 ## Features
 
-- [ ] JWT Authentication with bcrypt password hashing
-- [ ] Role-Based Access Control (RBAC)
-- [ ] Real-time portfolio tracking
-- [ ] Live market data updates via Socket.IO
-- [ ] Personalized watchlists
-- [ ] Scalable relational database schemas (PostgreSQL + Prisma)
-- [ ] Redis caching
-- [ ] Rate limiting
+- [x] JWT Authentication with bcrypt password hashing
+- [x] Role-Based Access Control (RBAC)
+- [x] Real-time portfolio tracking via Socket.IO
+- [x] Live market data via Finnhub API
+- [x] Redis caching for stock price responses (60s TTL)
+- [x] Personalized watchlists with live prices
+- [x] Portfolio management (create, holdings, BUY/SELL transactions)
+- [x] Relational database schemas (PostgreSQL + Prisma)
+- [x] API rate limiting (express-rate-limit)
+- [x] HTTP security headers (Helmet)
 - [ ] Dockerized deployment with Docker Compose
 - [ ] CI/CD with GitHub Actions
 - [ ] AWS EC2 hosting with Nginx reverse proxy
@@ -39,7 +41,10 @@ Full-Stack Financial Analytics Platform
 MarketPulse/
 ├── backend/          # Node.js + Express API
 ├── frontend/         # React SPA
-├── docs/             # Documentation
+├── docs/             # API documentation & Postman collection
+│   ├── MarketPulse_API.postman_collection.json
+│   ├── socket-events.md
+│   └── watchlists.md
 ├── .gitignore
 ├── LICENSE
 ├── README.md
@@ -56,7 +61,20 @@ MarketPulse/
 
 ## Getting Started
 
-> Setup instructions will be added as the project progresses.
+```bash
+# Backend
+cd backend
+npm install
+cp .env.example .env   # fill in your credentials
+npx prisma db push
+npx tsx seed-admin.ts  # creates admin@example.com / Admin123
+npm run dev            # starts on http://localhost:5000
+
+# Frontend
+cd frontend
+npm install
+npm run dev            # starts on http://localhost:5173
+```
 
 ---
 

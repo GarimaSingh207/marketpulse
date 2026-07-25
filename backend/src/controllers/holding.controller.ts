@@ -2,7 +2,7 @@ import { Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createHoldingSchema } from "../schemas/portfolio.schema";
-import { getIO } from "../socket";
+import { emitUserEvent } from "../socket";
 
 export const addHolding = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -35,23 +35,16 @@ export const addHolding = async (req: AuthRequest, res: Response): Promise<void>
     const { symbol, quantity, averagePrice } = parseResult.data;
 
     const holding = await prisma.holding.create({
-      data: {
-        portfolioId,
-        symbol,
-        quantity,
-        averagePrice,
-      },
+      data: { portfolioId, symbol, quantity, averagePrice },
     });
 
-    try {
-      getIO().to(`user:${userId}`).emit("holding:created", {
-        holdingId: holding.id,
-        portfolioId: holding.portfolioId,
-        symbol: holding.symbol,
-        quantity: holding.quantity,
-        averagePrice: Number(holding.averagePrice),
-      });
-    } catch (e) {}
+    emitUserEvent(userId, "holding:created", {
+      holdingId: holding.id,
+      portfolioId: holding.portfolioId,
+      symbol: holding.symbol,
+      quantity: holding.quantity,
+      averagePrice: Number(holding.averagePrice),
+    });
 
     res.status(201).json(holding);
   } catch (error) {
@@ -71,9 +64,7 @@ export const deleteHolding = async (req: AuthRequest, res: Response): Promise<vo
 
     const holding = await prisma.holding.findFirst({
       where: { id },
-      include: {
-        portfolio: true,
-      },
+      include: { portfolio: true },
     });
 
     if (!holding || holding.portfolio.userId !== userId) {
@@ -81,16 +72,12 @@ export const deleteHolding = async (req: AuthRequest, res: Response): Promise<vo
       return;
     }
 
-    await prisma.holding.delete({
-      where: { id },
-    });
+    await prisma.holding.delete({ where: { id } });
 
-    try {
-      getIO().to(`user:${userId}`).emit("holding:deleted", {
-        holdingId: id,
-        portfolioId: holding.portfolioId,
-      });
-    } catch (e) {}
+    emitUserEvent(userId, "holding:deleted", {
+      holdingId: id,
+      portfolioId: holding.portfolioId,
+    });
 
     res.status(200).json({ message: "Holding deleted successfully" });
   } catch (error) {

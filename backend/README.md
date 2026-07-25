@@ -1,6 +1,6 @@
 # MarketPulse Backend
 
-Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, RBAC, Portfolio Management, Live Market Data, & Redis Caching
+Node.js + Express + TypeScript API with PostgreSQL, Prisma ORM, JWT Authentication, RBAC, Portfolio Management, Watchlists, Live Market Data, Redis Caching, Socket.IO, Helmet, and Rate Limiting.
 
 ---
 
@@ -23,7 +23,8 @@ backend/
 │   │   ├── market.controller.ts        # Live stock price quote handler
 │   │   ├── portfolio.controller.ts     # Portfolio CRUD handlers (create, list, delete)
 │   │   ├── portfolioValue.controller.ts# Real-time portfolio valuation handler
-│   │   └── transaction.controller.ts   # BUY/SELL transaction handlers with weighted avg price
+│   │   ├── transaction.controller.ts   # BUY/SELL transaction handlers with weighted avg price
+│   │   └── watchlist.controller.ts     # Watchlist CRUD + stock management handlers
 │   ├── lib/
 │   │   ├── prisma.ts                   # Prisma client singleton
 │   │   └── redis.ts                    # Redis (ioredis) client singleton
@@ -38,13 +39,16 @@ backend/
 │   │   ├── holding.routes.ts           # Holding & Transaction routes
 │   │   ├── market.routes.ts            # Market price quote routes
 │   │   ├── portfolio.routes.ts         # Portfolio routes & Valuation route
-│   │   └── profile.routes.ts           # Protected user profile route
+│   │   ├── profile.routes.ts           # Protected user profile route
+│   │   └── watchlist.routes.ts         # Watchlist routes
 │   ├── schemas/
 │   │   ├── auth.schema.ts              # Zod auth validation schemas
-│   │   └── portfolio.schema.ts         # Zod portfolio, holding, & transaction schemas
+│   │   ├── portfolio.schema.ts         # Zod portfolio, holding, & transaction schemas
+│   │   └── watchlist.schema.ts         # Zod watchlist validation schemas
 │   ├── services/
-│   │   └── market.service.ts           # Market data service (Finnhub API with Redis 60s caching)
-│   ├── app.ts                          # Express app setup & route registration
+│   │   └── market.service.ts           # Market data service (Finnhub API + Redis 60s caching)
+│   ├── socket.ts                       # Socket.IO server initialization & event helpers
+│   ├── app.ts                          # Express app setup, security middleware & route registration
 │   └── index.ts                        # Entry point - loads env & starts server
 ├── seed-admin.ts                       # Admin user seed script
 ├── package.json
@@ -124,23 +128,41 @@ npm start
 
 ## API Endpoints
 
-| Method | Endpoint                                 | Access         | Description                                       |
-|--------|------------------------------------------|----------------|---------------------------------------------------|
-| GET    | `/api/health`                            | Public         | Server health check                               |
-| GET    | `/api/db-check`                          | Public         | Database connection status                        |
-| POST   | `/api/auth/register`                     | Public         | Register a new user (returns 201)                 |
-| POST   | `/api/auth/login`                        | Public         | Login user & return 24h JWT token                 |
-| GET    | `/api/profile`                           | Protected      | Retrieve authenticated user's profile             |
-| GET    | `/api/admin/users`                       | Admin Only     | Retrieve all registered users (omits password)    |
-| DELETE | `/api/admin/users/:id`                   | Admin Only     | Delete a user by ID (404 if not found)            |
-| POST   | `/api/portfolios`                        | Protected      | Create portfolio for authenticated user           |
-| GET    | `/api/portfolios`                        | Protected      | Get all portfolios owned by authenticated user    |
-| DELETE | `/api/portfolios/:id`                    | Owner Only     | Delete portfolio (404 if not found/unowned)       |
-| POST   | `/api/portfolios/:portfolioId/holdings`  | Owner Only     | Add holding to portfolio                          |
-| DELETE | `/api/holdings/:id`                      | Owner Only     | Delete holding                                    |
-| POST   | `/api/holdings/:holdingId/transactions`  | Owner Only     | Create BUY or SELL transaction                    |
-| GET    | `/api/market/price/:symbol`              | Protected      | Fetch real-time stock price (`{ symbol, currentPrice }`)|
-| GET    | `/api/portfolio/value/:portfolioId`      | Owner Only     | Get live portfolio value & holding market values  |
+| Method | Endpoint                                   | Access         | Description                                          |
+|--------|--------------------------------------------|----------------|------------------------------------------------------|
+| GET    | `/api/health`                              | Public         | Server health check                                  |
+| GET    | `/api/db-check`                            | Public         | Database connection status                           |
+| POST   | `/api/auth/register`                       | Public         | Register a new user (returns 201)                    |
+| POST   | `/api/auth/login`                          | Public         | Login user & return 24h JWT token                    |
+| GET    | `/api/profile`                             | Protected      | Retrieve authenticated user's profile                |
+| GET    | `/api/admin/users`                         | Admin Only     | Retrieve all registered users (omits password)       |
+| DELETE | `/api/admin/users/:id`                     | Admin Only     | Delete a user by ID                                  |
+| POST   | `/api/portfolios`                          | Protected      | Create portfolio for authenticated user              |
+| GET    | `/api/portfolios`                          | Protected      | Get all portfolios owned by authenticated user       |
+| DELETE | `/api/portfolios/:id`                      | Owner Only     | Delete portfolio                                     |
+| POST   | `/api/portfolios/:portfolioId/holdings`    | Owner Only     | Add holding to portfolio                             |
+| GET    | `/api/portfolios/:portfolioId/value`       | Owner Only     | Get live portfolio value & holding market values     |
+| DELETE | `/api/holdings/:id`                        | Owner Only     | Delete holding                                       |
+| POST   | `/api/holdings/:holdingId/transactions`    | Owner Only     | Create BUY or SELL transaction                       |
+| GET    | `/api/market/price/:symbol`               | Protected      | Fetch real-time stock price (Redis-cached 60s)       |
+| POST   | `/api/watchlists`                          | Protected      | Create a watchlist                                   |
+| GET    | `/api/watchlists`                          | Protected      | Get all watchlists for authenticated user            |
+| GET    | `/api/watchlists/:id`                      | Owner Only     | Get watchlist with live stock prices                 |
+| DELETE | `/api/watchlists/:id`                      | Owner Only     | Delete watchlist and all its stocks                  |
+| POST   | `/api/watchlists/:id/stocks`              | Owner Only     | Add stock to watchlist (rejects duplicates)          |
+| DELETE | `/api/watchlists/:id/stocks/:symbol`      | Owner Only     | Remove stock from watchlist                          |
+
+---
+
+## Security Middleware
+
+| Middleware | Purpose |
+|-----------|---------|
+| `helmet` | Sets secure HTTP response headers |
+| `cors` | Configures Cross-Origin Resource Sharing |
+| `express-rate-limit` | 100 requests per 15 min per IP on all `/api` routes |
+| `authenticateToken` | Validates JWT Bearer token on protected routes |
+| `authorizeRoles` | Enforces role-based access (ADMIN/USER) |
 
 ---
 
@@ -150,6 +172,15 @@ npm start
 2. **TTL**: 60 seconds (`EX 60`).
 3. **Lookup Sequence**:
    - Checks Redis cache for key `stock:<SYMBOL>`.
-   - **Cache Hit**: Logs `CACHE HIT` and returns cached quote.
+   - **Cache Hit**: Logs `CACHE HIT` and returns cached quote immediately.
    - **Cache Miss**: Logs `CACHE MISS`, fetches price from Finnhub, saves to Redis for 60 seconds, and returns price.
-4. **Resilience**: Invalid symbols, failed HTTP responses, database queries, and users are **NEVER** cached. If Redis is down, system falls back to fetching directly without crashing.
+4. **Shared Cache**: The same cached price is served for both portfolio valuation and watchlist price requests.
+5. **Resilience**: If Redis is down, the system falls back to fetching directly from Finnhub without crashing.
+
+---
+
+## Socket.IO Real-Time Events
+
+See [`docs/socket-events.md`](../docs/socket-events.md) for the complete event reference.
+
+All events are emitted to the user's private room `user:<USER_ID>`. Clients must authenticate with a JWT token during the Socket.IO handshake.

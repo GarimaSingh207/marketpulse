@@ -15,7 +15,9 @@ router.use(authenticateToken);
 
 router.post("/", createPortfolio);
 router.get("/", getPortfolios);
-router.get("/value/:portfolioId", getPortfolioValue);
+
+// Static segment routes must come before dynamic /:id to avoid conflicts
+router.get("/:portfolioId/value", getPortfolioValue);
 router.delete("/:id", deletePortfolio);
 router.post("/:portfolioId/holdings", addHolding);
 
