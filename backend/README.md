@@ -77,10 +77,12 @@ cp .env.example .env
 
 Environment variables:
 - `PORT`: Server port (default: `5000`)
+- `NODE_ENV`: Environment mode (`development` or `production`)
 - `DATABASE_URL`: PostgreSQL connection string
 - `JWT_SECRET`: Secret key used for signing JWT tokens
 - `MARKET_API_KEY`: Finnhub API key for live stock quotes
 - `REDIS_URL`: Redis connection URL (default: `redis://localhost:6379`)
+- `CORS_ORIGIN`: Allowed frontend origin (default: `http://localhost:5173`)
 
 ### Database Setup & Prisma Commands
 
@@ -157,12 +159,15 @@ npm start
 ## Security Middleware
 
 | Middleware | Purpose |
-|-----------|---------|
-| `helmet` | Sets secure HTTP response headers |
-| `cors` | Configures Cross-Origin Resource Sharing |
-| `express-rate-limit` | 100 requests per 15 min per IP on all `/api` routes |
-| `authenticateToken` | Validates JWT Bearer token on protected routes |
+|-----------|----------|
+| `helmet` | Sets 9 secure HTTP response headers |
+| `cors` | Restricts to `CORS_ORIGIN` env var — no wildcard in production |
+| `express-rate-limit` (general) | 100 req / 15 min per IP on all `/api` routes |
+| `express-rate-limit` (auth) | 20 req / 15 min per IP on `/api/auth` specifically |
+| `authenticateToken` | Validates JWT Bearer token; JWT_SECRET has no fallback |
 | `authorizeRoles` | Enforces role-based access (ADMIN/USER) |
+
+See [`docs/security.md`](../docs/security.md) for the complete security reference.
 
 ---
 

@@ -1,11 +1,16 @@
 import { z } from "zod";
 
 export const createPortfolioSchema = z.object({
-  name: z.string().min(1, "Portfolio name is required"),
+  name: z.string().trim().min(1, "Portfolio name is required"),
 });
 
 export const createHoldingSchema = z.object({
-  symbol: z.string().min(1, "Symbol is required").transform((val) => val.toUpperCase()),
+  symbol: z
+    .string()
+    .trim()
+    .min(1, "Symbol is required")
+    .max(10, "Symbol must be 10 characters or fewer")
+    .transform((val) => val.toUpperCase()),
   quantity: z.number().positive("Quantity must be greater than 0"),
   averagePrice: z.number().positive("Average price must be greater than 0"),
 });

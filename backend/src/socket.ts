@@ -10,29 +10,34 @@ export interface AuthenticatedSocket extends Socket {
 let io: SocketIOServer | null = null;
 
 export const initSocketIO = (server: HTTPServer): SocketIOServer => {
+  const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+
   io = new SocketIOServer(server, {
     cors: {
-      origin: "*",
+      origin: allowedOrigin,
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
-  // JWT Middleware for Socket.IO authentication
+  // JWT authentication middleware for Socket.IO connections
   io.use((socket: AuthenticatedSocket, next) => {
     const token =
-      socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(" ")[1];
+      socket.handshake.auth?.token ||
+      socket.handshake.headers?.authorization?.split(" ")[1];
 
     if (!token) {
       return next(new Error("Authentication token required"));
     }
 
-    const jwtSecret = process.env.JWT_SECRET || "default_secret";
+    // JWT_SECRET is guaranteed to exist — startup validation in index.ts ensures this
+    const jwtSecret = process.env.JWT_SECRET!;
 
     try {
       const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
       socket.user = decoded;
       next();
-    } catch (err) {
+    } catch {
       next(new Error("Invalid or expired token"));
     }
   });
@@ -41,25 +46,21 @@ export const initSocketIO = (server: HTTPServer): SocketIOServer => {
     if (socket.user) {
       const roomName = `user:${socket.user.id}`;
       socket.join(roomName);
-      console.log(`Socket connected: ${socket.id} joined room ${roomName}`);
     }
 
     socket.on("disconnect", () => {
-      console.log(`Socket disconnected: ${socket.id}`);
+      // Connection closed — no sensitive data logged
     });
   });
 
   return io;
 };
 
-export const getIO = (): SocketIOServer => {
-  if (!io) {
-    throw new Error("Socket.IO server not initialized");
-  }
-  return io;
-};
-
-export const emitUserEvent = (userId: string, eventName: string, payload: any): void => {
+/**
+ * Emits a Socket.IO event to a specific user's private room.
+ * Safe to call even if Socket.IO is not yet initialized.
+ */
+export const emitUserEvent = (userId: string, eventName: string, payload: Record<string, unknown>): void => {
   if (io) {
     io.to(`user:${userId}`).emit(eventName, payload);
   }

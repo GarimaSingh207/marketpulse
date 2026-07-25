@@ -6,10 +6,20 @@ const redis = new Redis(redisUrl, {
   lazyConnect: true,
   maxRetriesPerRequest: 1,
   enableOfflineQueue: false,
+  connectTimeout: 5000,
 });
 
-redis.on("error", () => {
-  // Silent error listener to prevent unhandled Redis connection crashes
+redis.on("connect", () => {
+  console.log("[redis] Connected");
+});
+
+redis.on("error", (err: Error) => {
+  // Log the error type without leaking connection details
+  console.warn(`[redis] Connection error: ${err.message.split("\n")[0]}`);
+});
+
+redis.on("close", () => {
+  console.warn("[redis] Connection closed");
 });
 
 export default redis;

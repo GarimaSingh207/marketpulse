@@ -20,17 +20,18 @@ export const authenticateToken = (
   const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
   if (!token) {
-    res.status(401).json({ message: "Authentication token required" });
+    res.status(401).json({ success: false, message: "Authentication token required" });
     return;
   }
 
-  const jwtSecret = process.env.JWT_SECRET || "default_secret";
+  // JWT_SECRET is guaranteed to exist — startup validation in index.ts ensures this
+  const jwtSecret = process.env.JWT_SECRET!;
 
   try {
     const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
 };
