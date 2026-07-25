@@ -1,28 +1,32 @@
 # ─── Stage 1: Build ───────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
+# Install OpenSSL for Prisma engine compatibility on Alpine Linux
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
-# Copy package files and prisma schema first for optimal layer caching
+# Copy package files and prisma schema
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies including devDependencies for TypeScript compilation
+# Install dependencies including devDependencies
 RUN npm ci
 
-# Generate Prisma Client
+# Generate Prisma Client for linux-musl-openssl-3.0.x
 RUN npx prisma generate
 
-# Copy application source code
+# Copy source code and build TypeScript to dist/
 COPY tsconfig.json ./
 COPY src ./src
-COPY seed-admin.ts ./
 
-# Build TypeScript to dist/
 RUN npm run build
 
 # ─── Stage 2: Production Runner ──────────────────────────────────────────────
 FROM node:20-alpine AS runner
+
+# Install OpenSSL for Prisma runtime on Alpine Linux
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
@@ -32,14 +36,14 @@ ENV NODE_ENV=production
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install all dependencies required for running DB push, seed, and server
+# Install dependencies
 RUN npm ci
 
-# Copy generated Prisma client and built dist from builder stage
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Generate Prisma Client in production runner environment
+RUN npx prisma generate
+
+# Copy compiled JavaScript output from builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/seed-admin.ts ./seed-admin.ts
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh ./
