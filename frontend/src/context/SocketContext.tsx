@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 
@@ -10,38 +10,40 @@ const SocketContext = createContext<SocketContextValue>({ socket: null });
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const { token, isAuthenticated } = useAuth();
-  const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     // Only connect when authenticated
     if (!isAuthenticated || !token) {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      setSocket((prev) => {
+        if (prev) prev.disconnect();
+        return null;
+      });
       return;
     }
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
-    socketRef.current = io(socketUrl, {
+    const socketInstance = io(socketUrl, {
       auth: { token },
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
     });
 
-    socketRef.current.on("connect_error", (err) => {
+    socketInstance.on("connect_error", (err) => {
       console.warn("[socket] Connection error:", err.message);
     });
 
+    setSocket(socketInstance);
+
     return () => {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      socketInstance.disconnect();
+      setSocket(null);
     };
   }, [isAuthenticated, token]);
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current }}>
+    <SocketContext.Provider value={{ socket }}>
       {children}
     </SocketContext.Provider>
   );

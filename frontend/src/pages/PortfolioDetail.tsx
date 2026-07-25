@@ -252,6 +252,7 @@ export default function PortfolioDetail() {
                             onClick={() => {
                               setSelectedHoldingForTx(h);
                               setTxType("BUY");
+                              setTxQty("");
                               setTxPrice(livePrice.toFixed(2));
                             }}
                           >
