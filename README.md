@@ -6,13 +6,13 @@ Full-Stack Financial Analytics Platform
 
 ## Tech Stack
 
-**Frontend:** React, React Router, Axios, Socket.IO Client
+**Frontend:** React 18, React Router v6, Axios, Socket.IO Client, Nginx (Alpine)
 
-**Backend:** Node.js, Express, TypeScript, Prisma, PostgreSQL, Redis, Socket.IO
+**Backend:** Node.js 20, Express, TypeScript, Prisma ORM, PostgreSQL 16, Redis 7, Socket.IO
 
 **Security:** JWT, bcrypt, Helmet, express-rate-limit
 
-**Deployment:** Docker, Docker Compose, GitHub Actions, AWS (EC2, S3, IAM)
+**Infrastructure & Containerization:** Docker, Docker Compose, GitHub Actions, AWS (EC2, S3, IAM)
 
 ---
 
@@ -23,12 +23,12 @@ Full-Stack Financial Analytics Platform
 - [x] Real-time portfolio tracking via Socket.IO
 - [x] Live market data via Finnhub API
 - [x] Redis caching for stock price responses (60s TTL)
-- [x] Personalized watchlists with live prices
+- [x] Personalized watchlists with live stock prices
 - [x] Portfolio management (create, holdings, BUY/SELL transactions)
 - [x] Relational database schemas (PostgreSQL + Prisma)
 - [x] API rate limiting (express-rate-limit)
 - [x] HTTP security headers (Helmet)
-- [ ] Dockerized deployment with Docker Compose
+- [x] Dockerized deployment with Docker Compose (Frontend, Backend, PostgreSQL, Redis)
 - [ ] CI/CD with GitHub Actions
 - [ ] AWS EC2 hosting with Nginx reverse proxy
 - [ ] S3 and IAM integration
@@ -39,12 +39,20 @@ Full-Stack Financial Analytics Platform
 
 ```
 MarketPulse/
-├── backend/          # Node.js + Express API
-├── frontend/         # React SPA
-├── docs/             # API documentation & Postman collection
+├── backend/          # Node.js + Express + TypeScript API
+│   ├── Dockerfile
+│   ├── docker-entrypoint.sh
+│   └── prisma/
+├── frontend/         # React SPA (Vite)
+│   ├── Dockerfile
+│   └── nginx.conf
+├── docs/             # Documentation & Postman collection
 │   ├── MarketPulse_API.postman_collection.json
+│   ├── security.md
 │   ├── socket-events.md
 │   └── watchlists.md
+├── docker-compose.yml
+├── .env.example
 ├── .gitignore
 ├── LICENSE
 ├── README.md
@@ -53,28 +61,69 @@ MarketPulse/
 
 ---
 
-## Live Demo
+## Docker Quick Start (Single Command)
 
-> Coming soon — deployment URL will be added to `url.txt`
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine + Docker Compose (v2+)
+
+### 1. Start the entire application
+
+Run a single command from the project root:
+
+```bash
+docker compose up --build
+```
+
+This automatically orchestrates and builds:
+- **`postgres`** (PostgreSQL 16 on port `5432` with healthcheck)
+- **`redis`** (Redis 7 on port `6379` with healthcheck)
+- **`backend`** (Node.js API on port `5000`, waits for Postgres & Redis health, pushes Prisma schema, seeds `admin@example.com` / `Admin123`)
+- **`frontend`** (React SPA on port `5173` served via Nginx Alpine)
+
+### 2. Access the Application
+
+- **Frontend App**: [http://localhost:5173](http://localhost:5173)
+- **Backend API Health**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+- **Database Connection Check**: [http://localhost:5000/api/db-check](http://localhost:5000/api/db-check)
+
+### 3. Stop containers
+
+```bash
+# Stop containers keeping database volumes
+docker compose down
+
+# Stop containers and remove persistent database volumes
+docker compose down -v
+```
 
 ---
 
-## Getting Started
+## Local Development (Without Docker)
 
 ```bash
-# Backend
+# 1. Backend Setup
 cd backend
 npm install
-cp .env.example .env   # fill in your credentials
+cp .env.example .env
 npx prisma db push
-npx tsx seed-admin.ts  # creates admin@example.com / Admin123
-npm run dev            # starts on http://localhost:5000
+npx tsx seed-admin.ts  # seeds admin@example.com / Admin123
+npm run dev            # starts API on http://localhost:5000
 
-# Frontend
+# 2. Frontend Setup
 cd frontend
 npm install
-npm run dev            # starts on http://localhost:5173
+cp .env.example .env
+npm run dev            # starts SPA on http://localhost:5173
 ```
+
+---
+
+## Troubleshooting & FAQ
+
+- **Database Connection Refused**: Ensure PostgreSQL container passes healthcheck (`docker compose ps`).
+- **Prisma Schema Mismatch**: Run `docker compose exec backend npx prisma db push`.
+- **CORS Error in Browser**: Verify `CORS_ORIGIN` in `.env` matches `http://localhost:5173`.
 
 ---
 
