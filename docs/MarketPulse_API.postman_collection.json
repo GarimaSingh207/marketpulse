@@ -353,13 +353,164 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/portfolio/value/:portfolioId",
+              "raw": "{{baseUrl}}/api/portfolios/:portfolioId/value",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "portfolio", "value", ":portfolioId"],
+              "path": ["api", "portfolios", ":portfolioId", "value"],
               "variable": [
                 {
                   "key": "portfolioId",
                   "value": "portfolio_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Watchlists",
+      "item": [
+        {
+          "name": "Create Watchlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Tech Picks\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlists",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlists"]
+            }
+          }
+        },
+        {
+          "name": "Get All Watchlists",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlists",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlists"]
+            }
+          }
+        },
+        {
+          "name": "Get Watchlist with Live Prices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlists/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlists", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "watchlist_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Watchlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlists/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlists", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "watchlist_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Stock to Watchlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"AAPL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlists/:id/stocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlists", ":id", "stocks"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "watchlist_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Stock from Watchlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/watchlists/:id/stocks/:symbol",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "watchlists", ":id", "stocks", ":symbol"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "watchlist_id_here"
+                },
+                {
+                  "key": "symbol",
+                  "value": "AAPL"
                 }
               ]
             }

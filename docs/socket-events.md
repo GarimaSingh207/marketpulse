@@ -18,11 +18,11 @@ const socket = io("http://localhost:5000", {
 });
 ```
 
-Upon successful JWT verification, the client automatically joins room `user:<USER_ID>`. All portfolio event notifications are broadcast strictly to the user's room.
+Upon successful JWT verification, the client automatically joins room `user:<USER_ID>`. All event notifications are broadcast strictly to the user's private room.
 
 ---
 
-## Event Specifications
+## Portfolio Events
 
 ### 1. `portfolio:created`
 Emitted when a portfolio is created.
@@ -109,5 +109,59 @@ Emitted automatically when a transaction recalculates holding quantity or weight
     "quantity": 15,
     "averagePrice": 158.50
   }
+}
+```
+
+---
+
+## Watchlist Events
+
+### 7. `watchlist:created`
+Emitted when a watchlist is created.
+
+**Payload:**
+```json
+{
+  "watchlistId": "cmrz...",
+  "name": "My Tech Picks"
+}
+```
+
+---
+
+### 8. `watchlist:deleted`
+Emitted when a watchlist is deleted.
+
+**Payload:**
+```json
+{
+  "watchlistId": "cmrz..."
+}
+```
+
+---
+
+### 9. `watchlist:stockAdded`
+Emitted when a stock is added to a watchlist.
+
+**Payload:**
+```json
+{
+  "watchlistId": "cmrz...",
+  "stockId": "cmrz...",
+  "symbol": "AAPL"
+}
+```
+
+---
+
+### 10. `watchlist:stockRemoved`
+Emitted when a stock is removed from a watchlist.
+
+**Payload:**
+```json
+{
+  "watchlistId": "cmrz...",
+  "symbol": "AAPL"
 }
 ```
