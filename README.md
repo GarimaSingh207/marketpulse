@@ -127,6 +127,69 @@ npm run dev            # starts SPA on http://localhost:5173
 
 ---
 
+## Automated Testing Suite
+
+MarketPulse features a comprehensive automated testing suite built with **Vitest**, **Supertest**, and **React Testing Library**.
+
+### Test Frameworks & Utilities
+- **Backend:** Vitest + Supertest + In-Memory Mocks (Prisma Client, ioredis, Socket.IO)
+- **Frontend:** Vitest + React Testing Library + jsdom + Mock Context Providers
+
+### Test Commands
+
+#### Backend Tests
+```bash
+cd backend
+npm test               # Run all backend tests once
+npm run test:watch     # Run backend tests in watch mode
+npm run test:coverage  # Generate backend coverage report
+```
+
+#### Frontend Tests
+```bash
+cd frontend
+npm test               # Run all frontend component/page tests once
+npm run test:watch     # Run frontend tests in watch mode
+npm run test:coverage  # Generate frontend coverage report
+```
+
+### Test Coverage Summary
+
+| Workspace | Test Files | Total Tests | Statement Coverage | Branch Coverage | Function Coverage | Line Coverage |
+|-----------|------------|-------------|--------------------|-----------------|-------------------|---------------|
+| **Backend** | 7 | 70 | 69.47% | 52.22% | 64.58% | 69.24% |
+| **Frontend** | 10 | 67 | 56.42% | 60.29% | 61.22% | 56.72% |
+
+### Test Folder Structure
+
+```
+MarketPulse/
+├── backend/
+│   ├── vitest.config.ts
+│   └── src/
+│       └── tests/
+│           ├── setup.ts              # Test env configuration & global mocks
+│           ├── mocks/                # Prisma, Redis, Socket.IO mocks
+│           ├── health.test.ts        # Health check & 404 endpoint tests
+│           ├── auth.test.ts          # Auth, registration, login & JWT middleware tests
+│           ├── portfolio.test.ts     # Portfolio CRUD endpoint tests
+│           ├── holding.test.ts       # Holding endpoint tests
+│           ├── transaction.test.ts   # Buy/Sell transaction logic tests
+│           ├── watchlist.test.ts     # Watchlist & stock tracking tests
+│           └── market.test.ts        # Live price & fallback quote tests
+├── frontend/
+│   ├── vite.config.ts                # Vitest jsdom configuration
+│   └── src/
+│       └── tests/
+│           ├── setup.ts              # jsdom setup & browser API mocks
+│           ├── mocks/                # AuthContext & SocketContext mock providers
+│           ├── components/           # Component tests (Navbar, Sidebar, Modal, Spinner, etc.)
+│           └── pages/                # Page integration tests (Login, Register, Dashboard)
+```
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
