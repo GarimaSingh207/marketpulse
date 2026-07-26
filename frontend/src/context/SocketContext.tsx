@@ -6,7 +6,7 @@ interface SocketContextValue {
   socket: Socket | null;
 }
 
-const SocketContext = createContext<SocketContextValue>({ socket: null });
+export const SocketContext = createContext<SocketContextValue>({ socket: null });
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const { token, isAuthenticated } = useAuth();

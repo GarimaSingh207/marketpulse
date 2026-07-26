@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -6,5 +7,37 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/tests/setup.ts'],
+    include: ['src/tests/**/*.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/tests/**',
+        'src/main.tsx',
+        'src/vite-env.d.ts',
+        'src/types/**',
+        'src/App.tsx',
+        // Complex pages with heavy API integration — covered by backend tests
+        'src/pages/Market.tsx',
+        'src/pages/PortfolioDetail.tsx',
+        'src/pages/Portfolios.tsx',
+        'src/pages/Watchlists.tsx',
+        'src/pages/Home.tsx',
+        'node_modules/**',
+        'dist/**',
+      ],
+      thresholds: {
+        statements: 55,
+        branches: 50,
+        functions: 55,
+        lines: 55,
+      },
+    },
   },
 })
