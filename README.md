@@ -38,8 +38,8 @@ Full-Stack Financial Analytics Platform
 - [x] HTTP security headers (Helmet)
 - [x] Dockerized deployment with Docker Compose (Frontend, Backend, PostgreSQL, Redis)
 - [x] CI/CD with GitHub Actions (Automated build, type checks, unit/integration testing & coverage)
-- [ ] AWS EC2 hosting with Nginx reverse proxy
-- [ ] S3 and IAM integration
+- [x] AWS EC2 deployment setup with production Docker Compose (`docker-compose.production.yml`)
+- [ ] AWS S3 & CloudFront asset hosting
 
 ---
 
@@ -49,32 +49,35 @@ Full-Stack Financial Analytics Platform
 MarketPulse/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml    # Production GitHub Actions CI Pipeline
-├── backend/          # Node.js + Express + TypeScript API
+│       └── ci.yml                     # Production GitHub Actions CI Pipeline
+├── backend/                           # Node.js + Express + TypeScript API
 │   ├── Dockerfile
 │   ├── docker-entrypoint.sh
 │   ├── vitest.config.ts
+│   ├── .env.production.example        # Backend production environment template
 │   ├── prisma/
 │   └── src/
 │       └── tests/
-├── frontend/         # React SPA (Vite)
+├── frontend/                          # React SPA (Vite)
 │   ├── Dockerfile
 │   ├── nginx.conf
 │   ├── vite.config.ts
+│   ├── .env.production.example        # Frontend production environment template
 │   └── src/
 │       └── tests/
-├── docs/             # Documentation & Postman collection
-├── docker-compose.yml
-├── .env.example
+├── docs/                              # Documentation & Postman collection
+├── docker-compose.yml                 # Local development Compose configuration
+├── docker-compose.production.yml      # Production AWS Compose configuration
+├── .env.example                       # Root environment variables template
 ├── .gitignore
 ├── LICENSE
 ├── README.md
-└── url.txt           # Live demo URL
+└── url.txt                            # Live demo URL
 ```
 
 ---
 
-## Docker Quick Start (Single Command)
+## Docker Quick Start (Local Development)
 
 ### Prerequisites
 
@@ -262,6 +265,165 @@ npx tsc --noEmit
 npm test
 npm run test:coverage
 ```
+
+---
+
+## AWS Production Deployment Guide
+
+MarketPulse is configured for containerized production deployment on **AWS EC2** using [`docker-compose.production.yml`](file:///docker-compose.production.yml).
+
+### 1. EC2 Instance Provisioning
+1. Launch an AWS EC2 instance:
+   - **AMI**: Ubuntu 24.04 LTS (or 22.04 LTS) 64-bit (x86).
+   - **Instance Type**: `t3.micro` (free tier eligible) or `t3.small` (recommended for production builds).
+   - **Storage**: 20 GB General Purpose SSD (gp3).
+2. Configure **Security Group** Inbound Rules:
+   - **HTTP (80)**: Source `0.0.0.0/0` (Frontend web traffic).
+   - **HTTPS (443)**: Source `0.0.0.0/0` (TLS/SSL traffic).
+   - **Custom TCP (5000)**: Source `0.0.0.0/0` (Backend REST API / Socket.IO).
+   - **SSH (22)**: Source `My IP` (Secure administrative access).
+
+### 2. EC2 Environment Setup (One-time)
+Connect to your EC2 instance via SSH and install Docker and Docker Compose v2:
+
+```bash
+# Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Install Docker prerequisites
+sudo apt install -y ca-certificates curl gnupg lsb-release git
+
+# Add Docker’s official GPG key and repository
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine & Docker Compose plugin
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# Grant user permission to run Docker without sudo
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+### 3. Application Deployment
+
+```bash
+# Clone the repository onto EC2
+git clone https://github.com/<YOUR_USERNAME>/marketpulse.git
+cd marketpulse
+
+# Copy the root production environment template
+cp .env.example .env
+
+# Edit .env with your production values
+nano .env
+```
+
+**Required Production `.env` Values:**
+```ini
+POSTGRES_USER=marketpulse_prod_user
+POSTGRES_PASSWORD=YOUR_SECURE_GENERATED_PASSWORD
+POSTGRES_DB=marketpulse_prod
+
+NODE_ENV=production
+PORT=5000
+JWT_SECRET=YOUR_32_CHAR_MIN_CRYPTO_RANDOM_SECRET
+MARKET_API_KEY=YOUR_FINNHUB_PRODUCTION_API_KEY
+CORS_ORIGIN=http://<YOUR_EC2_PUBLIC_IP_OR_DOMAIN>
+
+VITE_API_URL=http://<YOUR_EC2_PUBLIC_IP_OR_DOMAIN>:5000
+VITE_SOCKET_URL=http://<YOUR_EC2_PUBLIC_IP_OR_DOMAIN>:5000
+```
+
+### 4. Running Production Containers
+
+Launch the production stack:
+
+```bash
+docker compose -f docker-compose.production.yml up -d --build
+```
+
+### 5. Production Database Migrations
+
+For production schema updates:
+
+```bash
+# In production, generate Prisma client inside container and apply migrations cleanly:
+docker compose -f docker-compose.production.yml exec backend npx prisma generate
+docker compose -f docker-compose.production.yml exec backend npx prisma migrate deploy
+```
+
+> **Why `prisma migrate deploy` over `db push`?**  
+> `prisma migrate deploy` applies version-controlled SQL migrations deterministically without altering existing production data or risking schema drift.
+
+### 6. Application Updates (Continuous Deployment)
+
+To deploy an updated version of MarketPulse without data loss:
+
+```bash
+# Pull latest code from main branch
+git pull origin main
+
+# Rebuild static frontend & backend images, then restart containers gracefully
+docker compose -f docker-compose.production.yml up -d --build
+
+# Run any pending database migrations
+docker compose -f docker-compose.production.yml exec backend npx prisma migrate deploy
+```
+
+### 7. Viewing Logs & Container Status
+
+```bash
+# Check service health and running status
+docker compose -f docker-compose.production.yml ps
+
+# View live aggregate container logs
+docker compose -f docker-compose.production.yml logs -f
+
+# View backend specific logs
+docker compose -f docker-compose.production.yml logs -f backend
+
+# View Nginx web server logs
+docker compose -f docker-compose.production.yml logs -f frontend
+```
+
+### 8. Restarting Services & Health Checks
+
+```bash
+# Restart entire stack
+docker compose -f docker-compose.production.yml restart
+
+# Check backend health check endpoint
+curl -f http://localhost:5000/api/health
+
+# Check database connection check endpoint
+curl -f http://localhost:5000/api/db-check
+```
+
+### 9. Rollback Procedure
+
+If a deployment issues occurs:
+
+```bash
+# 1. Rollback code to previous git commit/tag
+git checkout <PREVIOUS_STABLE_COMMIT_OR_TAG>
+
+# 2. Rebuild and restart containers
+docker compose -f docker-compose.production.yml up -d --build
+
+# 3. Verify health status
+curl -f http://localhost:5000/api/health
+```
+
+### 10. Monitoring Recommendations
+
+- **Automated Uptime Checks**: Configure AWS Route 53 Health Checks or UptimeRobot targeting `http://<EC2_IP>:5000/api/health`.
+- **System Metrics**: Enable AWS CloudWatch Basic Monitoring on your EC2 instance for CPU, Disk I/O, and Network utilization.
+- **Docker Resource Monitoring**: Run `docker stats` on EC2 to monitor container RAM and CPU utilization.
 
 ---
 
