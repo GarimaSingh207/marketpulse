@@ -12,6 +12,16 @@ Full-Stack Financial Analytics Platform
 
 ---
 
+## Technical Highlights (Resume Showcase)
+
+- **Real-Time Financial Updates**: Integrated Socket.IO WebSocket rooms broadcasting live portfolio valuation updates (`portfolio:valueUpdated`) and watchlist price events directly to client sessions.
+- **Low-Latency Redis Caching**: Built a 60-second TTL Redis caching layer (`stock:<SYMBOL>`) to reduce external market API latency and respect rate limits.
+- **Atomic Database Transactions**: Utilized Prisma `$transaction` pipelines to maintain data consistency across portfolio holdings, buy/sell history, and weighted cost-basis calculations.
+- **100% Automated Test Suite**: Built 137 unit and integration tests with Vitest, Supertest, and React Testing Library spanning Express routes and React component states.
+- **Production DevOps Pipeline**: Automated parallel GitHub Actions CI workflows for type checking, unit testing, coverage artifact generation, and containerized AWS EC2 deployment via `docker-compose.production.yml`.
+
+---
+
 ## Tech Stack
 
 **Frontend:** React 18, React Router v6, Axios, Socket.IO Client, Nginx (Alpine)
@@ -21,6 +31,18 @@ Full-Stack Financial Analytics Platform
 **Security:** JWT, bcrypt, Helmet, express-rate-limit
 
 **Infrastructure & Containerization:** Docker, Docker Compose, GitHub Actions, AWS (EC2, S3, IAM)
+
+---
+
+## Application Screenshots & Visual Demo
+
+| Dashboard Overview | Watchlist & Live Prices |
+|:---:|:---:|
+| ![Dashboard Screenshot Placeholder](https://via.placeholder.com/600x350/111827/38BDF8?text=MarketPulse+Dashboard) | ![Watchlist Screenshot Placeholder](https://via.placeholder.com/600x350/111827/38BDF8?text=Watchlist+%26+Live+Prices) |
+
+| Portfolio Management & Holdings | Authentication & Security |
+|:---:|:---:|
+| ![Portfolios Screenshot Placeholder](https://via.placeholder.com/600x350/111827/38BDF8?text=Portfolio+Management) | ![Auth Screenshot Placeholder](https://via.placeholder.com/600x350/111827/38BDF8?text=JWT+Authentication) |
 
 ---
 
@@ -74,6 +96,32 @@ MarketPulse/
 ├── README.md
 └── url.txt                            # Live demo URL
 ```
+
+---
+
+## REST API Endpoints Overview
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Register a new user account |
+| `POST` | `/api/auth/login` | Public | Authenticate user and receive JWT |
+| `GET` | `/api/profile` | Authenticated | Retrieve authenticated user profile |
+| `GET` | `/api/health` | Public | Backend health check status |
+| `GET` | `/api/db-check` | Public | PostgreSQL connection verification |
+| `POST` | `/api/portfolios` | Authenticated | Create a new investment portfolio |
+| `GET` | `/api/portfolios` | Authenticated | List all user portfolios with holdings |
+| `DELETE`| `/api/portfolios/:id` | Authenticated | Delete portfolio and associated holdings |
+| `GET` | `/api/portfolios/:id/value` | Authenticated | Live market valuation of portfolio |
+| `POST` | `/api/portfolios/:id/holdings` | Authenticated | Add a stock holding to a portfolio |
+| `DELETE`| `/api/holdings/:id` | Authenticated | Remove a stock holding |
+| `POST` | `/api/holdings/:id/transactions` | Authenticated | Execute BUY/SELL stock transaction |
+| `POST` | `/api/watchlists` | Authenticated | Create a custom stock watchlist |
+| `GET` | `/api/watchlists` | Authenticated | List all user watchlists |
+| `GET` | `/api/watchlists/:id` | Authenticated | Get watchlist with live cached stock prices |
+| `DELETE`| `/api/watchlists/:id` | Authenticated | Delete a stock watchlist |
+| `POST` | `/api/watchlists/:id/stocks` | Authenticated | Add ticker symbol to watchlist |
+| `DELETE`| `/api/watchlists/:id/stocks/:symbol` | Authenticated | Remove symbol from watchlist |
+| `GET` | `/api/market/price/:symbol` | Authenticated | Fetch real-time stock price (Redis cached) |
 
 ---
 
@@ -176,33 +224,6 @@ npm run test:coverage  # Generate frontend coverage report
 | **Backend** | 7 | 70 | 69.47% | 52.22% | 64.58% | 69.24% |
 | **Frontend** | 10 | 67 | 56.42% | 60.29% | 61.22% | 56.72% |
 
-### Test Folder Structure
-
-```
-MarketPulse/
-├── backend/
-│   ├── vitest.config.ts
-│   └── src/
-│       └── tests/
-│           ├── setup.ts              # Test env configuration & global mocks
-│           ├── mocks/                # Prisma, Redis, Socket.IO mocks
-│           ├── health.test.ts        # Health check & 404 endpoint tests
-│           ├── auth.test.ts          # Auth, registration, login & JWT middleware tests
-│           ├── portfolio.test.ts     # Portfolio CRUD endpoint tests
-│           ├── holding.test.ts       # Holding endpoint tests
-│           ├── transaction.test.ts   # Buy/Sell transaction logic tests
-│           ├── watchlist.test.ts     # Watchlist & stock tracking tests
-│           └── market.test.ts        # Live price & fallback quote tests
-├── frontend/
-│   ├── vite.config.ts                # Vitest jsdom configuration
-│   └── src/
-│       └── tests/
-│           ├── setup.ts              # jsdom setup & browser API mocks
-│           ├── mocks/                # AuthContext & SocketContext mock providers
-│           ├── components/           # Component tests (Navbar, Sidebar, Modal, Spinner, etc.)
-│           └── pages/                # Page integration tests (Login, Register, Dashboard)
-```
-
 ---
 
 ## GitHub Actions CI/CD Pipeline
@@ -236,34 +257,6 @@ The pipeline runs on `ubuntu-latest` with **Node.js 20** and utilizes `npm` depe
   │ 7. test:coverage  │           │ 7. Upload Artifact│
   │ 8. Upload Artifact│           └───────────────────┘
   └───────────────────┘
-```
-
-### Coverage Artifacts
-Each job automatically generates and uploads code coverage reports:
-- **`backend-coverage`**: Contains html, lcov, and json coverage reports for backend API routes and logic.
-- **`frontend-coverage`**: Contains html, lcov, and json coverage reports for frontend UI components and state logic.
-
-Artifacts are retained for 7 days per workflow run.
-
-### Reproducing CI Verification Locally
-
-To run the exact validation steps performed in GitHub Actions locally:
-
-```bash
-# 1. Backend Verification
-cd backend
-npm ci
-npx prisma generate
-npx tsc --noEmit
-npm test
-npm run test:coverage
-
-# 2. Frontend Verification
-cd frontend
-npm ci
-npx tsc --noEmit
-npm test
-npm run test:coverage
 ```
 
 ---
@@ -424,6 +417,15 @@ curl -f http://localhost:5000/api/health
 - **Automated Uptime Checks**: Configure AWS Route 53 Health Checks or UptimeRobot targeting `http://<EC2_IP>:5000/api/health`.
 - **System Metrics**: Enable AWS CloudWatch Basic Monitoring on your EC2 instance for CPU, Disk I/O, and Network utilization.
 - **Docker Resource Monitoring**: Run `docker stats` on EC2 to monitor container RAM and CPU utilization.
+
+---
+
+## Future Enhancements & Roadmap
+
+- [ ] **AWS S3 & CloudFront Integration**: Offload static SPA assets and user export files to AWS S3 bucket distributed globally via CloudFront CDN.
+- [ ] **OAuth 2.0 / Social Login**: Add Google and GitHub OAuth authentication options alongside standard JWT login.
+- [ ] **Advanced Interactive Charting**: Integrate Lightweight Charts or D3.js interactive candlestick technical analysis charts.
+- [ ] **Automated WebHook Price Alerts**: Send SMS/Email notifications (via AWS SNS or Twilio) when stock prices cross target user thresholds.
 
 ---
 
