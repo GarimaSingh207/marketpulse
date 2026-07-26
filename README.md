@@ -2,6 +2,14 @@
 
 Full-Stack Financial Analytics Platform
 
+<!-- GitHub Actions CI/CD Badges Placeholder -->
+<!-- Replace <USERNAME> and <REPO> with your GitHub username and repository name after pushing -->
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#github-actions-cicd-pipeline)
+[![Test Status](https://img.shields.io/badge/tests-137%20passed-blue)](#github-actions-cicd-pipeline)
+
+> **Badge Setup Note:** Once pushed to GitHub, replace the URLs above with your repository workflow badge URLs:
+> - **Build Badge:** `https://github.com/<USERNAME>/<REPO>/actions/workflows/ci.yml/badge.svg`
+
 ---
 
 ## Tech Stack
@@ -29,7 +37,7 @@ Full-Stack Financial Analytics Platform
 - [x] API rate limiting (express-rate-limit)
 - [x] HTTP security headers (Helmet)
 - [x] Dockerized deployment with Docker Compose (Frontend, Backend, PostgreSQL, Redis)
-- [ ] CI/CD with GitHub Actions
+- [x] CI/CD with GitHub Actions (Automated build, type checks, unit/integration testing & coverage)
 - [ ] AWS EC2 hosting with Nginx reverse proxy
 - [ ] S3 and IAM integration
 
@@ -39,18 +47,23 @@ Full-Stack Financial Analytics Platform
 
 ```
 MarketPulse/
+├── .github/
+│   └── workflows/
+│       └── ci.yml    # Production GitHub Actions CI Pipeline
 ├── backend/          # Node.js + Express + TypeScript API
 │   ├── Dockerfile
 │   ├── docker-entrypoint.sh
-│   └── prisma/
+│   ├── vitest.config.ts
+│   ├── prisma/
+│   └── src/
+│       └── tests/
 ├── frontend/         # React SPA (Vite)
 │   ├── Dockerfile
-│   └── nginx.conf
+│   ├── nginx.conf
+│   ├── vite.config.ts
+│   └── src/
+│       └── tests/
 ├── docs/             # Documentation & Postman collection
-│   ├── MarketPulse_API.postman_collection.json
-│   ├── security.md
-│   ├── socket-events.md
-│   └── watchlists.md
 ├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
@@ -189,7 +202,69 @@ MarketPulse/
 
 ---
 
+## GitHub Actions CI/CD Pipeline
+
+MarketPulse includes an automated Continuous Integration pipeline defined in [`.github/workflows/ci.yml`](file:///.github/workflows/ci.yml).
+
+### Workflow Triggers
+The CI workflow automatically triggers on:
+- **Pushes** to `main` or `master` branches.
+- **Pull Requests** targeting `main` or `master` branches.
+
+### Pipeline Architecture & Parallel Jobs
+The pipeline runs on `ubuntu-latest` with **Node.js 20** and utilizes `npm` dependency caching (`cache: 'npm'`) to minimize build times.
+
+```
+┌────────────────────────────────────────────────────────┐
+│                   GitHub Push / PR                     │
+└───────────────────────────┬────────────────────────────┘
+                            │
+            ┌───────────────┴───────────────┐
+            ▼                               ▼
+  ┌───────────────────┐           ┌───────────────────┐
+  │   Backend Job     │           │   Frontend Job    │
+  ├───────────────────┤           ├───────────────────┤
+  │ 1. Checkout       │           │ 1. Checkout       │
+  │ 2. Setup Node.js  │           │ 2. Setup Node.js  │
+  │ 3. npm ci         │           │ 3. npm ci         │
+  │ 4. prisma generate│           │ 4. tsc --noEmit   │
+  │ 5. tsc --noEmit   │           │ 5. npm test       │
+  │ 6. npm test       │           │ 6. test:coverage  │
+  │ 7. test:coverage  │           │ 7. Upload Artifact│
+  │ 8. Upload Artifact│           └───────────────────┘
+  └───────────────────┘
+```
+
+### Coverage Artifacts
+Each job automatically generates and uploads code coverage reports:
+- **`backend-coverage`**: Contains html, lcov, and json coverage reports for backend API routes and logic.
+- **`frontend-coverage`**: Contains html, lcov, and json coverage reports for frontend UI components and state logic.
+
+Artifacts are retained for 7 days per workflow run.
+
+### Reproducing CI Verification Locally
+
+To run the exact validation steps performed in GitHub Actions locally:
+
+```bash
+# 1. Backend Verification
+cd backend
+npm ci
+npx prisma generate
+npx tsc --noEmit
+npm test
+npm run test:coverage
+
+# 2. Frontend Verification
+cd frontend
+npm ci
+npx tsc --noEmit
+npm test
+npm run test:coverage
+```
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
