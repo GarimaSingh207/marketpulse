@@ -37,8 +37,9 @@ services:
       dockerfile: Dockerfile
     container_name: marketpulse-backend-prod
     restart: unless-stopped
-    ports:
-      - "5000:5000"
+    # No host port binding — backend is reachable only within the Docker
+    # bridge network via http://backend:5000 (used by the Nginx proxy).
+    # Port 5000 does NOT need to be open in the AWS Security Group.
     environment:
       PORT: 5000
       NODE_ENV: production
@@ -64,9 +65,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
-        VITE_SOCKET_URL: ${VITE_SOCKET_URL:?VITE_SOCKET_URL is required}
+      # VITE_API_URL and VITE_SOCKET_URL are no longer passed as build args.
+      # The frontend uses relative paths ("") for REST API calls (same-origin through Nginx)
+      # and window.location.origin for Socket.IO (resolved at runtime in the browser).
     container_name: marketpulse-frontend-prod
     restart: unless-stopped
     ports:

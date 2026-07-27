@@ -1,7 +1,11 @@
 import axios from "axios";
 
+// In production, all API traffic is routed through the Nginx reverse proxy on port 80.
+// baseURL is intentionally empty — all paths like /api/auth/login are same-origin requests
+// that Nginx proxies to the backend container internally (no port 5000 exposed to the internet).
+// In local development, Vite's dev server handles requests directly to the backend.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL || "",
   headers: {
     "Content-Type": "application/json",
   },

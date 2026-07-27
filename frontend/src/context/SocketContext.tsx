@@ -22,7 +22,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+    // In production, Socket.IO connects to the same origin as the frontend (Nginx on port 80).
+    // Nginx proxies /socket.io/ to the backend container with WebSocket upgrade headers.
+    // window.location.origin resolves correctly at runtime in the browser without any hardcoded IP.
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
 
     const socketInstance = io(socketUrl, {
       auth: { token },
