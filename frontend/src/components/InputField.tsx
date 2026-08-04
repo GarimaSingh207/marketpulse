@@ -5,6 +5,7 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   leftIcon?: React.ReactNode;
   rightElement?: React.ReactNode;
+  bottomContent?: React.ReactNode;
 }
 
 export default function InputField({
@@ -12,6 +13,7 @@ export default function InputField({
   id,
   leftIcon,
   rightElement,
+  bottomContent,
   className = "",
   ...props
 }: InputFieldProps) {
@@ -31,6 +33,7 @@ export default function InputField({
         />
         {rightElement && <div className="input-element-right">{rightElement}</div>}
       </div>
+      {bottomContent}
     </div>
   );
 }

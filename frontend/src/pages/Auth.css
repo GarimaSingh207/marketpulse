@@ -793,3 +793,56 @@
     transform: scale(0.9);
   }
 }
+
+/* ── PASSWORD STRENGTH INDICATOR ─────────────────────────────────────────── */
+
+.auth-strength-container {
+  display: flex;
+  gap: 6px;
+  height: 4px;
+  width: 100%;
+  margin-top: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.auth-strength-bar {
+  flex: 1;
+  height: 100%;
+  background-color: var(--auth-surface-container-highest); /* default unfulfilled */
+  border-radius: 2px;
+  transition: background-color 0.25s ease;
+}
+
+.auth-strength-bar.weak {
+  background-color: var(--auth-error) !important; /* soft red (#ffb4ab) */
+}
+
+.auth-strength-bar.fair {
+  background-color: var(--auth-primary-container) !important; /* burnished gold (#c8a45d) */
+}
+
+.auth-strength-bar.strong {
+  background-color: #34d399 !important; /* emerald green */
+}
+
+.auth-strength-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.25s ease;
+}
+
+.auth-strength-label.weak {
+  color: var(--auth-error);
+}
+
+.auth-strength-label.fair {
+  color: var(--auth-primary);
+}
+
+.auth-strength-label.strong {
+  color: #34d399;
+}

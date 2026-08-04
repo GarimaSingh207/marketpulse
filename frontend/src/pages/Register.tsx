@@ -1,34 +1,103 @@
 import { useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { Mail, Lock, User, Eye, EyeOff, BarChart2, TrendingUp, Shield, Zap } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, TrendingUp } from "lucide-react";
+import AuthLayout from "../components/AuthLayout";
+import AuthCard from "../components/AuthCard";
+import InputField from "../components/InputField";
+import PrimaryButton from "../components/PrimaryButton";
+import SecondaryButton from "../components/SecondaryButton";
+import "./Auth.css";
 
-function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3 | 4; label: string } {
-  if (!pw) return { level: 0, label: "" };
-  let score = 0;
-  if (pw.length >= 6) score++;
-  if (pw.length >= 10) score++;
-  if (/[A-Z]/.test(pw) || /[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  const labels = ["", "Weak", "Fair", "Good", "Strong"];
-  return { level: score as 0 | 1 | 2 | 3 | 4, label: labels[score] };
+function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3; colorClass: string; label: string } {
+  if (!pw) return { level: 0, colorClass: "", label: "" };
+  if (pw.length < 6) {
+    return { level: 1, colorClass: "weak", label: "Weak" };
+  }
+  if (pw.length < 10) {
+    return { level: 2, colorClass: "fair", label: "Fair" };
+  }
+  return { level: 3, colorClass: "strong", label: "Strong" };
 }
 
-const strengthClass = ["", "weak", "fair", "good", "strong"];
+function RegisterBrandPanel() {
+  return (
+    <div className="auth-showcase-composition">
+      {/* 1. Main Portfolio Chart */}
+      <div className="glass-card showcase-chart-card">
+        <div>
+          <h3 className="label-caps">Portfolio Overview</h3>
+          <div className="portfolio-value-wrap">
+            <span className="portfolio-value">Investment Analytics</span>
+          </div>
+        </div>
+        <div className="chart-container" style={{ display: "flex", alignItems: "flex-end", gap: "8px", height: "112px", marginTop: "24px" }}>
+          <div className="chart-grid" />
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", width: "100%", height: "100%", zIndex: 10, padding: "0 8px" }}>
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.4)", height: "40%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.5)", height: "35%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.3)", height: "50%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.7)", height: "45%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.6)", height: "65%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.8)", height: "55%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "rgba(200, 164, 93, 0.9)", height: "80%", borderRadius: "2px 2px 0 0" }} />
+            <div style={{ width: "8%", backgroundColor: "var(--auth-primary)", height: "95%", borderRadius: "2px 2px 0 0", boxShadow: "0 0 15px rgba(200,164,93,0.3)" }} />
+          </div>
+        </div>
+      </div>
 
-const features = [
-  { icon: TrendingUp, text: "Real-time market data & live stock prices" },
-  { icon: BarChart2,  text: "Portfolio analytics with gain/loss tracking" },
-  { icon: Eye,        text: "Custom watchlists for favorite assets" },
-  { icon: Zap,        text: "Instant socket updates across devices" },
-];
+      {/* 2. AI Insights */}
+      <div className="glass-card showcase-ai-card" style={{ marginTop: "-32px", zIndex: 20 }}>
+        <div className="ai-card-title-bar">
+          <svg className="ai-icon-gold" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5 5.5-2.5-5.5-2.5zm7.5 7l-1.25 2.75L15 20l2.75 1.25L19 23l1.25-2.75L23 20l-2.75-1.25L19 17z" />
+          </svg>
+          <h4 className="ai-card-title">AI Intel</h4>
+        </div>
+        <p className="ai-card-text">
+          Unusual options volume detected in semiconductor sector preceding earnings.
+        </p>
+      </div>
+
+      {/* 3. Watchlist Action */}
+      <div className="glass-card showcase-watchlist-card">
+        <div className="watchlist-header">
+          <h4 className="watchlist-title">Watchlist Action</h4>
+        </div>
+        <div className="watchlist-rows">
+          <div className="watchlist-row">
+            <div>
+              <div className="stock-symbol">NVDA</div>
+              <div className="stock-name">Nvidia Corp</div>
+            </div>
+            <div className="stock-price-col">
+              <div className="stock-price">$822.79</div>
+              <div className="stock-change positive">+4.2%</div>
+            </div>
+          </div>
+          <div className="watchlist-row">
+            <div>
+              <div className="stock-symbol">AAPL</div>
+              <div className="stock-name">Apple Inc</div>
+            </div>
+            <div className="stock-price-col">
+              <div className="stock-price">$173.50</div>
+              <div className="stock-change negative">-0.8%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +108,21 @@ export default function Register() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Validation checks
+    if (!name.trim()) {
+      setError("Name must be at least 2 characters");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     try {
       await register(name, email, password);
@@ -55,234 +139,157 @@ export default function Register() {
     }
   };
 
+  const handleGoogleAuth = () => {
+    alert("Workspace Single Sign-On is managed by your organization's IT department.");
+  };
+
+  // Render password strength indicator bar under the password field
+  const renderStrengthBar = () => {
+    if (!password) return null;
+    return (
+      <div>
+        <div className="auth-strength-container" aria-label={`Password strength: ${strength.label}`}>
+          <div className={`auth-strength-bar ${strength.level >= 1 ? strength.colorClass : ""}`} />
+          <div className={`auth-strength-bar ${strength.level >= 2 ? strength.colorClass : ""}`} />
+          <div className={`auth-strength-bar ${strength.level >= 3 ? strength.colorClass : ""}`} />
+        </div>
+        {strength.label && (
+          <p className={`auth-strength-label ${strength.colorClass}`}>
+            {strength.label} password
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  const passwordVisibilityToggle = (
+    <button
+      type="button"
+      className="input-icon-right"
+      onClick={() => setShowPassword((p) => !p)}
+      aria-label={showPassword ? "Hide key" : "Show key"}
+      tabIndex={-1}
+    >
+      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+    </button>
+  );
+
+  const confirmPasswordVisibilityToggle = (
+    <button
+      type="button"
+      className="input-icon-right"
+      onClick={() => setShowConfirmPassword((p) => !p)}
+      aria-label={showConfirmPassword ? "Hide key" : "Show key"}
+      tabIndex={-1}
+    >
+      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+    </button>
+  );
+
   return (
-    <div className="auth-layout">
-      {/* ── Brand Panel ────────────────────────────────────────────── */}
-      <motion.div
-        className="auth-panel-brand"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div className="auth-brand-logo">
-          <div className="auth-brand-icon" aria-hidden="true">
-            <BarChart2 size={20} color="white" strokeWidth={2.5} />
+    <AuthLayout brandPanel={<RegisterBrandPanel />}>
+      {/* Header / Logo */}
+      <div className="auth-header">
+        <div className="auth-logo-group">
+          <div className="auth-logo-icon-box">
+            <TrendingUp size={20} strokeWidth={2.5} />
           </div>
           <span className="auth-brand-name">MarketPulse</span>
         </div>
+      </div>
 
-        <div className="auth-brand-content">
-          <h1 className="auth-brand-headline">
-            Start investing<br />
-            <span>with confidence.</span>
-          </h1>
-          <p className="auth-brand-description">
-            Join thousands of investors using MarketPulse to track, analyze, and grow their portfolios.
-          </p>
-          <div className="auth-features">
-            {features.map(({ icon: Icon, text }, i) => (
-              <motion.div
-                key={i}
-                className="auth-feature"
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 + i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <div className="auth-feature-icon" aria-hidden="true">
-                  <Icon size={13} strokeWidth={2.5} />
-                </div>
-                <span>{text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        <div className="auth-stats" aria-hidden="true">
-          <div className="auth-stat-item">
-            <span className="auth-stat-number">Free</span>
-            <span className="auth-stat-label">Always free</span>
-          </div>
-          <div className="auth-stat-item">
-            <span className="auth-stat-number">∞</span>
-            <span className="auth-stat-label">Portfolios</span>
-          </div>
-          <div className="auth-stat-item">
-            <span className="auth-stat-number">Live</span>
-            <span className="auth-stat-label">Market data</span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── Form Panel ─────────────────────────────────────────────── */}
-      <motion.div
-        className="auth-panel-form"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+      <AuthCard
+        title="Welcome to MarketPulse"
+        subtitle="Create your institutional trading account to access portfolio analytics, market intelligence, and professional investment tools."
+        error={error}
       >
-        <div className="auth-form-container">
-          <div className="auth-form-header">
-            <h2 className="auth-form-title">Create account</h2>
-            <p className="auth-form-subtitle">Get started with MarketPulse for free</p>
+        <form onSubmit={handleSubmit} noValidate>
+          {/* Full Name */}
+          <InputField
+            id="reg-name"
+            label="Full Name"
+            type="text"
+            placeholder="Jane Doe"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            leftIcon={<User size={20} />}
+            required
+            autoComplete="name"
+            autoFocus
+          />
+
+          {/* Email Address */}
+          <InputField
+            id="reg-email"
+            label="Email Address"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            leftIcon={<Mail size={20} />}
+            required
+            autoComplete="email"
+          />
+
+          {/* Password */}
+          <InputField
+            id="reg-password"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="At least 6 characters"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            leftIcon={<Lock size={20} />}
+            rightElement={passwordVisibilityToggle}
+            bottomContent={renderStrengthBar()}
+            required
+            autoComplete="new-password"
+          />
+
+          {/* Confirm Password */}
+          <InputField
+            id="reg-confirm-password"
+            label="Confirm Password"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            leftIcon={<Lock size={20} />}
+            rightElement={confirmPasswordVisibilityToggle}
+            required
+            autoComplete="new-password"
+          />
+
+          <PrimaryButton type="submit" loading={loading} loadingText="Creating account…">
+            Create Account
+          </PrimaryButton>
+
+          <div className="auth-divider-container">
+            <div className="auth-divider-line" />
+            <span className="auth-divider-text">Or</span>
+            <div className="auth-divider-line" />
           </div>
 
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                className="error-banner"
-                role="alert"
-                aria-live="assertive"
-                initial={{ opacity: 0, y: -8, height: 0 }}
-                animate={{ opacity: 1, y: 0, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-                style={{ marginBottom: "1.25rem", overflow: "hidden" }}
-              >
-                <Shield size={14} aria-hidden="true" />
-                <span>{error}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <SecondaryButton type="button" onClick={handleGoogleAuth}>
+            <svg className="auth-google-icon" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
+            </svg>
+            Continue with Google Workspace
+          </SecondaryButton>
+        </form>
 
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Name */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="reg-name">
-                Full name
-              </label>
-              <div className="form-input-wrap">
-                <User size={14} className="form-input-icon" aria-hidden="true" />
-                <input
-                  id="reg-name"
-                  type="text"
-                  className="form-input has-icon-left"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Doe"
-                  required
-                  autoComplete="name"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="reg-email">
-                Email address
-              </label>
-              <div className="form-input-wrap">
-                <Mail size={14} className="form-input-icon" aria-hidden="true" />
-                <input
-                  id="reg-email"
-                  type="email"
-                  className="form-input has-icon-left"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  autoComplete="email"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="reg-password">
-                Password
-              </label>
-              <div className="form-input-wrap">
-                <Lock size={14} className="form-input-icon" aria-hidden="true" />
-                <input
-                  id="reg-password"
-                  type={showPassword ? "text" : "password"}
-                  className="form-input has-icon-left has-icon-right"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  minLength={6}
-                  required
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="form-input-icon-right"
-                  onClick={() => setShowPassword((p) => !p)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  tabIndex={-1}
-                >
-                  {showPassword ? (
-                    <EyeOff size={14} strokeWidth={2} />
-                  ) : (
-                    <Eye size={14} strokeWidth={2} />
-                  )}
-                </button>
-              </div>
-
-              {/* Strength indicator */}
-              {password && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="strength-bar-wrap" aria-label={`Password strength: ${strength.label}`}>
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className={`strength-bar ${
-                          i <= strength.level ? strengthClass[strength.level] : ""
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  {strength.label && (
-                    <p className={`strength-label ${strengthClass[strength.level]}`}>
-                      {strength.label} password
-                    </p>
-                  )}
-                </motion.div>
-              )}
-            </div>
-
-            <motion.button
-              type="submit"
-              className="btn btn-primary btn-lg"
-              style={{ width: "100%", marginTop: "1.25rem" }}
-              disabled={loading}
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {loading ? (
-                <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span
-                    style={{
-                      width: "14px",
-                      height: "14px",
-                      border: "2px solid rgba(255,255,255,0.3)",
-                      borderTopColor: "white",
-                      borderRadius: "50%",
-                      animation: "spin 0.7s linear infinite",
-                      display: "inline-block",
-                    }}
-                    aria-hidden="true"
-                  />
-                  Creating account…
-                </span>
-              ) : (
-                "Create account"
-              )}
-            </motion.button>
-          </form>
-
-          <p className="auth-form-footer">
-            Already have an account?{" "}
-            <Link to="/login">Sign in</Link>
+        <div className="auth-card-footer">
+          <p className="auth-card-footer-text">
+            Already have an account?
+            <Link to="/login" className="auth-card-footer-link">
+              Sign In
+            </Link>
+          </p>
+          <p className="auth-policy-text">
+            By creating an account, you agree to our Terms of Service and Privacy Policy.
           </p>
         </div>
-      </motion.div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
+      </AuthCard>
+    </AuthLayout>
   );
 }

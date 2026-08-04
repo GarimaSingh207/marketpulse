@@ -44,7 +44,7 @@ describe("Register page", () => {
 
   it("renders the Password input", () => {
     renderRegister();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
   });
 
   it("renders the Create account button", () => {
@@ -69,7 +69,8 @@ describe("Register page", () => {
 
     await user.type(screen.getByLabelText(/full name/i), "John Doe");
     await user.type(screen.getByLabelText(/email address/i), "john@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password123");
+    await user.type(screen.getByLabelText(/^password$/i), "password123");
+    await user.type(screen.getByLabelText(/confirm password/i), "password123");
     await user.click(screen.getByRole("button", { name: /create account/i }));
 
     expect(screen.getByRole("button", { name: /creating account/i })).toBeDisabled();
@@ -83,7 +84,8 @@ describe("Register page", () => {
 
     await user.type(screen.getByLabelText(/full name/i), "John Doe");
     await user.type(screen.getByLabelText(/email address/i), "john@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password123");
+    await user.type(screen.getByLabelText(/^password$/i), "password123");
+    await user.type(screen.getByLabelText(/confirm password/i), "password123");
     await user.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
@@ -103,7 +105,8 @@ describe("Register page", () => {
 
     await user.type(screen.getByLabelText(/full name/i), "Jane Doe");
     await user.type(screen.getByLabelText(/email address/i), "duplicate@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password123");
+    await user.type(screen.getByLabelText(/^password$/i), "password123");
+    await user.type(screen.getByLabelText(/confirm password/i), "password123");
     await user.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
@@ -118,7 +121,8 @@ describe("Register page", () => {
 
     await user.type(screen.getByLabelText(/full name/i), "Test");
     await user.type(screen.getByLabelText(/email address/i), "test@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password123");
+    await user.type(screen.getByLabelText(/^password$/i), "password123");
+    await user.type(screen.getByLabelText(/confirm password/i), "password123");
     await user.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
