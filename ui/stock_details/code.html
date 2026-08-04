@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NVDA | MarketPulse Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4d4639;
+        }
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.2); }
+        }
+        .chart-glow {
+            filter: drop-shadow(0 0 10px rgba(232, 193, 119, 0.15));
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#d1c5b4",
+                        "primary-fixed-dim": "#e8c177",
+                        "surface-bright": "#393939",
+                        "tertiary": "#c6c7c2",
+                        "on-tertiary-fixed": "#1a1c19",
+                        "error-container": "#93000a",
+                        "secondary": "#bac3ff",
+                        "error": "#ffb4ab",
+                        "surface": "#131313",
+                        "on-primary": "#402d00",
+                        "secondary-fixed-dim": "#bac3ff",
+                        "on-secondary-fixed": "#001159",
+                        "inverse-on-surface": "#313030",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-container": "#513a00",
+                        "on-surface": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#c8a45d",
+                        "inverse-primary": "#775a1a",
+                        "tertiary-fixed": "#e3e3de",
+                        "on-error": "#690005",
+                        "on-secondary-fixed-variant": "#0031c5",
+                        "secondary-container": "#0136d6",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-container": "#201f1f",
+                        "on-tertiary": "#2f312e",
+                        "tertiary-container": "#a8a9a5",
+                        "background": "#131313",
+                        "primary-fixed": "#ffdea3",
+                        "on-primary-fixed-variant": "#5c4202",
+                        "surface-dim": "#131313",
+                        "surface-container-highest": "#353534",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary": "#00208d",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "surface-tint": "#e8c177",
+                        "on-secondary-container": "#b0bbff",
+                        "on-primary-fixed": "#261900",
+                        "on-tertiary-container": "#3c3e3b",
+                        "outline": "#9a8f80",
+                        "primary": "#e8c177",
+                        "secondary-fixed": "#dee1ff",
+                        "on-background": "#e5e2e1",
+                        "tertiary-fixed-dim": "#c6c7c2",
+                        "outline-variant": "#4d4639",
+                        "on-tertiary-fixed-variant": "#454744"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "unit": "8px",
+                        "margin-mobile": "24px",
+                        "gutter": "32px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-lg": ["20px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "data-md": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container flex flex-col py-8 shadow-2xl z-[60]">
+<div class="px-6 mb-12">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">MarketPulse</h1>
+<p class="font-body-md text-on-surface-variant opacity-60 text-xs">Institutional Grade</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">terminal</span>
+<span class="font-body-md">Terminal</span>
+</a>
+<a class="flex items-center px-6 py-3 text-primary font-bold border-r-2 border-primary bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">analytics</span>
+<span class="font-body-md">Markets</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">account_balance_wallet</span>
+<span class="font-body-md">Portfolio</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">show_chart</span>
+<span class="font-body-md">Analytics</span>
+</a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-bright transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">visibility</span>
+<span class="font-body-md">Watchlist</span>
+</a>
+</nav>
+<div class="px-6 pt-6 border-t border-outline-variant/20">
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-sm text-sm hover:opacity-90 transition-opacity">
+                Execute Trade
+            </button>
+</div>
+</aside>
+<!-- Top AppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-surface flex justify-between items-center px-margin-desktop z-50 border-b border-outline-variant/10">
+<div class="flex items-center gap-8">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+<input class="bg-surface-container-high border-none text-sm pl-10 pr-4 py-2 w-80 rounded-sm focus:ring-1 focus:ring-primary/50 transition-all" placeholder="Search markets, assets, news..." type="text"/>
+</div>
+<nav class="hidden lg:flex gap-6">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity" href="#">MARKETS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity" href="#">INDICES</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity" href="#">FX</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity" href="#">CRYPTO</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">notifications</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A professional studio headshot of a senior financial analyst in a dark suit against a charcoal background, high contrast editorial lighting, matte finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4z_oPdeaYjOYCw6KK30v_UYV6Bvdr31kPZaebvxkGlytVjLUFA-ia6F0kUFEVCpohpKhyBgHyn1A5s7xMTZCLaeN3zMspR0kjL_EPScZDB4FmxlIm5EAuXn9-b5HiCp4lK8Xa9sh8VL9Phv044bXNRFsRq394f8crYBxX7QMfk8MjcisSz-LZrLZOfpBUeGDzk2Nk2svVzJ1CJCtgYkIAPdaoxkHt6TS5RgoQoINiwtyVC9MeAwk4lg"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen">
+<div class="max-w-[1440px] mx-auto p-margin-desktop space-y-10">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6 items-center">
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">NVIDIA Corp</h2>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant font-data-md text-xs border border-outline-variant/20">NVDA: NASDAQ</span>
+<div class="flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-full border border-primary/20 ml-2">
+<span class="w-2 h-2 rounded-full bg-green-500 pulse-animation"></span>
+<span class="text-[10px] font-bold text-primary tracking-widest uppercase">Market Open</span>
+</div>
+</div>
+<div class="flex items-baseline gap-4 mt-2">
+<span class="font-display-md text-display-md font-bold text-on-surface tracking-tight">$875.28</span>
+<div class="flex items-center text-green-400 font-data-md text-lg">
+<span class="material-symbols-outlined text-xl">arrow_drop_up</span>
+<span>+$34.65 (+4.12%)</span>
+<span class="ml-2 text-on-surface-variant/40 text-sm">Today</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4"><button class="px-8 py-2.5 bg-primary text-on-primary font-bold rounded-sm hover:opacity-90 active:scale-95 transition-all">Buy</button><button class="px-8 py-2.5 bg-surface-container border border-outline-variant text-on-surface font-bold rounded-sm hover:bg-surface-bright active:scale-95 transition-all">Sell</button><button class="flex items-center gap-2 px-6 py-2.5 border border-primary text-primary font-bold rounded-sm hover:bg-primary/5 active:scale-95 transition-all"><span class="material-symbols-outlined text-xl">star</span>Watchlist</button></div>
+</section>
+<!-- Hero Chart Section -->
+<section class="bg-surface-container border border-outline-variant/10 rounded-sm overflow-hidden shadow-2xl">
+<div class="p-6 flex justify-between items-center border-b border-outline-variant/10 mb-4">
+<div class="flex gap-1">
+<button class="px-4 py-2 font-label-caps text-xs text-primary bg-primary/10 border-b-2 border-primary">1D</button>
+<button class="px-4 py-2 font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">5D</button>
+<button class="px-4 py-2 font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">1M</button>
+<button class="px-4 py-2 font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">6M</button>
+<button class="px-4 py-2 font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">1Y</button>
+<button class="px-4 py-2 font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">5Y</button>
+<button class="px-4 py-2 font-label-caps text-xs text-on-surface-variant hover:text-primary transition-colors">MAX</button>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-xs font-data-md text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Price
+                        </div>
+<div class="flex items-center gap-2 text-xs font-data-md text-on-surface-variant/60">
+<span class="w-2 h-2 rounded-full bg-outline"></span> Vol (45.2M)
+                        </div>
+</div>
+</div>
+<div class="relative h-[480px] w-full bg-surface-container-low p-8 p-12">
+<!-- Placeholder for interactive chart using Three.js style animation -->
+<div class="relative h-full w-full flex items-end justify-between gap-1 chart-glow">
+<!-- Simulated Candle Sticks -->
+<div class="flex-1 h-2/3 bg-green-500/20 border-x border-green-500 relative"><div class="absolute top-0 left-1/2 w-px h-full bg-green-500 -translate-x-1/2"></div></div>
+<div class="flex-1 h-3/4 bg-green-500/20 border-x border-green-500 relative"><div class="absolute top-0 left-1/2 w-px h-full bg-green-500 -translate-x-1/2"></div></div>
+<div class="flex-1 h-1/2 bg-red-500/20 border-x border-red-500 relative"><div class="absolute top-0 left-1/2 w-px h-full bg-red-500 -translate-x-1/2"></div></div>
+<div class="flex-1 h-4/5 bg-green-500/20 border-x border-green-500 relative"><div class="absolute top-0 left-1/2 w-px h-full bg-green-500 -translate-x-1/2"></div></div>
+<div class="flex-1 h-3/5 bg-green-500/20 border-x border-green-500 relative"><div class="absolute top-0 left-1/2 w-px h-full bg-green-500 -translate-x-1/2"></div></div>
+<div class="flex-1 h-5/6 bg-primary/40 border-x border-primary relative">
+<div class="absolute top-0 left-1/2 w-px h-full bg-primary -translate-x-1/2"></div>
+<!-- Crosshair Tooltip -->
+<div class="absolute -top-16 -left-16 w-32 bg-surface-bright border border-primary p-2 z-10 shadow-xl">
+<p class="text-[10px] font-data-md text-primary">$875.28</p>
+<p class="text-[8px] font-data-md text-on-surface-variant">14:30:00 EST</p>
+<p class="text-[8px] font-data-md text-green-400">Vol: 1.2M</p>
+</div>
+</div>
+</div>
+<!-- Chart Grid Labels -->
+<div class="absolute right-4 top-8 bottom-8 flex flex-col justify-between text-[10px] font-data-md text-on-surface-variant/40">
+<span>$900.00</span>
+<span>$875.00</span>
+<span>$850.00</span>
+<span>$825.00</span>
+<span>$800.00</span>
+</div>
+</div>
+</section>
+<!-- Key Metrics Grid -->
+<section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-px bg-outline-variant/10 border border-outline-variant/10"><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">MARKET CAP</p><p class="font-data-lg text-2xl text-on-surface">$2.15T</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">P/E RATIO</p><p class="font-data-lg text-2xl text-on-surface">72.4</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">EPS</p><p class="font-data-lg text-2xl text-on-surface">$1.80</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">DIV YIELD</p><p class="font-data-lg text-2xl text-on-surface">0.02%</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">52W HIGH</p><p class="font-data-lg text-2xl text-on-surface">$974.00</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">52W LOW</p><p class="font-data-lg text-2xl text-on-surface">$450.10</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">AVG VOL</p><p class="font-data-lg text-2xl text-on-surface">45.2M</p></div><div class="bg-surface-container p-6 flex flex-col gap-2 hover:bg-surface-bright transition-all cursor-default h-32 justify-center"><p class="font-label-caps text-[10px] text-on-surface-variant/40 tracking-widest">BETA</p><p class="font-data-lg text-2xl text-on-surface">1.65</p></div></section>
+<!-- Intelligence Grid: Company Intel & Analyst Insights -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Company Intel -->
+<div class="lg:col-span-8 bg-surface-container-high border border-outline-variant/10 p-8 space-y-8">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">Company Intelligence</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<!-- Left: Overview -->
+<div class="space-y-6">
+<p class="font-label-caps text-label-caps text-primary border-b border-primary/20 pb-2">OVERVIEW</p>
+<div class="grid grid-cols-2 gap-y-6">
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">INDUSTRY</p>
+<p class="text-on-surface font-body-md">Semiconductors</p>
+</div>
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">SECTOR</p>
+<p class="text-on-surface font-body-md">Technology</p>
+</div>
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">CEO</p>
+<p class="text-on-surface font-body-md">Jensen Huang</p>
+</div>
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">HQ</p>
+<p class="text-on-surface font-body-md">Santa Clara, CA</p>
+</div>
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">EMPLOYEES</p>
+<p class="text-on-surface font-body-md">29,600</p>
+</div>
+</div>
+</div>
+<!-- Right: Financial Performance -->
+<div class="space-y-6">
+<p class="font-label-caps text-label-caps text-primary border-b border-primary/20 pb-2">FINANCIAL PERFORMANCE</p>
+<div class="space-y-8">
+<div>
+<div class="flex justify-between items-end mb-2">
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">REVENUE GROWTH (TTM)</p>
+<p class="text-green-400 font-data-md">+265%</p>
+</div>
+<div class="flex items-end gap-1 h-12">
+<div class="flex-1 bg-primary/20 h-4"></div>
+<div class="flex-1 bg-primary/40 h-6"></div>
+<div class="flex-1 bg-primary/60 h-10"></div>
+<div class="flex-1 bg-primary h-12"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">NET INCOME MARGIN</p>
+<p class="text-green-400 font-data-md">48.8%</p>
+</div>
+<div class="flex items-end gap-1 h-12">
+<div class="flex-1 bg-tertiary/20 h-6"></div>
+<div class="flex-1 bg-tertiary/40 h-8"></div>
+<div class="flex-1 bg-tertiary/60 h-9"></div>
+<div class="flex-1 bg-tertiary h-11"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Analyst Insights -->
+<div class="lg:col-span-4 bg-surface-container border border-outline-variant/10 space-y-6 p-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">Sentiment</h3>
+<!-- Visual Gauge Area -->
+<div class="relative py-10 flex flex-col items-center">
+<div class="w-48 h-24 overflow-hidden relative">
+<div class="w-48 h-48 rounded-full border-[12px] border-outline-variant/20 absolute top-0"></div>
+<div class="w-48 h-48 rounded-full border-[12px] border-primary absolute top-0" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: rotate(150deg);"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
+<p class="font-data-lg text-2xl font-bold text-on-surface">STRONG BUY</p>
+</div>
+</div>
+<div class="flex w-full justify-between mt-8">
+<div class="text-center">
+<p class="text-[10px] font-label-caps text-on-surface-variant/40">BUY</p>
+<p class="font-data-md text-on-surface">42</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-label-caps text-on-surface-variant/40">HOLD</p>
+<p class="font-data-md text-on-surface">3</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-label-caps text-on-surface-variant/40">SELL</p>
+<p class="font-data-md text-on-surface">1</p>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/10 space-y-4">
+<p class="text-[10px] font-label-caps text-on-surface-variant/50">PRICE TARGET</p>
+<div class="flex items-center justify-between">
+<span class="text-xs font-body-md text-on-surface-variant">Average</span>
+<span class="font-data-md text-primary">$1,100.00</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest relative">
+<div class="absolute left-0 w-[80%] h-full bg-primary"></div>
+<div class="absolute left-[80%] w-0.5 h-3 bg-on-surface -top-1"></div>
+</div>
+<div class="flex justify-between text-[10px] font-data-md text-on-surface-variant/60">
+<span>Low: $850</span>
+<span>High: $1,400</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Company News Feed -->
+<section class="space-y-6">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">Company Intelligence Feed</h3>
+<button class="text-primary font-label-caps text-xs hover:underline">VIEW ALL NEWS</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- News Card 1 -->
+<div class="group bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer h-full hover:shadow-2xl transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A futuristic rendering of an AI neural network chip glowing with gold and sapphire light in a high-tech clean room, cinematic lighting, ultra-detailed macro photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkze4D8k0MJt6HLekZomYp30xRvWBPzMKqmxt34dY0xvo1fdY94a4Er4ElMK9GrC1EJJ0DlyimkkQuIeGOTWCZU2mL_h9cb-JeFOQTm_QITA-ci4EnuIvZZGLHY1O3QYfAq2_f-kEYPPFM-n354U9HKILuuTFh9rx8QD4PrNXCsk1XS2OECnLzMkh_W2v9L2rs0Pw4BHbIXHt9OyQFNlqZWDPfdqYAfv1ceHxnxx-8oZbospe1V3pBjA"/>
+<div class="absolute top-4 left-4 bg-primary text-on-primary px-2 py-1 text-[10px] font-bold">TOP STORY</div>
+</div>
+<div class="p-6 space-y-3">
+<div class="flex items-center gap-2 text-[10px] font-label-caps text-on-surface-variant/60">
+<span class="font-bold text-primary">Bloomberg</span>
+<span>•</span>
+<span>2h ago</span>
+</div>
+<h4 class="font-body-lg font-semibold text-on-surface leading-tight group-hover:text-primary transition-colors">NVIDIA dominates AI chip market as demand for H100 GPU surges globally.</h4>
+</div>
+</div>
+<!-- News Card 2 -->
+<div class="group bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer h-full hover:shadow-2xl transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A sleek corporate office interior with panoramic windows overlooking Silicon Valley at dusk, cool blue and warm gold ambient lighting, professional editorial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT-dW9gjJEYdxr-2VuiLQK5Q5V2M9gckjXE5obxH5zmtVwVgBTsjgLdmuXLTG7-X2Oy_BKBswwJNlwgD9xRx_DH0GaHgWXEYjqsvaOzPQSPqQwMy4fndFj_FvrZ1ODeYoRTa3OlvlC1NQyxFn-yhWGTjm7iaHW1INNO8dEAwvyl9MFFr7cRDsAACuiXAXoQmxh1igJgmr_870Acg6wJf2sMTh8qCBvV57e-R7QilfaD7_Lbi3sio1gUA"/>
+</div>
+<div class="p-6 space-y-3">
+<div class="flex items-center gap-2 text-[10px] font-label-caps text-on-surface-variant/60">
+<span class="font-bold text-primary">Reuters</span>
+<span>•</span>
+<span>5h ago</span>
+</div>
+<h4 class="font-body-lg font-semibold text-on-surface leading-tight group-hover:text-primary transition-colors">Analysts raise NVDA targets to record highs after stellar Q1 earnings report.</h4>
+</div>
+</div>
+<!-- News Card 3 -->
+<div class="group bg-surface-container border border-outline-variant/10 overflow-hidden cursor-pointer h-full hover:shadow-2xl transition-all duration-300">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A data center server rack with glowing green indicators and optical fibers, high-end technical aesthetic, depth of field, industrial precision style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm_6udbmak2A0-62U7AgsYHhXZ69MNKZjrercmf0n4g6RxODiAazmoedGIhOfbAuNGXRl8BtTqpCmcamsS5p0gOiechoxFFWcr7LNtPk8AyMD4R3s6znt7XvlvzrOkIYJqtOI9uMAJec2wMKANA95odDTHa1h0wdXe5GOJeDK9fcMiOa20SJAjD6VYcCAFFnof7YHN3U6ylA77uKahKyYczZT6VKSRhctCvKqoBtzNzHldp0pcEoAp3A"/>
+</div>
+<div class="p-6 space-y-3">
+<div class="flex items-center gap-2 text-[10px] font-label-caps text-on-surface-variant/60">
+<span class="font-bold text-primary">CNBC</span>
+<span>•</span>
+<span>8h ago</span>
+</div>
+<h4 class="font-body-lg font-semibold text-on-surface leading-tight group-hover:text-primary transition-colors">Jensen Huang outlines vision for 'Next Industrial Revolution' at GTC.</h4>
+</div>
+</div>
+</div>
+</section>
+<!-- Related Assets -->
+<section class="space-y-6 pb-20">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant/60 tracking-widest">RELATED SEMICONDUCTOR ASSETS</h3>
+<div class="flex overflow-x-auto pb-4 custom-scrollbar gap-gutter">
+<!-- AMD -->
+<div class="min-w-[280px] bg-surface-container-high border border-outline-variant/10 p-4 flex items-center justify-between hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface flex items-center justify-center rounded-sm font-bold text-xs text-on-surface-variant border border-outline-variant/20">AMD</div>
+<div>
+<p class="text-sm font-bold text-on-surface">AMD</p>
+<p class="text-xs font-data-md text-on-surface-variant">$181.20</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-data-md text-green-400">+1.24%</p>
+<div class="h-1 w-16 bg-surface-container-highest mt-1">
+<div class="h-full bg-green-500 w-[60%]"></div>
+</div>
+</div>
+</div>
+<!-- TSM -->
+<div class="min-w-[280px] bg-surface-container-high border border-outline-variant/10 p-4 flex items-center justify-between hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface flex items-center justify-center rounded-sm font-bold text-xs text-on-surface-variant border border-outline-variant/20">TSM</div>
+<div>
+<p class="text-sm font-bold text-on-surface">TSMC</p>
+<p class="text-xs font-data-md text-on-surface-variant">$142.15</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-data-md text-green-400">+2.10%</p>
+<div class="h-1 w-16 bg-surface-container-highest mt-1">
+<div class="h-full bg-green-500 w-[75%]"></div>
+</div>
+</div>
+</div>
+<!-- INTC -->
+<div class="min-w-[280px] bg-surface-container-high border border-outline-variant/10 p-4 flex items-center justify-between hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface flex items-center justify-center rounded-sm font-bold text-xs text-on-surface-variant border border-outline-variant/20">INTC</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Intel</p>
+<p class="text-xs font-data-md text-on-surface-variant">$42.85</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-data-md text-red-400">-0.45%</p>
+<div class="h-1 w-16 bg-surface-container-highest mt-1">
+<div class="h-full bg-red-500 w-[40%]"></div>
+</div>
+</div>
+</div>
+<!-- AVGO -->
+<div class="min-w-[280px] bg-surface-container-high border border-outline-variant/10 p-4 flex items-center justify-between hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface flex items-center justify-center rounded-sm font-bold text-xs text-on-surface-variant border border-outline-variant/20">AVGO</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Broadcom</p>
+<p class="text-xs font-data-md text-on-surface-variant">$1,354.10</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-data-md text-green-400">+0.88%</p>
+<div class="h-1 w-16 bg-surface-container-highest mt-1">
+<div class="h-full bg-green-500 w-[55%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Micro-interactions and Lightweight atmospheric effects
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hover effect for Key Metrics cards
+            const metricCards = document.querySelectorAll('.bg-surface-container.p-6');
+            metricCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.classList.add('bg-surface-bright');
+                    card.style.transition = 'background-color 0.3s ease';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.classList.remove('bg-surface-bright');
+                });
+            });
+
+            // Smooth reveal for sections
+            const observerOptions = {
+                threshold: 0.1
+            };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        entry.target.classList.remove('opacity-0', 'translate-y-4');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-4');
+                observer.observe(section);
+            });
+        });
+    </script>
+</body></html>

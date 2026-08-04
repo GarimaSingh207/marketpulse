@@ -1,0 +1,272 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MarketPulse - Institutional Authentication</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed": "#1a1c19",
+                        "inverse-surface": "#e5e2e1",
+                        "on-surface-variant": "#d1c5b4",
+                        "on-tertiary": "#2f312e",
+                        "primary-fixed-dim": "#e8c177",
+                        "secondary-fixed": "#dee1ff",
+                        "secondary-fixed-dim": "#bac3ff",
+                        "secondary": "#bac3ff",
+                        "tertiary-fixed": "#e3e3de",
+                        "surface-bright": "#393939",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#131313",
+                        "tertiary-fixed-dim": "#c6c7c2",
+                        "on-background": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#0031c5",
+                        "on-secondary-container": "#b0bbff",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#a8a9a5",
+                        "background": "#131313",
+                        "primary-container": "#c8a45d",
+                        "on-primary-container": "#513a00",
+                        "on-tertiary-container": "#3c3e3b",
+                        "on-secondary-fixed": "#001159",
+                        "on-primary": "#402d00",
+                        "surface-container-low": "#1c1b1b",
+                        "inverse-primary": "#775a1a",
+                        "outline": "#9a8f80",
+                        "on-surface": "#e5e2e1",
+                        "primary": "#e8c177",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary": "#00208d",
+                        "on-tertiary-fixed-variant": "#454744",
+                        "surface-dim": "#131313",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed": "#261900",
+                        "surface-container-high": "#2a2a2a",
+                        "inverse-on-surface": "#313030",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "tertiary": "#c6c7c2",
+                        "surface-tint": "#e8c177",
+                        "secondary-container": "#0136d6",
+                        "primary-fixed": "#ffdea3",
+                        "surface-container": "#201f1f",
+                        "outline-variant": "#4d4639",
+                        "on-primary-fixed-variant": "#5c4202"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "container-max": "1440px",
+                        "gutter": "32px",
+                        "margin-mobile": "24px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "data-md": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"],
+                        "display-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "data-lg": ["20px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "data-md": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "display-md": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(42, 42, 42, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(200, 164, 93, 0.2);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .chart-grid {
+            background-image: 
+                linear-gradient(to right, rgba(200, 164, 93, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(200, 164, 93, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-bottom-color: #c8a45d;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex selection:bg-primary/30 selection:text-primary">
+<!-- LEFT SIDE: Product Showcase (Hidden on Mobile) -->
+<div class="hidden lg:flex w-1/2 h-full relative items-center justify-center overflow-hidden bg-surface-container-lowest">
+<!-- Shader Background -->
+
+<!-- Composition Container -->
+<div class="relative w-full max-w-2xl h-[800px] z-10 scale-90 xl:scale-100">
+<!-- Main Portfolio Chart -->
+<div class="absolute top-[10%] left-[5%] right-[15%] h-[400px] glass-card rounded-xl p-6 flex flex-col justify-between">
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Total Portfolio Value</h3>
+<div class="flex items-end gap-4">
+<span class="font-data-lg text-[40px] text-on-surface font-medium">$124,592.80</span>
+<span class="font-data-md text-data-md text-primary mb-2">+4.2% (24h)</span>
+</div>
+</div>
+<div class="w-full h-[200px] chart-grid relative mt-8">
+<!-- SVG Chart Line Mockup -->
+<svg class="w-full h-full absolute inset-0 drop-shadow-md" preserveAspectRatio="none" viewBox="0 0 400 150">
+<path class="animate-[dash_5s_linear_forwards]" d="M0,130 C50,120 100,140 150,90 C200,40 250,80 300,50 C350,20 400,30 400,30" fill="none" stroke="#c8a45d" stroke-dasharray="1000" stroke-dashoffset="0" stroke-width="2"></path>
+<path d="M0,130 C50,120 100,140 150,90 C200,40 250,80 300,50 C350,20 400,30 400,30 L400,150 L0,150 Z" fill="url(#chartGrad)" opacity="0.1"></path>
+<defs>
+<linearGradient id="chartGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#c8a45d"></stop>
+<stop offset="100%" stop-color="#131313" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+<!-- Current Value Dot -->
+<div class="absolute right-0 top-[10%] w-3 h-3 bg-primary rounded-full animate-pulse-slow shadow-[0_0_10px_#c8a45d]"></div>
+</div>
+</div>
+<!-- Overlapping: AI Insights (Floating) -->
+<div class="absolute top-[45%] right-[5%] w-[320px] glass-card rounded-xl p-5 animate-float shadow-[0_0_40px_rgba(200,164,93,0.1)]">
+<div class="flex items-center gap-3 mb-4 border-b border-outline-variant/30 pb-3">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="auto_awesome">auto_awesome</span>
+<h4 class="font-label-caps text-label-caps text-on-surface uppercase tracking-wider">AI Insight</h4>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    Anomaly detected in <span class="text-on-surface font-medium">Tech Sector</span> volume. Predicted volatility increase in next 4 hours based on institutional order flow.
+                </p>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface font-data-md text-[12px] rounded border border-outline-variant/20">NVDA</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface font-data-md text-[12px] rounded border border-outline-variant/20">MSFT</span>
+</div>
+</div>
+<!-- Overlapping: Watchlist Panel -->
+<div class="absolute bottom-[10%] left-[10%] w-[280px] glass-card rounded-xl p-0 overflow-hidden z-20">
+<div class="px-5 py-4 border-b border-outline-variant/30">
+<h4 class="font-label-caps text-label-caps text-on-surface uppercase tracking-wider">Live Watchlist</h4>
+</div>
+<div class="flex flex-col">
+<div class="px-5 py-4 flex justify-between items-center border-b border-outline-variant/10 hover:bg-surface-variant/30 transition-colors">
+<div>
+<div class="font-data-md text-data-md text-on-surface font-medium">NVDA</div>
+<div class="font-label-caps text-[10px] text-on-surface-variant mt-1">Nvidia Corp</div>
+</div>
+<div class="text-right">
+<div class="font-data-md text-data-md text-on-surface">$822.79</div>
+<div class="font-data-md text-[12px] text-primary mt-1">+1.8%</div>
+</div>
+</div>
+<div class="px-5 py-4 flex justify-between items-center hover:bg-surface-variant/30 transition-colors">
+<div>
+<div class="font-data-md text-data-md text-on-surface font-medium">AAPL</div>
+<div class="font-label-caps text-[10px] text-on-surface-variant mt-1">Apple Inc</div>
+</div>
+<div class="text-right">
+<div class="font-data-md text-data-md text-on-surface">$173.50</div>
+<div class="font-data-md text-[12px] text-error mt-1">-0.4%</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Small Secure Node Popup -->
+<div class="absolute bottom-[5%] right-[20%] glass-card rounded-full px-4 py-2 flex items-center gap-3 border border-primary/30 bg-surface/80">
+<div class="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse"></div>
+<span class="font-data-md text-[12px] text-on-surface-variant">Encrypted Node: NY-04 Active</span>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDE: Authentication Hub -->
+<div class="w-full lg:w-1/2 h-full flex flex-col bg-background relative overflow-y-auto lg:overflow-hidden">
+<!-- Header / Logo -->
+<div class="w-full p-8 lg:px-margin-desktop flex justify-between items-center lg:pt-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-[20px]" data-icon="timeline">timeline</span>
+</div>
+<span class="font-headline-sm text-[20px] font-bold tracking-tight text-on-surface">MarketPulse</span>
+</div>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+<!-- Auth Form Container -->
+<div class="flex-1 flex flex-col justify-center px-8 lg:px-24 max-w-[600px] w-full mx-auto pb-12 lg:pb-0">
+<div class="mb-10">
+<h1 class="font-display-md text-display-md lg:text-[48px] text-[36px] text-on-surface mb-3">Welcome Back</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Initialize your institutional trading session.</p>
+</div>
+<form class="space-y-8" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="relative group">
+<label class="absolute -top-3 left-0 font-label-caps text-label-caps text-on-surface-variant group-focus-within:text-primary transition-colors" for="email">Institutional Email</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-0 font-body-md text-body-md text-on-surface placeholder:text-surface-variant focus:ring-0 auth-input transition-colors" id="email" placeholder="john.doe@institution.com" required="" type="email">
+<span class="material-symbols-outlined absolute right-0 top-3 text-on-surface-variant" data-icon="mail">mail</span>
+</div>
+<!-- Auth Key Input -->
+<div class="relative group pt-4">
+<label class="absolute -top-3 left-0 font-label-caps text-label-caps text-on-surface-variant group-focus-within:text-primary transition-colors" for="auth-key">Authentication Key</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-0 font-data-md text-data-md text-on-surface placeholder:text-surface-variant focus:ring-0 auth-input transition-colors tracking-widest" id="auth-key" placeholder="••••••••••••" required="" type="password">
+<button aria-label="Toggle password visibility" class="absolute right-0 top-3 text-on-surface-variant hover:text-primary transition-colors outline-none" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<!-- Actions -->
+<div class="pt-6 space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container font-body-md text-body-md font-medium py-4 px-6 rounded hover:bg-primary transition-colors duration-200 flex items-center justify-center gap-2" type="submit">
+                        Enter Terminal
+                        <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="w-full bg-transparent border border-outline-variant text-on-surface font-body-md text-body-md py-4 px-6 rounded hover:bg-surface-variant/50 hover:border-outline transition-colors duration-200 flex items-center justify-center gap-3" type="button">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+                        Continue with Workspace
+                    </button>
+</div>
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-outline-variant/20">
+<a class="font-body-md text-[14px] text-on-surface-variant hover:text-primary transition-colors" href="#">Forgot Authentication Key?</a>
+<a class="font-body-md text-[14px] text-on-surface-variant hover:text-primary transition-colors" href="#">Create Institutional Account</a>
+</div>
+</form>
+</div>
+<!-- Subtle Footer -->
+<div class="w-full text-center pb-6 opacity-50">
+<span class="font-data-md text-[10px] text-on-surface-variant">MarketPulse Secure Network v4.2.1 • NY-LDN-HK</span>
+</div>
+</div>
+
+
+</body></html>

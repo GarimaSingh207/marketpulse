@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      background-color: #131313;
+      color: #e5e2e1;
+      font-family: 'Inter', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      vertical-align: middle;
+      font-size: 20px;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #1c1b1b;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4d4639;
+    }
+    .toggle-checkbox:checked {
+      right: 0;
+      background-color: #c8a45d;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: #513a00;
+    }
+    .hairline-border {
+      border: 1px solid rgba(245, 245, 240, 0.1);
+    }
+    /* Compact overrides */
+    select, input[type="text"] {
+      height: 32px !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-tertiary-fixed": "#1a1c19",
+                  "secondary-container": "#0136d6",
+                  "on-tertiary-container": "#3c3e3b",
+                  "on-error": "#690005",
+                  "on-secondary-container": "#b0bbff",
+                  "inverse-primary": "#775a1a",
+                  "tertiary": "#c6c7c2",
+                  "inverse-on-surface": "#313030",
+                  "background": "#131313",
+                  "tertiary-fixed": "#e3e3de",
+                  "on-primary-fixed": "#261900",
+                  "inverse-surface": "#e5e2e1",
+                  "surface-container-low": "#1c1b1b",
+                  "outline-variant": "#4d4639",
+                  "surface-bright": "#393939",
+                  "surface-container-highest": "#353534",
+                  "on-secondary-fixed": "#001159",
+                  "surface-variant": "#353534",
+                  "surface": "#131313",
+                  "primary-fixed-dim": "#e8c177",
+                  "surface-container": "#201f1f",
+                  "on-surface-variant": "#d1c5b4",
+                  "tertiary-container": "#a8a9a5",
+                  "surface-container-lowest": "#0e0e0e",
+                  "on-background": "#e5e2e1",
+                  "primary-container": "#c8a45d",
+                  "on-tertiary": "#2f312e",
+                  "outline": "#9a8f80",
+                  "tertiary-fixed-dim": "#c6c7c2",
+                  "secondary-fixed": "#dee1ff",
+                  "error-container": "#93000a",
+                  "primary-fixed": "#ffdea3",
+                  "surface-tint": "#e8c177",
+                  "surface-dim": "#131313",
+                  "on-secondary": "#00208d",
+                  "on-primary-fixed-variant": "#5c4202",
+                  "on-primary-container": "#513a00",
+                  "secondary-fixed-dim": "#bac3ff",
+                  "on-primary": "#402d00",
+                  "surface-container-high": "#2a2a2a",
+                  "primary": "#e8c177",
+                  "on-surface": "#e5e2e1",
+                  "on-error-container": "#ffdad6",
+                  "on-tertiary-fixed-variant": "#454744",
+                  "secondary": "#bac3ff",
+                  "error": "#ffb4ab",
+                  "on-secondary-fixed-variant": "#0031c5"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.125rem",
+                  "lg": "0.25rem",
+                  "xl": "0.5rem",
+                  "full": "0.75rem"
+          },
+          "spacing": {
+                  "container-max": "1440px",
+                  "margin-mobile": "16px",
+                  "unit": "6px",
+                  "gutter": "16px",
+                  "margin-desktop": "32px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Inter"],
+                  "data-md": ["JetBrains Mono"],
+                  "body-md": ["Inter"],
+                  "display-md": ["Inter"],
+                  "data-lg": ["JetBrains Mono"],
+                  "headline-lg": ["Inter"],
+                  "label-caps": ["Inter"],
+                  "display-lg": ["Inter"],
+                  "headline-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+                  "body-lg": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                  "data-md": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                  "body-md": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                  "display-md": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "data-lg": ["16px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                  "headline-lg": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                  "label-caps": ["10px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                  "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                  "headline-lg-mobile": ["20px", {"lineHeight": "1.3", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Side Navigation Shell -->
+<aside class="h-screen w-56 fixed left-0 top-0 bg-surface-container-low shadow-[20px_0_40px_rgba(0,0,0,0.15)] flex flex-col py-6 px-4 z-50">
+<div class="mb-8">
+<span class="text-2xl font-bold text-primary tracking-tight">MarketPulse</span>
+<p class="text-on-surface-variant font-body-md text-[10px] uppercase tracking-wider">Institutional Grade</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined !text-[18px]">terminal</span>
+<span class="text-[13px] font-medium">Terminal</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined !text-[18px]">account_balance_wallet</span>
+<span class="text-[13px] font-medium">Portfolio</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined !text-[18px]">analytics</span>
+<span class="text-[13px] font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined !text-[18px]">show_chart</span>
+<span class="text-[13px] font-medium">Markets</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-primary font-bold border-r-2 border-primary bg-surface-container-high group" href="#">
+<span class="material-symbols-outlined !text-[18px]">settings</span>
+<span class="text-[13px] font-bold">Settings</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full bg-primary-container text-on-primary-container py-2.5 px-3 font-bold text-[10px] uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
+        Upgrade to Pro
+      </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-56 min-h-screen">
+<!-- Top App Bar -->
+<header class="h-12 fixed top-0 right-0 left-56 bg-surface border-b border-white/5 flex items-center justify-between px-6 z-40">
+<div class="flex items-center flex-1 max-w-sm">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant !text-[16px]">search</span>
+<input class="w-full bg-surface-container-high border-none pl-8 pr-3 py-1 text-xs focus:ring-1 focus:ring-primary h-8" placeholder="Search markets, assets, settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:opacity-70 transition-opacity"><span class="material-symbols-outlined !text-[18px]">notifications</span></button>
+<div class="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity">
+<span class="text-[12px] font-medium">Alex Rivera</span>
+<span class="material-symbols-outlined !text-[18px]">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Page Content Container -->
+<div class="pt-16 pb-12 px-margin-desktop max-w-[1440px] mx-auto">
+<!-- Header Section -->
+<div class="mb-6">
+<h1 class="text-headline-lg font-bold mb-1">Settings</h1>
+<p class="text-on-surface-variant text-[13px] max-w-2xl">Manage your account, security, and application preferences with institutional-grade control panels.</p>
+</div>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Primary Settings -->
+<div class="col-span-8 space-y-4">
+<!-- Appearance Card -->
+<section class="bg-surface-container p-5 shadow-lg relative overflow-hidden group">
+<div class="flex items-center gap-3 mb-5">
+<span class="material-symbols-outlined text-primary !text-[20px]">palette</span>
+<h2 class="text-lg font-bold">Appearance</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div>
+<label class="block font-label-caps text-on-surface-variant mb-2 uppercase text-[9px]">Theme Mode</label>
+<div class="flex gap-1.5">
+<button class="flex-1 py-1.5 px-2 border border-primary text-primary text-[11px] font-medium">Dark</button>
+<button class="flex-1 py-1.5 px-2 border border-white/10 text-on-surface-variant text-[11px] font-medium hover:border-white/30">Light</button>
+<button class="flex-1 py-1.5 px-2 border border-white/10 text-on-surface-variant text-[11px] font-medium hover:border-white/30">System</button>
+</div>
+</div>
+<div>
+<label class="block font-label-caps text-on-surface-variant mb-2 uppercase text-[9px]">Font Size</label>
+<input class="w-full accent-primary bg-surface-container-highest h-1" max="24" min="12" type="range" value="16"/>
+<div class="flex justify-between text-[10px] text-on-surface-variant mt-1.5 font-data-md">
+<span>12px</span>
+<span>16px (Default)</span>
+<span>24px</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block font-label-caps text-on-surface-variant mb-2 uppercase text-[9px]">Accent Color</label>
+<div class="flex gap-2">
+<div class="w-6 h-6 bg-primary cursor-pointer border-2 border-white"></div>
+<div class="w-6 h-6 bg-secondary-container cursor-pointer border border-white/10"></div>
+<div class="w-6 h-6 bg-error cursor-pointer border border-white/10"></div>
+<div class="w-6 h-6 bg-tertiary-container cursor-pointer border border-white/10"></div>
+</div>
+</div>
+<div class="flex items-center justify-between py-3 border-t border-white/5">
+<div>
+<p class="text-[12px] font-bold">Compact Mode</p>
+<p class="text-[10px] text-on-surface-variant">Increase data density</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-8 h-4.5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Notifications Card -->
+<section class="bg-surface-container p-5 shadow-lg">
+<div class="flex items-center gap-3 mb-5">
+<span class="material-symbols-outlined text-primary !text-[20px]">notifications_active</span>
+<h2 class="text-lg font-bold">Notifications</h2>
+</div>
+<div class="space-y-0.5">
+<!-- Grid Header -->
+<div class="grid grid-cols-12 pb-2 border-b border-white/10 font-label-caps text-on-surface-variant text-[9px] tracking-[0.2em] uppercase">
+<div class="col-span-6">Alert Category</div>
+<div class="col-span-2 text-center">Push</div>
+<div class="col-span-2 text-center">Email</div>
+<div class="col-span-2 text-center">SMS</div>
+</div>
+<!-- Notification Rows -->
+<div class="grid grid-cols-12 py-2.5 border-b border-white/5 items-center hover:bg-white/[0.02] transition-colors">
+<div class="col-span-6">
+<p class="font-bold text-[12px]">Price Alerts</p>
+<p class="text-[10px] text-on-surface-variant">Volatility and limit hits</p>
+</div>
+<div class="col-span-2 flex justify-center"><input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+<div class="col-span-2 flex justify-center"><input class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+<div class="col-span-2 flex justify-center"><input class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+</div>
+<div class="grid grid-cols-12 py-2.5 border-b border-white/5 items-center hover:bg-white/[0.02] transition-colors">
+<div class="col-span-6">
+<p class="font-bold text-[12px]">Portfolio Updates</p>
+<p class="text-[10px] text-on-surface-variant">Daily summary &amp; rebalancing</p>
+</div>
+<div class="col-span-2 flex justify-center"><input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+<div class="col-span-2 flex justify-center"><input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+<div class="col-span-2 flex justify-center"><input class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+</div>
+<div class="grid grid-cols-12 py-2.5 border-b border-white/5 items-center hover:bg-white/[0.02] transition-colors">
+<div class="col-span-6">
+<p class="font-bold text-[12px]">Market News</p>
+<p class="text-[10px] text-on-surface-variant">Curated intelligence stream</p>
+</div>
+<div class="col-span-2 flex justify-center"><input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+<div class="col-span-2 flex justify-center"><input class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+<div class="col-span-2 flex justify-center"><input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-container-highest border-white/10 text-primary focus:ring-primary ring-offset-surface" type="checkbox"/></div>
+</div>
+</div>
+</section>
+<!-- Trading Preferences -->
+<section class="bg-surface-container p-5 shadow-lg">
+<div class="flex items-center gap-3 mb-5">
+<span class="material-symbols-outlined text-primary !text-[20px]">finance_mode</span>
+<h2 class="text-lg font-bold">Trading Preferences</h2>
+</div>
+<div class="grid grid-cols-2 gap-x-8 gap-y-4">
+<div class="space-y-1.5">
+<label class="block font-label-caps text-on-surface-variant text-[9px] uppercase">Default Order Type</label>
+<select class="w-full bg-surface-container-highest border-white/10 text-on-surface text-[12px] py-1 px-3 focus:border-primary focus:ring-0">
+<option>Limit Order</option>
+<option selected="">Market Order</option>
+<option>Stop Loss</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label-caps text-on-surface-variant text-[9px] uppercase">Preferred Currency</label>
+<select class="w-full bg-surface-container-highest border-white/10 text-on-surface text-[12px] py-1 px-3 focus:border-primary focus:ring-0">
+<option selected="">USD - US Dollar</option>
+<option>EUR - Euro</option>
+<option>GBP - British Pound</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label-caps text-on-surface-variant text-[9px] uppercase">Time Zone</label>
+<select class="w-full bg-surface-container-highest border-white/10 text-on-surface text-[12px] py-1 px-3 focus:border-primary focus:ring-0">
+<option selected="">(GMT-05:00) Eastern Time</option>
+<option>(GMT-08:00) Pacific Time</option>
+<option>(GMT+00:00) UTC</option>
+</select>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Profile & Secondary Info -->
+<div class="col-span-4 space-y-4 sticky top-16">
+<!-- Profile Overview Card -->
+<section class="bg-surface-container p-5 shadow-lg border-t-2 border-primary">
+<div class="flex flex-col items-center text-center mb-5">
+<div class="relative mb-3 group cursor-pointer">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/30 p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="Alex Rivera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDX-CJx09_MX0fbcpwB1tvI4wY5YAWFRp9lw8r_5kVGcx2GoD3ZfE0uakW3ZCamCJjsp_gFZUxKPFk8cHOr1EVU9gHF6UQafj7ST80LmW8BwM5VF6uk8CJ4cjXr5iPc9Ipt-eKANAmtOauPp-vnVnA7b1AQxX7eQyvjZJuiWjFDffrGqVLz_DzSzkS4knqff8upfZNNt8SKj5HWcUrRm6L2wA6rzLFJCP5bNBan1Z6p9ZqWKwka9EXShw"/>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary text-on-primary p-1 rounded-full shadow-lg">
+<span class="material-symbols-outlined !text-[12px]">edit</span>
+</div>
+</div>
+<h2 class="text-lg font-bold mb-0.5">Alex Rivera</h2>
+<p class="text-on-surface-variant font-data-md text-[11px] mb-2.5">@arivera</p>
+<span class="px-2 py-0.5 bg-primary text-on-primary-fixed text-[9px] font-bold uppercase tracking-[0.2em] mb-4">Premium</span>
+</div>
+<div class="space-y-2.5 pt-4 border-t border-white/10">
+<div class="flex justify-between items-center text-[12px]">
+<span class="text-on-surface-variant">Email</span>
+<span class="font-data-md">alex.r@marketpulse.io</span>
+</div>
+<div class="flex justify-between items-center text-[12px]">
+<span class="text-on-surface-variant">Country</span>
+<span class="font-data-md">United States</span>
+</div>
+<div class="flex justify-between items-center text-[12px]">
+<span class="text-on-surface-variant">Member Since</span>
+<span class="font-data-md">May 2023</span>
+</div>
+</div>
+<button class="w-full mt-5 py-2 bg-white/5 border border-white/10 text-on-surface text-[11px] font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+              Edit Profile
+            </button>
+</section>
+<!-- Connected Accounts Card -->
+<section class="bg-surface-container p-5 shadow-lg">
+<h3 class="font-label-caps text-[9px] text-on-surface-variant mb-4 uppercase tracking-widest">Connected Accounts</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-on-surface-variant !text-[16px]">account_balance</span>
+<span class="text-[12px] font-medium">Brokerage</span>
+</div>
+<span class="text-[9px] text-primary font-bold">CONNECTED</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-on-surface-variant !text-[16px]">mail</span>
+<span class="text-[12px] font-medium">Google</span>
+</div>
+<span class="text-[9px] text-primary font-bold">CONNECTED</span>
+</div>
+</div>
+</section>
+<!-- Support & Quick Links -->
+<section class="space-y-2">
+<h3 class="font-label-caps text-[9px] text-on-surface-variant px-2 uppercase tracking-widest">Support &amp; Legal</h3>
+<div class="grid grid-cols-1 gap-1.5">
+<a class="flex items-center justify-between p-3 bg-surface-container-low border border-white/5 hover:border-primary/40 transition-all group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary !text-[16px]">help</span>
+<span class="text-[12px] font-medium">Help Center</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-0.5 transition-transform !text-[16px]">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-3 bg-surface-container-low border border-white/5 hover:border-primary/40 transition-all group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary !text-[16px]">bug_report</span>
+<span class="text-[12px] font-medium text-error">Report a Bug</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-0.5 transition-transform !text-[16px]">chevron_right</span>
+</a>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<script>
+    // Micro-interactions for toggles and range inputs
+    document.querySelectorAll('input[type="range"]').forEach(range => {
+      range.addEventListener('input', (e) => {
+        console.log(`Setting font size to: ${e.target.value}px`);
+      });
+    });
+
+    // Mock theme switching interaction
+    const themeButtons = document.querySelectorAll('.flex.gap-1\\.5 button');
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        themeButtons.forEach(b => b.classList.remove('border-primary', 'text-primary'));
+        themeButtons.forEach(b => b.classList.add('border-white/10', 'text-on-surface-variant'));
+        btn.classList.add('border-primary', 'text-primary');
+        btn.classList.remove('border-white/10', 'text-on-surface-variant');
+      });
+    });
+  </script>
+</body></html>

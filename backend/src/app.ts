@@ -14,18 +14,21 @@ import watchlistRoutes from "./routes/watchlist.routes";
 
 const app = express();
 
+// Trust reverse proxy (Nginx) for accurate client IP detection in rate limiters
+app.set("trust proxy", 1);
+
 // ─── Security middleware ─────────────────────────────────────────────────────
 app.use(helmet());
 
-// CORS: allow configured origin in production, any localhost in development
-const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+// CORS: allow configured origins in production, any localhost in development
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173").split(",").map(o => o.trim());
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (curl, Postman, server-to-server)
       if (!origin) return callback(null, true);
-      // Allow the configured origin
-      if (origin === allowedOrigin) return callback(null, true);
+      // Allow the configured origin(s)
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       // In development also allow any localhost port
       if (process.env.NODE_ENV !== "production" && /^http:\/\/localhost:\d+$/.test(origin)) {
         return callback(null, true);
@@ -80,10 +83,18 @@ app.use((_req: Request, res: Response) => {
 // ─── Centralized error handler ────────────────────────────────────────────────
 // Must have 4 parameters so Express recognizes it as an error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  // Never leak stack traces in production
+app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   const isDev = process.env.NODE_ENV !== "production";
-  console.error(`[error] ${err.message}`);
+  
+  // Detailed diagnostic logging for unhandled errors
+  console.error("=================== BACKEND EXCEPTION ===================");
+  console.error(`Timestamp: ${new Date().toISOString()}`);
+  console.error(`Method:    ${req.method}`);
+  console.error(`Path:      ${req.path}`);
+  console.error(`Message:   ${err.message}`);
+  console.error(`Stack:\n${err.stack || "No stack trace available"}`);
+  console.error("=========================================================");
+
   res.status(500).json({
     success: false,
     message: "Internal server error",

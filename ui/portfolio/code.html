@@ -1,0 +1,475 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MarketPulse | Portfolio Positions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#261900",
+                        "secondary": "#bac3ff",
+                        "inverse-primary": "#775a1a",
+                        "primary": "#e8c177",
+                        "on-surface": "#e5e2e1",
+                        "tertiary-container": "#a8a9a5",
+                        "on-secondary-container": "#b0bbff",
+                        "primary-fixed-dim": "#e8c177",
+                        "secondary-fixed-dim": "#bac3ff",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-bright": "#393939",
+                        "on-tertiary-fixed-variant": "#454744",
+                        "primary-fixed": "#ffdea3",
+                        "secondary-container": "#0136d6",
+                        "on-secondary": "#00208d",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary-fixed": "#001159",
+                        "on-primary-fixed-variant": "#5c4202",
+                        "surface-variant": "#353534",
+                        "on-secondary-fixed-variant": "#0031c5",
+                        "on-background": "#e5e2e1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary-fixed": "#dee1ff",
+                        "outline": "#9a8f80",
+                        "on-tertiary-container": "#3c3e3b",
+                        "on-surface-variant": "#d1c5b4",
+                        "error": "#ffb4ab",
+                        "primary-container": "#c8a45d",
+                        "surface": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#353534",
+                        "error-container": "#93000a",
+                        "outline-variant": "#4d4639",
+                        "tertiary-fixed": "#e3e3de",
+                        "on-tertiary": "#2f312e",
+                        "surface-tint": "#e8c177",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary-fixed": "#1a1c19",
+                        "surface-container-low": "#1c1b1b",
+                        "background": "#131313",
+                        "on-primary": "#402d00",
+                        "surface-dim": "#131313",
+                        "on-primary-container": "#513a00",
+                        "on-error": "#690005",
+                        "tertiary": "#c6c7c2",
+                        "tertiary-fixed-dim": "#c6c7c2",
+                        "surface-container": "#201f1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "container-max": "1440px",
+                        "unit": "8px",
+                        "margin-mobile": "24px",
+                        "gutter": "32px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "data-md": ["JetBrains Mono"],
+                        "data-lg": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "display-md": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "data-md": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "data-lg": ["20px", {"lineHeight": "1.2", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stagger-load {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideUpFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .price-flash-green { animation: flashGreen 1.5s ease-out; }
+        .price-flash-red { animation: flashRed 1.5s ease-out; }
+        @keyframes flashGreen {
+            0% { background-color: rgba(52, 211, 153, 0.2); }
+            100% { background-color: transparent; }
+        }
+        @keyframes flashRed {
+            0% { background-color: rgba(239, 68, 68, 0.2); }
+            100% { background-color: transparent; }
+        }
+        .pulse-live {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+        .hairline { border: 0.5px solid rgba(245, 245, 240, 0.1); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4d4639; border-radius: 10px; }
+        
+        /* Sticky Column Styles */
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background-color: inherit;
+        }
+        .sticky-header {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background-color: #353534; /* surface-container-highest */
+        }
+        tr:hover .sticky-col {
+            background-color: #2a2a2a; /* matching hover:bg-surface-variant/20 approx */
+        }
+    </style>
+</head>
+<body class="bg-surface selection:bg-primary selection:text-on-primary custom-scrollbar">
+<!-- SideNavBar -->
+<aside class="h-screen w-[280px] fixed left-0 top-0 border-r border-outline-variant/10 bg-surface-container flex flex-col py-gutter z-50">
+<div class="px-8 mb-10">
+<h1 class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-surface">MarketPulse</h1>
+<p class="text-[10px] font-label-caps uppercase tracking-[0.2em] text-on-surface-variant mt-1">Institutional Terminal</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-8 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-lg">terminal</span>
+<span class="font-label-caps text-label-caps">Terminal</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-3 text-primary bg-primary/5 border-r-2 border-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-lg">pie_chart</span>
+<span class="font-label-caps text-label-caps">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-lg">query_stats</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-lg">show_chart</span>
+<span class="font-label-caps text-label-caps">Markets</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-lg">list_alt</span>
+<span class="font-label-caps text-label-caps">Watchlist</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-8 pt-8 border-t border-outline-variant/10">
+<button class="w-full bg-primary text-on-primary py-3 px-4 font-label-caps text-label-caps font-bold flex items-center justify-center gap-2 mb-6 hover:opacity-90 active:scale-95 transition-all rounded">
+<span class="material-symbols-outlined text-md">add_circle</span>
+                Open Trade
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">help_outline</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">logout</span>
+                    Sign Out
+                </a>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-[calc(100%-280px)] ml-[280px] px-8 py-4 sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/10">
+<div class="flex items-center gap-8 flex-1">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#34d399] pulse-live"></div>
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Market Live</span>
+<span class="text-[10px] text-on-surface-variant/60 font-data-md" id="timestamp">01:31:32 GMT-5</span>
+</div>
+<nav class="hidden xl:flex items-center gap-6 border-l border-outline-variant/20 pl-8">
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200 font-label-caps text-label-caps" href="#">Markets</a>
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200 font-label-caps text-label-caps" href="#">Indices</a>
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200 font-label-caps text-label-caps" href="#">FX</a>
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200 font-label-caps text-label-caps" href="#">Crypto</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded font-label-caps text-label-caps font-bold hover:brightness-110 active:scale-95 transition-all">
+                Execute Trade
+            </button>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden hairline">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC81Lj_1eFNRmsiT3s0i6vIZZBeobmcdcHyTOOEOIvoAvjaInPyVRNMPtvcE_R8t6xrHj0zihhcA08WvdHZ9ofeijwAyAkhMV-ZjRawEq9Jmad-BDliqurYc6NGg60Ju5eFpjSPEpmFsQCIV8mZm2j_mOU4wNfQ37gRO3EQceN1qN9HHSxa1n25KS6RZ7VF-mR_gQlKuGkfD5g-_WyX1vfa_P-4ueGRI2DlgNSaHrsUs9NAydr5PeIjTw">
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[280px] p-8 max-w-[1600px]">
+<!-- 1. Top Summary Ribbon -->
+<section class="stagger-load flex items-center gap-4 mb-8" style="animation-delay: 0.1s;">
+<div class="flex-1 bg-surface-container-high p-5 rounded border border-outline-variant/10 hover:border-primary/30 transition-all group">
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1 uppercase">Total Portfolio Value</p>
+<h2 class="font-data-lg text-data-lg text-primary tracking-tight counter" data-value="4842910.42">$4,842,910.42</h2>
+</div>
+<div class="flex-1 bg-surface-container-high p-5 rounded border border-outline-variant/10">
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1 uppercase">Total Invested</p>
+<h2 class="font-data-lg text-data-lg text-on-surface tracking-tight counter" data-value="4130017.61">$4,130,017.61</h2>
+</div>
+<div class="flex-1 bg-surface-container-high p-5 rounded border border-outline-variant/10">
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1 uppercase">Unrealized P&amp;L</p>
+<div class="flex items-center gap-2">
+<h2 class="font-data-lg text-data-lg text-[#34d399] tracking-tight counter" data-value="712892.81">$712,892.81</h2>
+<span class="flex items-center text-[11px] font-data-md bg-[#34d399]/10 text-[#34d399] px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[12px]">arrow_upward</span>17.2%
+                    </span>
+</div>
+</div>
+<div class="w-48 bg-surface-container-high p-5 rounded border border-outline-variant/10">
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1 uppercase">Holdings</p>
+<h2 class="font-data-lg text-data-lg text-on-surface tracking-tight">18</h2>
+</div>
+</section>
+<!-- 2. Primary Holdings Section (Expanded) -->
+<section class="mb-10">
+<!-- Advanced Toolbar -->
+<div class="stagger-load flex items-center justify-between mb-4" style="animation-delay: 0.2s;">
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container border border-outline-variant/20 focus:ring-1 focus:ring-primary/30 text-on-surface py-2 pl-9 pr-4 font-body-md text-data-md rounded w-72" placeholder="Search Symbol or Name..." type="text">
+</div>
+<div class="flex items-center bg-surface-container border border-outline-variant/20 rounded divide-x divide-outline-variant/20">
+<select class="bg-transparent text-on-surface text-[11px] font-label-caps px-4 py-2 appearance-none cursor-pointer hover:text-primary transition-colors border-none focus:ring-0">
+<option>Sector: All</option>
+<option>Technology</option>
+<option>Energy</option>
+<option>Healthcare</option>
+<option>Financials</option>
+</select>
+<select class="bg-transparent text-on-surface text-[11px] font-label-caps px-4 py-2 appearance-none cursor-pointer hover:text-primary transition-colors border-none focus:ring-0">
+<option>P/L: All</option>
+<option>Profitable</option>
+<option>Losing</option>
+</select>
+<select class="bg-transparent text-on-surface text-[11px] font-label-caps px-4 py-2 appearance-none cursor-pointer hover:text-primary transition-colors border-none focus:ring-0">
+<option>Sort: Value</option>
+<option>Symbol</option>
+<option>Change %</option>
+<option>P/L Amount</option>
+</select>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 rounded hover:bg-surface-variant/30 flex items-center gap-2 group" onclick="location.reload();">
+<span class="material-symbols-outlined text-lg">refresh</span>
+</button>
+</div>
+<!-- Table Container -->
+<div class="stagger-load bg-surface-container rounded border border-outline-variant/10 overflow-hidden" style="animation-delay: 0.3s;">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/40"><th class="px-6 py-4 font-label-caps text-[10px] text-on-surface-variant border-b border-outline-variant/10 uppercase tracking-widest sticky-header">Company</th><th class="px-4 py-4 font-label-caps text-[10px] text-on-surface-variant border-b border-outline-variant/10 text-right uppercase tracking-widest">Position</th><th class="px-4 py-4 font-label-caps text-[10px] text-on-surface-variant border-b border-outline-variant/10 text-right uppercase tracking-widest">Price</th><th class="px-4 py-4 font-label-caps text-[10px] text-on-surface-variant border-b border-outline-variant/10 text-right uppercase tracking-widest">Today's Change</th><th class="px-4 py-4 font-label-caps text-[10px] text-on-surface-variant border-b border-outline-variant/10 text-right uppercase tracking-widest">Market Value</th><th class="px-6 py-4 border-b border-outline-variant/10 text-right font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest"></th></tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Row: NVDA -->
+<tr class="group hover:bg-surface-variant/20 transition-colors cursor-pointer"><td class="px-6 py-5 sticky-col"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center p-1.5 shrink-0"><img alt="NVDA" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF3U_j1OgxO1WwU0COVu-c_qgBVOU_O93G8D1NiRJyXmKJzXRf1givVN6fNOsRQ5qoJcVWYZISt9fNWSUoDqI7e9KSsoPnulRfnFkFdmeM75tg-mPrrUj4kVg1W57HlPF_6ZA8fBmFOOumXcmhDSugI_Th6pmp7a09t0SDCeZcoa4u8VOYLGzsvELaoXfQRzOmrdaI1ioJRIhabF1MLb5T4xL_TDRYwlp4QbdmslHg_67hEY02_QanJw"></div><div><p class="font-body-md font-semibold text-on-surface">NVIDIA Corp.</p><p class="text-[10px] text-on-surface-variant uppercase tracking-wider">NVDA</p></div></div></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">1,250.00</p><p class="text-[10px] text-on-surface-variant">Avg: $412.50</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface price-cell price-flash-green" data-symbol="NVDA">$893.91</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-[#34d399]">+4.20%</p><p class="text-[10px] text-[#34d399]">+$598,425.00</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">$1,114,050.00</p><p class="text-[10px] text-primary">23.0% Weight</p></td><td class="px-6 py-5 text-right relative"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button></td></tr>
+<!-- Row: MSFT -->
+<tr class="group hover:bg-surface-variant/20 transition-colors cursor-pointer"><td class="px-6 py-5 sticky-col"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center p-1.5 shrink-0"><img alt="MSFT" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeHe4od7_tLXH-C6YS_NqAtFb8flF8_nbgS_fDZopyl9LodoLZuNz7-AkuSOPX0B2YBM4kIseWupR7e4JBlHv3IE-EBhtqPNHc4LWtr7T7_D_UZ-K09SfXgbqpiX36lmz7t5uIdWTm4Mjn5_wafrHBQJ4mfzJ_hB48i-ZPhBA4umye-SeVhnqOHRBUYtDr0IysDqiufAqz0Q2HcRVoauZnZZUXAX-jnpw2TuYygzKJAf_Pw7CSVCCJ7Q"></div><div><p class="font-body-md font-semibold text-on-surface">Microsoft</p><p class="text-[10px] text-on-surface-variant uppercase tracking-wider">MSFT</p></div></div></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">2,100.00</p><p class="text-[10px] text-on-surface-variant">Avg: $345.12</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface price-cell price-flash-red" data-symbol="MSFT">$415.70</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-error">-0.42%</p><p class="text-[10px] text-[#34d399]">+$148,470.00</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">$873,222.00</p><p class="text-[10px] text-primary">18.1% Weight</p></td><td class="px-6 py-5 text-right"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button></td></tr>
+<!-- Row: AAPL -->
+<tr class="group hover:bg-surface-variant/20 transition-colors cursor-pointer"><td class="px-6 py-5 sticky-col"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center p-1.5 shrink-0"><img alt="AAPL" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUkcM0_1TBrxAE0tooxJpqNy7I1pCAj0hY-3Nm1xF91vJmy4MoYkmUAtJY8xIS8SGJsMkbK8ozZyWLkgGdFzUbAl-SyYVnYF8l4ErHt15a44j7kgXcALOQts6nxvaehFLi9Zzm3rkEfB5OPYO4sC24BkRrQhFXviMFOfa_AzSTujG7reCw97cN3Fml8MBZjP8UsLLh9p9mgDrp12tO3RoMrLGCXZcA-PM3d-MLhqPlmnZ1wA_xRCfi5Q"></div><div><p class="font-body-md font-semibold text-on-surface">Apple Inc.</p><p class="text-[10px] text-on-surface-variant uppercase tracking-wider">AAPL</p></div></div></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">3,400.00</p><p class="text-[10px] text-on-surface-variant">Avg: $162.80</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface price-cell price-flash-red" data-symbol="AAPL">$189.21</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-[#34d399]">+1.15%</p><p class="text-[10px] text-[#34d399]">+$90,610.00</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">$644,130.00</p><p class="text-[10px] text-primary">13.3% Weight</p></td><td class="px-6 py-5 text-right"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button></td></tr>
+<!-- Row: RELIANCE -->
+<tr class="group hover:bg-surface-variant/20 transition-colors cursor-pointer"><td class="px-6 py-5 sticky-col"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center p-1.5 shrink-0"><span class="material-symbols-outlined text-on-surface-variant text-sm">factory</span></div><div><p class="font-body-md font-semibold text-on-surface">Reliance Ind.</p><p class="text-[10px] text-on-surface-variant uppercase tracking-wider">RELIANCE</p></div></div></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">12,000.00</p><p class="text-[10px] text-on-surface-variant">Avg: $31.20</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface price-cell price-flash-red" data-symbol="RELIANCE">$35.42</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-[#34d399]">+0.85%</p><p class="text-[10px] text-[#34d399]">+$51,000.00</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">$425,400.00</p><p class="text-[10px] text-primary">8.8% Weight</p></td><td class="px-6 py-5 text-right"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button></td></tr>
+<!-- Row: TCS -->
+<tr class="group hover:bg-surface-variant/20 transition-colors cursor-pointer"><td class="px-6 py-5 sticky-col"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center p-1.5 font-bold text-[10px] text-primary shrink-0">TCS</div><div><p class="font-body-md font-semibold text-on-surface">Tata Consultancy</p><p class="text-[10px] text-on-surface-variant uppercase tracking-wider">TCS</p></div></div></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">8,500.00</p><p class="text-[10px] text-on-surface-variant">Avg: $44.10</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface price-cell price-flash-green" data-symbol="TCS">$48.25</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-error">-1.10%</p><p class="text-[10px] text-[#34d399]">+$35,275.00</p></td><td class="px-4 py-5 text-right"><p class="font-data-md text-on-surface">$410,125.00</p><p class="text-[10px] text-primary">8.5% Weight</p></td><td class="px-6 py-5 text-right"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- 3. Insights Grid (Replaced Sidebar) -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
+<!-- Largest Position Card -->
+<div class="stagger-load bg-surface-container p-6 rounded border border-outline-variant/10 flex flex-col justify-between" style="animation-delay: 0.4s;">
+<div>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-label-caps text-[11px] text-on-surface-variant uppercase tracking-widest">Largest Exposure</h3>
+<span class="material-symbols-outlined text-primary text-sm">analytics</span>
+</div>
+<div class="mb-4">
+<div class="flex justify-between items-baseline mb-2">
+<p class="font-body-md text-on-surface font-semibold">NVDA</p>
+<span class="font-data-md text-primary">23.0%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 23%"></div>
+</div>
+</div>
+</div>
+<p class="text-[10px] text-on-surface-variant leading-relaxed">Rebalancing alert threshold at 25% exposure.</p>
+</div>
+<!-- Daily Leaders Card -->
+<div class="stagger-load bg-surface-container p-6 rounded border border-outline-variant/10" style="animation-delay: 0.5s;">
+<h3 class="font-label-caps text-[11px] text-on-surface-variant uppercase tracking-widest mb-6">Daily Leaders</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between group cursor-pointer hover:bg-surface-variant/20 p-2 -m-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-[#34d399]/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[#34d399] text-sm">trending_up</span>
+</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface text-xs">NVDA</p>
+<p class="text-[9px] text-on-surface-variant uppercase">NVIDIA</p>
+</div>
+</div>
+<span class="font-data-md text-[#34d399] text-xs">+4.20%</span>
+</div>
+<div class="flex items-center justify-between group cursor-pointer hover:bg-surface-variant/20 p-2 -m-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-error/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-sm">trending_down</span>
+</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface text-xs">TCS</p>
+<p class="text-[9px] text-on-surface-variant uppercase">Tata Consultancy</p>
+</div>
+</div>
+<span class="font-data-md text-error text-xs">-1.10%</span>
+</div>
+</div>
+</div>
+<!-- Sector Allocation Visualization -->
+<div class="stagger-load bg-surface-container p-6 rounded border border-outline-variant/10" style="animation-delay: 0.6s;">
+<h3 class="font-label-caps text-[11px] text-on-surface-variant uppercase tracking-widest mb-6">Sector Weighting</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[11px] mb-1.5">
+<span class="text-on-surface">Tech</span>
+<span class="text-on-surface-variant font-data-md">68.2%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 68%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] mb-1.5">
+<span class="text-on-surface">Energy</span>
+<span class="text-on-surface-variant font-data-md">12.5%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Diversification Score -->
+<div class="stagger-load bg-surface-container p-6 rounded border border-outline-variant/10 flex items-center justify-center" style="animation-delay: 0.7s;">
+<div class="flex flex-col items-center gap-2">
+<h3 class="font-label-caps text-[11px] text-on-surface-variant uppercase tracking-widest mb-2">Risk Profile</h3>
+<div class="flex items-center gap-4">
+<div class="relative w-16 h-16 flex items-center justify-center shrink-0">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-highest" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-primary" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="176" stroke-dashoffset="44" stroke-width="3"></circle>
+</svg>
+<span class="absolute font-data-md text-on-surface">74</span>
+</div>
+<div>
+<p class="font-body-md text-on-surface text-xs font-semibold">Healthy</p>
+<p class="text-[9px] text-on-surface-variant">Diversification</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Counter Animation
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const val = (progress * (end - start) + start).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                });
+                obj.innerHTML = val;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const targetValue = parseFloat(counter.getAttribute('data-value'));
+                animateValue(counter, targetValue * 0.98, targetValue, 2000);
+            });
+
+            // Update timestamp
+            function updateTime() {
+                const now = new Date();
+                document.getElementById('timestamp').innerText = now.toLocaleTimeString() + ' GMT-5';
+            }
+            setInterval(updateTime, 1000);
+            updateTime();
+
+            // Simulate Real-Time Updates
+            setInterval(() => {
+                const cells = document.querySelectorAll('.price-cell');
+                const randomCell = cells[Math.floor(Math.random() * cells.length)];
+                if (!randomCell) return;
+                
+                const currentVal = parseFloat(randomCell.innerText.replace(/[$,]/g, ''));
+                const isUp = Math.random() > 0.48;
+                const change = currentVal * (Math.random() * 0.002);
+                const newVal = isUp ? currentVal + change : currentVal - change;
+                
+                randomCell.innerText = '$' + newVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                randomCell.classList.remove('price-flash-green', 'price-flash-red');
+                void randomCell.offsetWidth; 
+                randomCell.classList.add(isUp ? 'price-flash-green' : 'price-flash-red');
+            }, 3000);
+        });
+    </script>
+
+
+</body></html>
