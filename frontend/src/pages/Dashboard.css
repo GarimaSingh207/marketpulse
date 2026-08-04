@@ -1,0 +1,433 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — DASHBOARD STYLES
+   Scoped UI system for Institutional Terminal Dashboard
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Ticker Bar ───────────────────────────────────────────────────────────── */
+.dashboard-ticker-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 32px;
+  background-color: #0e0e0e;
+  border-bottom: 1px solid rgba(77, 70, 57, 0.2);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  z-index: 60;
+}
+
+.dashboard-ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  gap: 3rem;
+  align-items: center;
+  animation: dashboardTicker 30s linear infinite;
+}
+
+@keyframes dashboardTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.dashboard-ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-ticker-symbol {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d1c5b4;
+}
+
+.dashboard-ticker-price {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  color: #e8c177;
+}
+
+.dashboard-ticker-change {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #e8c177;
+}
+
+.dashboard-ticker-change.negative {
+  color: #ffb4ab;
+}
+
+/* ── Dashboard Root Container ─────────────────────────────────────────────── */
+.dashboard-root {
+  --dash-bg: #131313;
+  --dash-surface: #201f1f;
+  --dash-surface-high: #2a2a2a;
+  --dash-surface-low: #1c1b1b;
+  --dash-primary: #e8c177;
+  --dash-primary-container: #c8a45d;
+  --dash-on-surface: #e5e2e1;
+  --dash-on-surface-variant: #d1c5b4;
+  --dash-outline-variant: rgba(77, 70, 57, 0.25);
+  --dash-error: #ffb4ab;
+  --dash-secondary: #bac3ff;
+
+  background-color: var(--dash-bg);
+  color: var(--dash-on-surface);
+  min-height: 100vh;
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ── Top App Bar / Header ─────────────────────────────────────────────────── */
+.dashboard-appbar {
+  position: sticky;
+  top: 32px;
+  z-index: 40;
+  background-color: rgba(19, 19, 19, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--dash-outline-variant);
+  margin: -1.5rem -2.5rem 2rem -2.5rem;
+  padding: 1rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-search-wrap {
+  position: relative;
+  width: 260px;
+}
+
+.dashboard-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--dash-on-surface-variant);
+  pointer-events: none;
+}
+
+.dashboard-search-input {
+  background-color: var(--dash-surface-high);
+  border: 1px solid var(--dash-outline-variant);
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--dash-on-surface);
+  width: 100%;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-search-input:focus {
+  border-color: rgba(232, 193, 119, 0.5);
+  box-shadow: 0 0 0 1px rgba(232, 193, 119, 0.2);
+}
+
+.dashboard-search-input::placeholder {
+  color: rgba(209, 197, 180, 0.4);
+}
+
+.dashboard-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dashboard-nav-tab {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--dash-on-surface-variant);
+  padding-bottom: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.dashboard-nav-tab:hover {
+  color: var(--dash-on-surface);
+}
+
+.dashboard-nav-tab.active {
+  color: var(--dash-primary);
+  font-weight: 700;
+  border-bottom: 2px solid var(--dash-primary);
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-btn-gold {
+  background-color: rgba(232, 193, 119, 0.1);
+  border: 1px solid rgba(232, 193, 119, 0.25);
+  color: var(--dash-primary);
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.dashboard-btn-gold:hover {
+  background-color: rgba(232, 193, 119, 0.2);
+  border-color: rgba(232, 193, 119, 0.4);
+}
+
+.dashboard-btn-stone {
+  background-color: var(--dash-surface-high);
+  border: 1px solid var(--dash-outline-variant);
+  color: var(--dash-on-surface);
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.dashboard-btn-stone:hover {
+  background-color: var(--dash-surface-low);
+}
+
+/* ── Bento Grid Base ──────────────────────────────────────────────────────── */
+.dashboard-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+}
+
+.bento-card {
+  background-color: var(--dash-surface);
+  border: 1px solid var(--dash-outline-variant);
+  border-radius: 8px;
+  transition: transform 0.25s var(--ease-out), background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.bento-card:hover {
+  background-color: #262525;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.bento-card-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--dash-outline-variant);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bento-card-title {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dash-on-surface);
+}
+
+/* ── Hero Section ─────────────────────────────────────────────────────────── */
+.hero-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero-pulse-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--dash-primary);
+  border-radius: 50%;
+  animation: pulseGold 2s infinite ease-in-out;
+}
+
+@keyframes pulseGold {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+.hero-value-display {
+  font-family: var(--font-sans);
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--dash-on-surface);
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.hero-value-currency {
+  font-size: 32px;
+  font-weight: 300;
+  color: rgba(209, 197, 180, 0.4);
+}
+
+.hero-timeframes {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.hero-tf-btn {
+  padding: 0.25rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--dash-on-surface-variant);
+  border-radius: 2px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.hero-tf-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.hero-tf-btn.active {
+  color: var(--dash-primary);
+  border-bottom: 1px solid var(--dash-primary);
+  font-weight: 600;
+}
+
+/* ── Sector Performance ───────────────────────────────────────────────────── */
+.sector-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sector-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--dash-on-surface-variant);
+}
+
+.sector-bar-bg {
+  width: 100%;
+  height: 6px;
+  background-color: var(--dash-surface-low);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.sector-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s var(--ease-out);
+}
+
+.sector-bar-fill.positive {
+  background-color: var(--dash-primary);
+}
+
+.sector-bar-fill.negative {
+  background-color: var(--dash-error);
+}
+
+/* ── Holdings & Movers Avatar Placeholder ─────────────────────────────────── */
+.logo-placeholder-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: var(--dash-surface-high);
+  border: 1px solid rgba(232, 193, 119, 0.15);
+  color: var(--dash-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Ledger Table ─────────────────────────────────────────────────────────── */
+.ledger-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.ledger-table th {
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(209, 197, 180, 0.6);
+  border-bottom: 1px solid rgba(77, 70, 57, 0.15);
+}
+
+.ledger-table td {
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  border-bottom: 1px solid rgba(77, 70, 57, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.ledger-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ── News Item Hover ──────────────────────────────────────────────────────── */
+.news-item-headline {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--dash-on-surface);
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.news-item-headline:hover {
+  color: var(--dash-primary);
+}
+
+/* ── Responsive Rules ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .dashboard-grid-12 {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid-12 > div {
+    grid-column: span 12 !important;
+  }
+
+  .dashboard-appbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .dashboard-nav-tabs {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+}

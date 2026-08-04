@@ -41,9 +41,14 @@ export default function Sidebar({
           <div className="sidebar-brand-icon" aria-hidden="true">
             <BarChart2 size={18} color="white" strokeWidth={2.5} />
           </div>
-          <span className="sidebar-brand-text">
-            <span>MarketPulse</span>
-          </span>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span className="sidebar-brand-text">
+              <span>MarketPulse</span>
+            </span>
+            <span style={{ fontSize: "8px", letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, marginTop: "-2px" }}>
+              INSTITUTIONAL TERMINAL
+            </span>
+          </div>
         </div>
 
         {/* Close button (mobile) */}
@@ -115,6 +120,31 @@ export default function Sidebar({
             );
           })}
         </nav>
+
+        {/* Open Trade CTA */}
+        {!isCollapsed && (
+          <div style={{ padding: "0.75rem 1.25rem", marginTop: "auto" }}>
+            <button
+              style={{
+                width: "100%",
+                padding: "0.6rem",
+                backgroundColor: "var(--dash-primary, #e8c177)",
+                color: "#402d00",
+                fontFamily: "var(--font-sans)",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                borderRadius: "4px",
+                border: "none",
+                cursor: "pointer",
+                transition: "opacity 0.2s ease",
+              }}
+              onClick={() => alert("Trade execution panel opening...")}
+            >
+              OPEN TRADE
+            </button>
+          </div>
+        )}
 
         {/* Collapse toggle (desktop) */}
         {onToggleCollapse && (
