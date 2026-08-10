@@ -1,0 +1,193 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — HISTORY STYLES
+   Scoped UI system for Institutional Trade Ledger & Audit Log
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.hist-root {
+  --hist-bg: #131313;
+  --hist-surface: #201f1f;
+  --hist-surface-high: #2a2a2a;
+  --hist-surface-low: #1c1b1b;
+  --hist-surface-highest: #353534;
+  --hist-primary: #e8c177;
+  --hist-on-surface: #e5e2e1;
+  --hist-on-surface-variant: #d1c5b4;
+  --hist-outline-variant: rgba(77, 70, 57, 0.25);
+  --hist-error: #ffb4ab;
+  --hist-emerald: #34d399;
+
+  background-color: var(--hist-bg);
+  color: var(--hist-on-surface);
+  min-height: calc(100vh - var(--navbar-h));
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.hist-stagger-load {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: histSlideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes histSlideUpFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hist-hairline {
+  border: 0.5px solid rgba(245, 245, 240, 0.1);
+}
+
+.hist-bento-card {
+  background-color: var(--hist-surface);
+  border-radius: 4px;
+  padding: 1.25rem;
+  border: 1px solid var(--hist-outline-variant);
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-width: 200px;
+}
+
+.hist-bento-card:hover {
+  border-color: rgba(232, 193, 119, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.hist-text-mono {
+  font-family: var(--font-mono);
+}
+
+.hist-title-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Custom ledger table wrapper */
+.hist-table-card {
+  background-color: var(--hist-surface-low);
+  border: 1px solid var(--hist-outline-variant);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.hist-table th {
+  padding: 0.75rem 1rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hist-on-surface-variant);
+  opacity: 0.6;
+  border-bottom: 1px solid var(--hist-outline-variant);
+  background-color: var(--hist-surface-low);
+}
+
+.hist-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(245, 245, 240, 0.04);
+  vertical-align: middle;
+}
+
+.hist-table tr.group:hover {
+  background-color: rgba(245, 245, 240, 0.02);
+}
+
+.hist-date-group-divider {
+  background-color: rgba(245, 245, 240, 0.02);
+  border-bottom: 1px solid var(--hist-outline-variant);
+}
+
+.hist-date-group-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hist-primary);
+  padding: 0.65rem 1rem;
+}
+
+/* Toolbar & filters */
+.hist-filter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--hist-surface-low);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--hist-outline-variant);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.hist-filter-select {
+  background-color: var(--hist-surface-high);
+  border: 1px solid var(--hist-outline-variant);
+  color: var(--hist-on-surface);
+  font-size: 12px;
+  padding: 0.35rem 1.75rem 0.35rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.hist-filter-select:focus {
+  outline: none;
+  border-color: var(--hist-primary);
+}
+
+.hist-filter-input {
+  background-color: var(--hist-surface-high);
+  border: 1px solid var(--hist-outline-variant);
+  color: var(--hist-on-surface);
+  font-size: 12px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  outline: none;
+  max-width: 200px;
+}
+
+.hist-filter-input:focus {
+  border-color: var(--hist-primary);
+}
+
+.hist-badge-buy {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: var(--hist-emerald);
+}
+
+.hist-badge-sell {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--hist-error);
+}
+
+.hist-custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.hist-custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hist-custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4d4639;
+  border-radius: 10px;
+}
+.hist-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--hist-primary);
+}
+
+/* Mobile-friendly table adaptation */
+@media (max-width: 768px) {
+  .hist-root {
+    padding: 1rem 1rem 3rem 1rem;
+  }
+}

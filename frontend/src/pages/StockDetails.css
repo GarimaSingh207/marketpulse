@@ -1,0 +1,161 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — STOCK DETAILS STYLES
+   Scoped UI system for Institutional Terminal Stock Details
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.stock-details-root {
+  --mrkt-bg: #131313;
+  --mrkt-surface: #201f1f;
+  --mrkt-surface-high: #2a2a2a;
+  --mrkt-surface-low: #1c1b1b;
+  --mrkt-surface-highest: #353534;
+  --mrkt-surface-lowest: #0e0e0e;
+  --mrkt-primary: #e8c177;
+  --mrkt-primary-container: #c8a45d;
+  --mrkt-on-surface: #e5e2e1;
+  --mrkt-on-surface-variant: #d1c5b4;
+  --mrkt-outline: #9a8f80;
+  --mrkt-outline-variant: rgba(77, 70, 57, 0.25);
+  --mrkt-error: #ffb4ab;
+  --mrkt-secondary: #bac3ff;
+  --mrkt-tertiary: #c6c7c2;
+  --mrkt-emerald: #34d399;
+
+  background-color: var(--mrkt-bg);
+  color: var(--mrkt-on-surface);
+  min-height: calc(100vh - var(--navbar-h));
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.stock-stagger-load {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: stockSlideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stockSlideUpFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stock-hairline {
+  border: 0.5px solid rgba(245, 245, 240, 0.1);
+}
+
+.stock-bento-card {
+  background-color: var(--mrkt-surface);
+  border-radius: 4px;
+  padding: 1.5rem;
+  border: 1px solid var(--mrkt-outline-variant);
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.stock-bento-card:hover {
+  border-color: rgba(232, 193, 119, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.stock-text-mono {
+  font-family: var(--font-mono);
+}
+
+.stock-title-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Custom tabs styling matching Aethelred */
+.stock-tabs-header {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--mrkt-outline-variant);
+  margin-bottom: 1.5rem;
+}
+
+.stock-tab-btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mrkt-on-surface-variant);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.stock-tab-btn:hover {
+  color: var(--mrkt-primary);
+}
+
+.stock-tab-btn.active {
+  color: var(--mrkt-primary);
+  border-bottom-color: var(--mrkt-primary);
+  background-color: rgba(232, 193, 119, 0.05);
+}
+
+/* Quick trade styles */
+.stock-trade-panel {
+  background-color: var(--mrkt-surface-low);
+  border: 1px solid var(--mrkt-outline-variant);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.stock-input-field {
+  background-color: var(--mrkt-surface-lowest);
+  border: 1px solid var(--mrkt-outline-variant);
+  color: var(--mrkt-on-surface);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  font-family: var(--font-mono);
+}
+
+.stock-input-field:focus {
+  outline: none;
+  border-color: var(--mrkt-primary);
+  box-shadow: 0 0 0 2px rgba(232, 193, 119, 0.15);
+}
+
+.stock-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  animation: stockPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes stockPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(1.25); }
+}
+
+/* Unavailable Chart Box */
+.stock-chart-unavailable-box {
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(154, 143, 128, 0.2);
+  background-color: var(--mrkt-surface-lowest);
+  border-radius: 4px;
+  color: var(--mrkt-on-surface-variant);
+  text-align: center;
+  padding: 2rem;
+}
+
+/* responsive details */
+@media (max-width: 768px) {
+  .stock-details-root {
+    padding: 1rem 1rem 3rem 1rem;
+  }
+}

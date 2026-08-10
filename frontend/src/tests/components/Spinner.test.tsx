@@ -9,19 +9,19 @@ describe("Spinner", () => {
     expect(spinner).toBeInTheDocument();
   });
 
-  it("has aria-label Loading", () => {
+  it("has aria-label Loading…", () => {
     render(<Spinner />);
     const spinner = screen.getByRole("status");
-    expect(spinner).toHaveAttribute("aria-label", "Loading");
+    expect(spinner).toHaveAttribute("aria-label", "Loading…");
   });
 
-  it("renders inside a loading-center container", () => {
+  it("renders inside a spinner-container wrapper", () => {
     const { container } = render(<Spinner />);
-    expect(container.querySelector(".loading-center")).toBeInTheDocument();
+    expect(container.querySelector(".spinner-container")).toBeInTheDocument();
   });
 
-  it("spinner element has spinner class", () => {
+  it("spinner elements have dot classes", () => {
     const { container } = render(<Spinner />);
-    expect(container.querySelector(".spinner")).toBeInTheDocument();
+    expect(container.querySelector(".spinner-dot")).toBeInTheDocument();
   });
 });

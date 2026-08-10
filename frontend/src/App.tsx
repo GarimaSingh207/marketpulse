@@ -11,6 +11,10 @@ import Portfolios from "./pages/Portfolios";
 import PortfolioDetail from "./pages/PortfolioDetail";
 import Watchlists from "./pages/Watchlists";
 import Market from "./pages/Market";
+import Analytics from "./pages/Analytics";
+import StockDetails from "./pages/StockDetails";
+import History from "./pages/History";
+import Settings from "./pages/Settings";
 
 import "./App.css";
 
@@ -29,10 +33,15 @@ export default function App() {
               <Route element={<Layout />}>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/performance" element={<Analytics />} />
                 <Route path="/portfolios" element={<Portfolios />} />
                 <Route path="/portfolios/:id" element={<PortfolioDetail />} />
                 <Route path="/watchlists" element={<Watchlists />} />
                 <Route path="/market" element={<Market />} />
+                <Route path="/stock/:symbol" element={<StockDetails />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>
 

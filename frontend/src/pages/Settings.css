@@ -1,0 +1,198 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — SETTINGS STYLES
+   Scoped UI system for Settings & Controls Panels
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.set-root {
+  --set-bg: #131313;
+  --set-surface: #201f1f;
+  --set-surface-high: #2a2a2a;
+  --set-surface-low: #1c1b1b;
+  --set-surface-highest: #353534;
+  --set-primary: #e8c177;
+  --set-on-surface: #e5e2e1;
+  --set-on-surface-variant: #d1c5b4;
+  --set-outline-variant: rgba(77, 70, 57, 0.25);
+  --set-error: #ffb4ab;
+  --set-success: #34d399;
+
+  background-color: var(--set-bg);
+  color: var(--set-on-surface);
+  min-height: calc(100vh - var(--navbar-h));
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.set-stagger-load {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: setSlideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes setSlideUpFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.set-hairline {
+  border: 0.5px solid rgba(245, 245, 240, 0.1);
+}
+
+.set-card {
+  background-color: var(--set-surface);
+  border-radius: 4px;
+  padding: 1.25rem;
+  border: 1px solid var(--set-outline-variant);
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.set-card:hover {
+  border-color: rgba(232, 193, 119, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.set-text-mono {
+  font-family: var(--font-mono);
+}
+
+.set-title-caps {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Custom interactive inputs matching Matte style */
+.set-input-compact {
+  height: 32px !important;
+  background-color: var(--set-surface-highest);
+  border: 1px solid var(--set-outline-variant);
+  color: var(--set-on-surface);
+  font-size: 12px;
+  padding: 0 0.75rem;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.set-input-compact:focus {
+  border-color: var(--set-primary);
+}
+
+.set-select-compact {
+  height: 32px !important;
+  background-color: var(--set-surface-highest);
+  border: 1px solid var(--set-outline-variant);
+  color: var(--set-on-surface);
+  font-size: 12px;
+  padding: 0 1.75rem 0 0.75rem;
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.set-select-compact:focus {
+  border-color: var(--set-primary);
+}
+
+/* Custom switch toggle */
+.set-toggle-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.set-toggle-bg {
+  width: 2rem;
+  height: 1.15rem;
+  background-color: var(--set-surface-highest);
+  border-radius: 9999px;
+  position: relative;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.set-toggle-bg::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 0.9rem;
+  height: 0.9rem;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+input:checked + .set-toggle-bg {
+  background-color: var(--set-primary);
+}
+
+input:checked + .set-toggle-bg::after {
+  transform: translateX(0.85rem);
+}
+
+/* Accent Selection Pill */
+.set-accent-dot {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  border: 1px solid rgba(245, 245, 240, 0.1);
+}
+
+.set-accent-dot.active {
+  border: 2px solid #fff;
+  box-shadow: 0 0 8px var(--set-primary);
+}
+
+/* Status Badges */
+.set-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.set-badge-gold {
+  background-color: var(--set-primary);
+  color: #402d00;
+}
+
+.set-badge-variant {
+  background-color: rgba(245, 245, 240, 0.05);
+  color: var(--set-on-surface-variant);
+  border: 0.5px solid var(--set-outline-variant);
+}
+
+.set-badge-success {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: var(--set-success);
+}
+
+/* Grid layout overrides for compact dense form */
+.set-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+/* Responsive constraints */
+@media (max-width: 1024px) {
+  .set-grid-12 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .set-root {
+    padding: 1rem 1rem 3rem 1rem;
+  }
+}

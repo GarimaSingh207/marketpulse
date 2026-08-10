@@ -122,7 +122,7 @@ export default function Navbar({ onToggleSidebar }: NavbarProps) {
           whileTap={{ scale: 0.96 }}
           className="btn btn-ghost btn-sm"
           onClick={logout}
-          aria-label="Sign out"
+          aria-label="Logout"
           style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
         >
           <LogOut size={13} strokeWidth={2} />

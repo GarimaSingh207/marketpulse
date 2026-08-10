@@ -8,13 +8,18 @@ import {
   X,
   ChevronLeft,
   BarChart2,
+  History,
+  Settings,
 } from "lucide-react";
 
 const links = [
   { to: "/dashboard",  icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/analytics",  icon: BarChart2,        label: "Analytics" },
   { to: "/portfolios", icon: Briefcase,        label: "Portfolios" },
   { to: "/watchlists", icon: Eye,              label: "Watchlists" },
   { to: "/market",     icon: TrendingUp,       label: "Market" },
+  { to: "/history",    icon: History,          label: "History" },
+  { to: "/settings",   icon: Settings,         label: "Settings" },
 ];
 
 interface SidebarProps {
@@ -63,7 +68,7 @@ export default function Sidebar({
         )}
 
         {/* Nav */}
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav" aria-label="Main navigation">
           <span className="sidebar-section-label">Navigation</span>
           {links.map((link) => {
             const Icon = link.icon;

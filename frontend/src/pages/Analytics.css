@@ -1,0 +1,261 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — PERFORMANCE / ANALYTICS STYLES
+   Scoped UI system for Institutional Terminal Performance & Analytics Workspace
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.analytics-root {
+  --analytics-bg: #131313;
+  --analytics-surface: #131313;
+  --analytics-surface-low: #1c1b1b;
+  --analytics-surface-container: #201f1f;
+  --analytics-surface-high: #2a2a2a;
+  --analytics-surface-highest: #353534;
+  --analytics-surface-lowest: #0e0e0e;
+  --analytics-primary: #e8c177;
+  --analytics-primary-container: #c8a45d;
+  --analytics-on-surface: #e5e2e1;
+  --analytics-on-surface-variant: #d1c5b4;
+  --analytics-outline: #9a8f80;
+  --analytics-outline-variant: rgba(77, 70, 57, 0.3);
+  --analytics-error: #ffb4ab;
+  --analytics-secondary: #bac3ff;
+  --analytics-tertiary: #c6c7c2;
+  --analytics-emerald: #34d399;
+
+  background-color: var(--analytics-bg);
+  color: var(--analytics-on-surface);
+  min-height: 100vh;
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ── Typography Utility Helpers ───────────────────────────────────────────── */
+.font-display-md {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.font-data-lg {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.font-data-md {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.font-label-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Entrance & Interaction Animations ────────────────────────────────────── */
+.animate-entrance {
+  animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.hairline-divider {
+  border-bottom: 1px solid rgba(245, 245, 240, 0.1);
+  margin: 0.75rem 0;
+}
+
+/* ── Grid System ───────────────────────────────────────────────────────────── */
+.analytics-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+}
+
+.analytics-card {
+  background-color: var(--analytics-surface-high);
+  border: 1px solid var(--analytics-outline-variant);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* ── Header App Bar & Search ───────────────────────────────────────────────── */
+.analytics-appbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: rgba(19, 19, 19, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--analytics-outline-variant);
+  margin: -1.5rem -2.5rem 2rem -2.5rem;
+  padding: 1rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.analytics-search-wrap {
+  position: relative;
+  width: 260px;
+}
+
+.analytics-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--analytics-on-surface-variant);
+  pointer-events: none;
+}
+
+.analytics-search-input {
+  background-color: var(--analytics-surface-low);
+  border: 1px solid var(--analytics-outline-variant);
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--analytics-on-surface);
+  width: 100%;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-search-input:focus {
+  border-color: rgba(232, 193, 119, 0.5);
+  box-shadow: 0 0 0 1px rgba(232, 193, 119, 0.2);
+}
+
+.analytics-search-input::placeholder {
+  color: rgba(209, 197, 180, 0.4);
+}
+
+.analytics-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.analytics-nav-tab {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--analytics-on-surface-variant);
+  padding-bottom: 0.25rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.analytics-nav-tab:hover {
+  color: var(--analytics-on-surface);
+}
+
+.analytics-nav-tab.active {
+  color: var(--analytics-primary);
+  font-weight: 700;
+  border-bottom: 2px solid var(--analytics-primary);
+}
+
+/* ── Timeframe Selector Buttons ───────────────────────────────────────────── */
+.timeframe-group {
+  display: flex;
+  background-color: var(--analytics-surface-low);
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid var(--analytics-outline-variant);
+  gap: 0.2rem;
+}
+
+.timeframe-btn {
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--analytics-on-surface-variant);
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timeframe-btn:hover {
+  color: var(--analytics-primary);
+}
+
+.timeframe-btn.active {
+  color: var(--analytics-primary);
+  background-color: var(--analytics-surface-high);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Sector Attribution Bars ──────────────────────────────────────────────── */
+.sector-bar-bg {
+  width: 100%;
+  height: 4px;
+  background-color: var(--analytics-surface-low);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sector-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sector-bar-fill.positive {
+  background-color: var(--analytics-primary);
+}
+
+.sector-bar-fill.negative {
+  background-color: var(--analytics-error);
+}
+
+/* ── Responsive Rules ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .analytics-grid-12 {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-grid-12 > div {
+    grid-column: span 12 !important;
+  }
+
+  .analytics-appbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .analytics-nav-tabs {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+}

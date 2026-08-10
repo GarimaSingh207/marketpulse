@@ -8,10 +8,9 @@ describe("ErrorBanner", () => {
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
   });
 
-  it("displays the warning icon (⚠) alongside the message", () => {
-    render(<ErrorBanner message="Network error" />);
-    const banner = screen.getByText(/network error/i);
-    expect(banner.parentElement ?? banner).toHaveTextContent("⚠");
+  it("displays the warning icon alongside the message", () => {
+    const { container } = render(<ErrorBanner message="Network error" />);
+    expect(container.querySelector(".error-banner-icon")).toBeInTheDocument();
   });
 
   it("renders with the error-banner class", () => {

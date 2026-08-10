@@ -3,8 +3,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react({
+      // In test mode, disable Babel plugin to avoid esbuild/OXC conflict in vitest v4
+      ...(mode === 'test' ? { babel: { plugins: [] } } : {}),
+    }),
+  ],
   server: {
     port: 5173,
     proxy: {
@@ -23,6 +28,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
     include: ['src/tests/**/*.test.{ts,tsx}'],
+    pool: 'vmThreads',
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -50,4 +56,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

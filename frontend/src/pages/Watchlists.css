@@ -1,0 +1,259 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — WATCHLIST STYLES
+   Scoped UI system for Institutional Terminal Watchlists
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.wl-root {
+  --wl-bg: #131313;
+  --wl-surface: #201f1f;
+  --wl-surface-high: #2a2a2a;
+  --wl-surface-low: #1c1b1b;
+  --wl-surface-highest: #353534;
+  --wl-surface-lowest: #0e0e0e;
+  --wl-primary: #e8c177;
+  --wl-primary-container: #c8a45d;
+  --wl-on-surface: #e5e2e1;
+  --wl-on-surface-variant: #d1c5b4;
+  --wl-outline: #9a8f80;
+  --wl-outline-variant: rgba(77, 70, 57, 0.25);
+  --wl-error: #ffb4ab;
+  --wl-secondary: #bac3ff;
+  --wl-tertiary: #c6c7c2;
+  --wl-emerald: #34d399;
+
+  background-color: var(--wl-bg);
+  color: var(--wl-on-surface);
+  min-height: calc(100vh - var(--navbar-h));
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.wl-stagger-load {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: wlSlideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes wlSlideUpFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.wl-price-flash-green { animation: wlFlashGreen 1s ease-out; }
+.wl-price-flash-red { animation: wlFlashRed 1s ease-out; }
+
+@keyframes wlFlashGreen {
+  0% { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+  100% { color: inherit; background: transparent; }
+}
+
+@keyframes wlFlashRed {
+  0% { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+  100% { color: inherit; background: transparent; }
+}
+
+.wl-hairline {
+  border: 0.5px solid rgba(245, 245, 240, 0.1);
+}
+
+.wl-bento-card {
+  background-color: var(--wl-surface);
+  border-radius: 4px;
+  padding: 1.25rem;
+  border: 1px solid var(--wl-outline-variant);
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.wl-bento-card:hover {
+  border-color: rgba(232, 193, 119, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.wl-text-mono {
+  font-family: var(--font-mono);
+}
+
+.wl-title-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wl-custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.wl-custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.wl-custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4d4639;
+  border-radius: 10px;
+}
+.wl-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--wl-primary);
+}
+
+/* Layout structure: Sidebar + Detail area */
+.wl-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.wl-sidebar {
+  background-color: var(--wl-surface-low);
+  border: 1px solid var(--wl-outline-variant);
+  border-radius: 4px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wl-sidebar-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wl-on-surface-variant);
+  opacity: 0.5;
+  padding: 0 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.wl-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: left;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--wl-on-surface-variant);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.wl-tab-btn:hover {
+  color: var(--wl-primary);
+  background-color: rgba(232, 193, 119, 0.05);
+}
+
+.wl-tab-btn.active {
+  color: var(--wl-primary);
+  background-color: var(--wl-surface-high);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--wl-primary);
+}
+
+.wl-content-area {
+  min-width: 0; /* Prevents flex/grid overflow issues */
+}
+
+/* Filter Strip */
+.wl-filter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--wl-surface-low);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--wl-outline-variant);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.wl-filter-select {
+  background-color: var(--wl-surface-high);
+  border: 1px solid var(--wl-outline-variant);
+  color: var(--wl-on-surface);
+  font-size: 12px;
+  padding: 0.35rem 1.75rem 0.35rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.wl-filter-select:focus {
+  outline: none;
+  border-color: var(--wl-primary);
+}
+
+.wl-filter-input {
+  background-color: var(--wl-surface-high);
+  border: 1px solid var(--wl-outline-variant);
+  color: var(--wl-on-surface);
+  font-size: 12px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  outline: none;
+  max-width: 180px;
+}
+
+.wl-filter-input:focus {
+  border-color: var(--wl-primary);
+}
+
+/* Table overrides */
+.wl-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wl-table th {
+  padding: 0.75rem 1rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wl-on-surface-variant);
+  opacity: 0.6;
+  border-bottom: 1px solid var(--wl-outline-variant);
+}
+
+.wl-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(245, 245, 240, 0.04);
+  vertical-align: middle;
+}
+
+.wl-table tr.group:hover {
+  background-color: rgba(245, 245, 240, 0.02);
+}
+
+.wl-table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Responsive collapse rules */
+@media (max-width: 992px) {
+  .wl-layout {
+    grid-template-columns: 1fr;
+  }
+  .wl-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .wl-tab-btn {
+    width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .wl-root {
+    padding: 1rem 1rem 3rem 1rem;
+  }
+}

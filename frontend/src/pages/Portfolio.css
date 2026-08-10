@@ -1,0 +1,188 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — PORTFOLIO STYLES
+   Scoped UI system for Institutional Terminal Portfolios and Portfolio Details
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.portfolio-root {
+  --port-bg: #131313;
+  --port-surface: #201f1f;
+  --port-surface-high: #2a2a2a;
+  --port-surface-low: #1c1b1b;
+  --port-surface-highest: #353534;
+  --port-surface-lowest: #0e0e0e;
+  --port-primary: #e8c177;
+  --port-primary-container: #c8a45d;
+  --port-on-surface: #e5e2e1;
+  --port-on-surface-variant: #d1c5b4;
+  --port-outline: #9a8f80;
+  --port-outline-variant: rgba(77, 70, 57, 0.25);
+  --port-error: #ffb4ab;
+  --port-secondary: #bac3ff;
+  --port-tertiary: #c6c7c2;
+  --port-emerald: #34d399;
+
+  background-color: var(--port-bg);
+  color: var(--port-on-surface);
+  min-height: 100vh;
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.stagger-load {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: portSlideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes portSlideUpFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.price-flash-green { animation: portFlashGreen 1.5s ease-out; }
+.price-flash-red { animation: portFlashRed 1.5s ease-out; }
+
+@keyframes portFlashGreen {
+  0% { background-color: rgba(52, 211, 153, 0.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes portFlashRed {
+  0% { background-color: rgba(239, 68, 68, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.pulse-live {
+  animation: portPulseGreen 2s infinite;
+}
+
+@keyframes portPulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.hairline { border: 0.5px solid rgba(245, 245, 240, 0.1); }
+
+/* Sticky Column Styles */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: inherit;
+}
+
+.sticky-header {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  background-color: var(--port-surface-highest);
+}
+
+tr:hover .sticky-col {
+  background-color: var(--port-surface-high) !important;
+}
+
+.port-card {
+  background-color: var(--port-surface);
+  border-radius: 4px; /* Soft 4px (0.25rem) / 8px (0.5rem) from design system */
+  padding: 1.5rem;
+  border: 1px solid var(--port-outline-variant);
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.port-card:hover {
+  border-color: rgba(232, 193, 119, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.port-text-mono {
+  font-family: var(--font-mono);
+}
+
+.port-title-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Custom Scrollbar */
+.port-custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.port-custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.port-custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4d4639;
+  border-radius: 10px;
+}
+
+/* SVG diversifaction score custom gauge styling */
+.risk-circle-bg {
+  stroke: var(--port-surface-highest);
+}
+
+.risk-circle-fg {
+  stroke: var(--port-primary);
+}
+
+.btn-secondary-ghost {
+  background: transparent;
+  border: 1px solid var(--port-outline-variant);
+  color: var(--port-on-surface);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.btn-secondary-ghost:hover {
+  background: rgba(245, 245, 240, 0.05);
+  border-color: var(--port-on-surface-variant);
+}
+
+/* Dropdowns in toolbar */
+.toolbar-select {
+  background-color: transparent;
+  color: var(--port-on-surface);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  outline: none;
+  transition: color 0.2s;
+  appearance: none;
+}
+
+.toolbar-select:hover {
+  color: var(--port-primary);
+}
+
+.toolbar-select-wrap {
+  position: relative;
+}
+
+.toolbar-select-wrap::after {
+  content: "▼";
+  font-size: 8px;
+  color: inherit;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  opacity: 0.5;
+}

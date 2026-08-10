@@ -10,6 +10,7 @@ import EmptyState from "../components/EmptyState";
 import Modal from "../components/Modal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { Plus, Trash2, ArrowRight, Briefcase, BarChart3 } from "lucide-react";
+import "./Portfolio.css";
 
 interface PortfolioWithValue extends Portfolio {
   liveValue?: number;
@@ -120,22 +121,24 @@ export default function Portfolios() {
   if (loading) return <Spinner text="Loading portfolios…" />;
 
   return (
-    <div className="section-gap">
+    <div className="portfolio-root">
       {/* Page Header */}
       <motion.div
-        className="page-header"
+        className="flex justify-between items-center mb-8 pb-4 border-b border-outline-variant/10"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
         <div>
-          <h1 className="page-title">Portfolios</h1>
-          <p className="page-subtitle">Track valuations, aggregate live returns, and configure asset allocations.</p>
+          <h1 className="font-headline-sm text-2xl font-bold tracking-tight text-on-surface">Portfolios</h1>
+          <p className="text-[11px] font-label-caps uppercase tracking-wider text-on-surface-variant mt-1">
+            Track valuations, aggregate live returns, and configure asset allocations.
+          </p>
         </div>
         <motion.button
           whileHover={{ y: -1 }}
           whileTap={{ scale: 0.98 }}
-          className="btn btn-primary"
+          className="bg-primary text-on-primary py-2.5 px-6 font-label-caps text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all rounded"
           onClick={() => setShowCreateModal(true)}
         >
           <Plus size={16} strokeWidth={2.5} />
@@ -151,7 +154,10 @@ export default function Portfolios() {
           title="No Active Portfolios"
           message="Create a new portfolio shell to start recording buy and sell transactions."
           action={
-            <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+            <button
+              className="bg-primary text-on-primary py-2 px-4 font-label-caps text-xs font-bold flex items-center gap-2 rounded hover:opacity-90 active:scale-95 transition-all"
+              onClick={() => setShowCreateModal(true)}
+            >
               <Plus size={15} /> Get Started
             </button>
           }
@@ -164,7 +170,7 @@ export default function Portfolios() {
             hidden: { opacity: 0 },
             show: { opacity: 1, transition: { staggerChildren: 0.05 } },
           }}
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
         >
           {portfolios.map((p) => (
             <motion.div
@@ -174,55 +180,55 @@ export default function Portfolios() {
                 show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 25 } },
               }}
               whileHover={{ y: -4, scale: 1.01 }}
-              className="card card-accent"
-              style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "200px" }}
+              className="port-card flex flex-col justify-between min-h-[220px]"
             >
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                    <div className="stat-card-icon accent" style={{ width: "30px", height: "30px", marginBottom: 0 }}>
-                      <Briefcase size={14} />
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center text-primary shrink-0">
+                      <Briefcase size={16} />
                     </div>
-                    <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                      {p.name}
-                    </h3>
+                    <div>
+                      <h3 className="font-body-md font-semibold text-on-surface">{p.name}</h3>
+                      <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">
+                        ID: {p.id.slice(0, 8)}
+                      </span>
+                    </div>
                   </div>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
-                    className="btn btn-danger btn-sm"
+                    className="text-on-surface-variant hover:text-error transition-all p-2 rounded hover:bg-surface-variant/30"
                     onClick={() => setPortfolioToDelete({ id: p.id, name: p.name })}
                     disabled={deletingId === p.id}
                     aria-label={`Delete portfolio ${p.name}`}
-                    style={{ padding: "0.4rem", borderRadius: "var(--r-sm)" }}
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={15} />
                   </motion.button>
                 </div>
 
-                <div style={{ margin: "0.75rem 0" }}>
-                  <span className="text-muted" style={{ fontSize: "0.72rem", display: "block", fontWeight: 600, letterSpacing: "0.02em" }}>
+                <div className="my-4">
+                  <span className="text-on-surface-variant font-label-caps text-[9px] uppercase tracking-wider block">
                     ESTIMATED LIVE VALUATION
                   </span>
-                  <p className="stat-value text-profit text-mono" style={{ fontSize: "1.5rem", marginTop: "0.15rem" }}>
+                  <p className="text-2xl text-primary font-bold port-text-mono mt-1">
                     ${(p.liveValue || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
                 </div>
 
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                  <span className="badge badge-accent" style={{ fontSize: "0.7rem" }}>
+                <div className="flex gap-2 items-center mt-3">
+                  <span className="text-[10px] font-label-caps bg-surface-variant/40 px-2.5 py-1 rounded text-on-surface">
                     {p.holdings?.length || 0} Positions
                   </span>
-                  <span className="badge badge-neutral" style={{ fontSize: "0.7rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                    <BarChart3 size={10} /> Allocations set
+                  <span className="text-[10px] font-label-caps bg-[#34d399]/10 px-2.5 py-1 rounded text-[#34d399] flex items-center gap-1">
+                    <BarChart3 size={11} /> Allocations set
                   </span>
                 </div>
               </div>
 
-              <div style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border)" }}>
+              <div className="mt-6 pt-4 border-t border-outline-variant/10">
                 <Link
                   to={`/portfolios/${p.id}`}
-                  className="btn btn-ghost"
-                  style={{ width: "100%", justifyContent: "center", gap: "0.5rem" }}
+                  className="w-full bg-transparent border border-outline-variant/20 hover:border-primary/45 hover:text-primary transition-all text-on-surface text-center py-2.5 px-4 font-label-caps text-xs font-bold flex items-center justify-center gap-2 rounded"
                 >
                   <span>Manage Portfolio</span>
                   <ArrowRight size={14} />
@@ -238,14 +244,14 @@ export default function Portfolios() {
         {showCreateModal && (
           <Modal title="Create New Portfolio" onClose={() => setShowCreateModal(false)}>
             <form onSubmit={handleCreate}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="portfolioName">
+              <div className="form-group mb-6">
+                <label className="text-xs font-label-caps text-on-surface-variant uppercase tracking-wider mb-2 block" htmlFor="portfolioName">
                   Portfolio Identifier
                 </label>
                 <input
                   id="portfolioName"
                   type="text"
-                  className="form-input"
+                  className="w-full bg-surface-variant/20 border-b border-outline-variant/35 focus:border-primary text-on-surface py-2.5 px-3 font-body-md text-sm outline-none transition-colors rounded-sm"
                   value={newPortfolioName}
                   onChange={(e) => setNewPortfolioName(e.target.value)}
                   placeholder="e.g. Liquid Capital, Retiresafe Fund"
@@ -253,16 +259,20 @@ export default function Portfolios() {
                   autoFocus
                 />
               </div>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="btn-secondary-ghost"
                   onClick={() => setShowCreateModal(false)}
                   disabled={submitting}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                <button
+                  type="submit"
+                  className="bg-primary text-on-primary py-2.5 px-5 font-label-caps text-xs font-bold rounded hover:opacity-90 active:scale-95 transition-all"
+                  disabled={submitting}
+                >
                   {submitting ? "Creating..." : "Create Portfolio"}
                 </button>
               </div>

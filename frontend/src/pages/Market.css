@@ -1,0 +1,162 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AETHELRED PRECISION — MARKET STYLES
+   Scoped UI system for Institutional Terminal Markets
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.market-root {
+  --mrkt-bg: #131313;
+  --mrkt-surface: #201f1f;
+  --mrkt-surface-high: #2a2a2a;
+  --mrkt-surface-low: #1c1b1b;
+  --mrkt-surface-highest: #353534;
+  --mrkt-surface-lowest: #0e0e0e;
+  --mrkt-primary: #e8c177;
+  --mrkt-primary-container: #c8a45d;
+  --mrkt-on-surface: #e5e2e1;
+  --mrkt-on-surface-variant: #d1c5b4;
+  --mrkt-outline: #9a8f80;
+  --mrkt-outline-variant: rgba(77, 70, 57, 0.25);
+  --mrkt-error: #ffb4ab;
+  --mrkt-secondary: #bac3ff;
+  --mrkt-tertiary: #c6c7c2;
+  --mrkt-emerald: #34d399;
+
+  background-color: var(--mrkt-bg);
+  color: var(--mrkt-on-surface);
+  min-height: 100vh;
+  padding: 1.5rem 2.5rem 4rem 2.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.mrkt-stagger-load {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: mrktSlideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mrktSlideUpFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mrkt-price-flash-green { animation: mrktFlashGreen 1.5s ease-out; }
+.mrkt-price-flash-red { animation: mrktFlashRed 1.5s ease-out; }
+
+@keyframes mrktFlashGreen {
+  0% { background-color: rgba(52, 211, 153, 0.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes mrktFlashRed {
+  0% { background-color: rgba(239, 68, 68, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.mrkt-hairline { border: 0.5px solid rgba(245, 245, 240, 0.1); }
+
+.mrkt-bento-card {
+  background-color: var(--mrkt-surface);
+  border-radius: 4px;
+  padding: 1.25rem;
+  border: 1px solid var(--mrkt-outline-variant);
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.mrkt-bento-card:hover {
+  border-color: rgba(232, 193, 119, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.mrkt-text-mono {
+  font-family: var(--font-mono);
+}
+
+.mrkt-title-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mrkt-custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.mrkt-custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mrkt-custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4d4639;
+  border-radius: 10px;
+}
+
+.mrkt-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(232, 193, 119, 0.05), transparent);
+  background-size: 200% 100%;
+  animation: mrktShimmer 2s infinite linear;
+}
+
+@keyframes mrktShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Category pills in toolbar */
+.mrkt-filter-pill {
+  background-color: var(--mrkt-surface-high);
+  color: var(--mrkt-on-surface-variant);
+  border: 1px solid var(--mrkt-outline-variant);
+  font-size: 10px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  padding: 0.375rem 1rem;
+  transition: all 0.2s;
+  border-radius: 2px;
+}
+
+.mrkt-filter-pill:hover,
+.mrkt-filter-pill.active {
+  color: var(--mrkt-primary);
+  border-color: rgba(232, 193, 119, 0.4);
+}
+
+.mrkt-filter-pill.active {
+  background-color: rgba(232, 193, 119, 0.1);
+}
+
+/* Input Fields styling */
+.mrkt-search-input {
+  background-color: var(--mrkt-surface-high);
+  border: none;
+  border-bottom: 2px solid var(--mrkt-outline-variant);
+  color: var(--mrkt-on-surface);
+  font-size: 1.25rem;
+  outline: none;
+  padding: 1rem 1rem 1rem 3.5rem;
+  transition: border-bottom-color 0.2s;
+  width: 100%;
+}
+
+.mrkt-search-input:focus {
+  border-bottom-color: var(--mrkt-primary);
+}
+
+.mrkt-ticker-badge {
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--mrkt-surface-high);
+  border: 1px solid var(--mrkt-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  font-size: 8px;
+  font-weight: bold;
+}
