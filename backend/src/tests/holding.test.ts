@@ -100,6 +100,34 @@ describe("POST /api/portfolios/:portfolioId/holdings", () => {
 
     expect(res.status).toBe(401);
   });
+
+  it("accepts fractional quantity and returns 201", async () => {
+    mockPrisma.portfolio.findFirst.mockResolvedValue(mockPortfolio());
+    mockPrisma.holding.create.mockResolvedValue(mockHolding({ quantity: 10.55 }));
+
+    const res = await request(app)
+      .post("/api/portfolios/portfolio-001/holdings")
+      .set(authHeader())
+      .send({ symbol: "AAPL", quantity: 10.55, averagePrice: 150 });
+
+    expect(res.status).toBe(201);
+    expect(res.body.quantity).toBe(10.55);
+  });
+
+  it("returns 500 when holding unique constraint is violated", async () => {
+    mockPrisma.portfolio.findFirst.mockResolvedValue(mockPortfolio());
+    const error = new Error("Unique constraint failed");
+    (error as any).code = "P2002";
+    mockPrisma.holding.create.mockRejectedValue(error);
+
+    const res = await request(app)
+      .post("/api/portfolios/portfolio-001/holdings")
+      .set(authHeader())
+      .send({ symbol: "AAPL", quantity: 10, averagePrice: 150 });
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toMatch(/internal server error/i);
+  });
 });
 
 // ─── Delete Holding ───────────────────────────────────────────────────────────

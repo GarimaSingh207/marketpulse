@@ -178,4 +178,96 @@ describe("Dashboard page", () => {
       expect(screen.getByRole("link", { name: /new portfolio/i })).toBeInTheDocument();
     });
   });
+
+  it("renders valid backend portfolio value correctly", async () => {
+    const portfolios = [
+      { id: "p1", name: "Tech Portfolio", userId: "user-001", holdings: [{ id: "h1", symbol: "AAPL", quantity: 10, averagePrice: 150 }] },
+    ];
+    renderDashboard({ portfolios, watchlists: [] });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("$10,000.00").length).toBeGreaterThan(0);
+    });
+  });
+
+  it("renders empty portfolio as $0.00 and does not use hardcoded fallback", async () => {
+    mockApi.get.mockImplementation((url: string) => {
+      if (url.includes("/api/portfolios") && !url.includes("/value")) {
+        return Promise.resolve({ data: [] });
+      }
+      if (url.includes("/api/watchlists")) {
+        return Promise.resolve({ data: [] });
+      }
+      return Promise.reject(new Error("Unknown URL"));
+    });
+
+    render(
+      <MemoryRouter>
+        <AuthContext.Provider
+          value={{
+            user: authenticatedUser,
+            token: "mock-token",
+            isAuthenticated: true,
+            login: vi.fn(),
+            register: vi.fn(),
+            logout: vi.fn(),
+          }}
+        >
+          <SocketContext.Provider value={{ socket: null }}>
+            <Dashboard />
+          </SocketContext.Provider>
+        </AuthContext.Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("$0.00")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("2,482,904.52")).not.toBeInTheDocument();
+    expect(screen.queryByText(/2482904/)).not.toBeInTheDocument();
+  });
+
+  it("renders error banner when valuation API fails", async () => {
+    const portfolios = [
+      { id: "p1", name: "Tech Portfolio", userId: "user-001", holdings: [{ id: "h1" }] },
+    ];
+
+    mockApi.get.mockImplementation((url: string) => {
+      if (url.includes("/api/portfolios") && !url.includes("/value")) {
+        return Promise.resolve({ data: portfolios });
+      }
+      if (url.includes("/api/watchlists")) {
+        return Promise.resolve({ data: [] });
+      }
+      if (url.includes("/value")) {
+        return Promise.reject({
+          response: { data: { message: "Valuation API failed." } },
+        });
+      }
+      return Promise.reject(new Error("Unknown URL"));
+    });
+
+    render(
+      <MemoryRouter>
+        <AuthContext.Provider
+          value={{
+            user: authenticatedUser,
+            token: "mock-token",
+            isAuthenticated: true,
+            login: vi.fn(),
+            register: vi.fn(),
+            logout: vi.fn(),
+          }}
+        >
+          <SocketContext.Provider value={{ socket: null }}>
+            <Dashboard />
+          </SocketContext.Provider>
+        </AuthContext.Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/valuation api failed/i)).toBeInTheDocument();
+    });
+  });
 });

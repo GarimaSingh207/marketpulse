@@ -4,16 +4,16 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .hist-root {
-  --hist-bg: #131313;
-  --hist-surface: #201f1f;
-  --hist-surface-high: #2a2a2a;
-  --hist-surface-low: #1c1b1b;
-  --hist-surface-highest: #353534;
+  --hist-bg: #0d0e11;
+  --hist-surface: #1a1b22;
+  --hist-surface-high: #21222c;
+  --hist-surface-low: #13141a;
+  --hist-surface-highest: #272830;
   --hist-primary: #e8c177;
-  --hist-on-surface: #e5e2e1;
-  --hist-on-surface-variant: #d1c5b4;
-  --hist-outline-variant: rgba(77, 70, 57, 0.25);
-  --hist-error: #ffb4ab;
+  --hist-on-surface: #e8e6e3;
+  --hist-on-surface-variant: #b8b0a4;
+  --hist-outline-variant: rgba(255, 255, 255, 0.07);
+  --hist-error: #f87171;
   --hist-emerald: #34d399;
 
   background-color: var(--hist-bg);
@@ -42,7 +42,7 @@
   background-color: var(--hist-surface);
   border-radius: 4px;
   padding: 1.25rem;
-  border: 1px solid var(--hist-outline-variant);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   transition: all var(--duration-base) var(--ease-out);
   position: relative;
   overflow: hidden;
@@ -51,9 +51,9 @@
 }
 
 .hist-bento-card:hover {
-  border-color: rgba(232, 193, 119, 0.3);
+  border-color: rgba(232, 193, 119, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
 }
 
 .hist-text-mono {

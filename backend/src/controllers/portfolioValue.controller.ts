@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { fetchStockPrice } from "../services/market.service";
@@ -38,12 +39,13 @@ export const getPortfolioValue = async (req: AuthRequest, res: Response): Promis
         currentPrice = Number(holding.averagePrice);
       }
 
-      const marketValue = Number((holding.quantity * currentPrice).toFixed(2));
+      const qty = new Prisma.Decimal(holding.quantity);
+      const marketValue = Number(qty.times(currentPrice).toFixed(2));
       totalValue += marketValue;
 
       holdingsValueList.push({
         symbol: holding.symbol,
-        quantity: holding.quantity,
+        quantity: qty.toNumber(),
         currentPrice,
         marketValue,
       });

@@ -36,34 +36,35 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
 
     const { type, quantity, price } = parseResult.data;
 
-    let updatedQuantity: number;
+    let updatedQuantity: Prisma.Decimal;
     let updatedAveragePrice: Prisma.Decimal;
 
-    const currentQuantity = holding.quantity;
-    const currentAvgPrice = Number(holding.averagePrice);
+    const currentQuantity = new Prisma.Decimal(holding.quantity);
+    const currentAvgPrice = new Prisma.Decimal(holding.averagePrice);
+    const txQuantity = new Prisma.Decimal(quantity);
+    const txPrice = new Prisma.Decimal(price);
 
     if (type === "BUY") {
-      updatedQuantity = currentQuantity + quantity;
-      const totalCost = currentQuantity * currentAvgPrice + quantity * price;
-      const newAvgPriceNumber = totalCost / updatedQuantity;
-      updatedAveragePrice = new Prisma.Decimal(newAvgPriceNumber.toFixed(4));
+      updatedQuantity = currentQuantity.plus(txQuantity);
+      const totalCost = currentQuantity.times(currentAvgPrice).plus(txQuantity.times(txPrice));
+      updatedAveragePrice = totalCost.div(updatedQuantity);
     } else {
       // SELL logic
-      if (quantity > currentQuantity) {
+      if (txQuantity.greaterThan(currentQuantity)) {
         res.status(400).json({
-          message: `Cannot sell ${quantity} units. Only ${currentQuantity} available.`,
+          message: `Cannot sell ${quantity} units. Only ${currentQuantity.toString()} available.`,
         });
         return;
       }
-      updatedQuantity = currentQuantity - quantity;
+      updatedQuantity = currentQuantity.minus(txQuantity);
       // Selling does not change the weighted average cost basis of remaining shares
-      updatedAveragePrice = holding.averagePrice;
+      updatedAveragePrice = currentAvgPrice;
     }
 
     // Execute transaction creation and holding update atomically
     const [transaction, updatedHolding] = await prisma.$transaction([
       prisma.transaction.create({
-        data: { holdingId, type, quantity, price },
+        data: { holdingId, type, quantity: txQuantity, price: txPrice },
       }),
       prisma.holding.update({
         where: { id: holdingId },
@@ -76,7 +77,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       holdingId: transaction.holdingId,
       portfolioId: holding.portfolioId,
       type: transaction.type,
-      quantity: transaction.quantity,
+      quantity: Number(transaction.quantity),
       price: Number(transaction.price),
       createdAt: transaction.createdAt,
     });
@@ -85,7 +86,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       portfolioId: holding.portfolioId,
       updatedHolding: {
         holdingId: updatedHolding.id,
-        quantity: updatedHolding.quantity,
+        quantity: Number(updatedHolding.quantity),
         averagePrice: Number(updatedHolding.averagePrice),
       },
     });

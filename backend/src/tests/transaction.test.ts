@@ -160,4 +160,56 @@ describe("POST /api/holdings/:holdingId/transactions — BUY", () => {
 
     expect(res.status).toBe(404);
   });
+
+  it("performs weighted average cost calculation and quantity updates using Decimals on BUY", async () => {
+    const holding = mockHolding({ quantity: 10.5, averagePrice: new Prisma.Decimal("150.50") });
+    mockPrisma.holding.findFirst.mockResolvedValue(holding);
+
+    mockPrisma.$transaction.mockImplementation(async (promises: any) => {
+      return [
+        mockTransaction({ id: "tx-new", quantity: 5.25, price: new Prisma.Decimal("160.20") }),
+        mockHolding({ quantity: 15.75, averagePrice: new Prisma.Decimal("153.7333") })
+      ];
+    });
+
+    const res = await request(app)
+      .post("/api/holdings/holding-001/transactions")
+      .set(authHeader())
+      .send({ type: "BUY", quantity: 5.25, price: 160.20 });
+
+    expect(res.status).toBe(201);
+
+    // Check what Prisma was called with
+    const updateData = mockPrisma.holding.update.mock.calls[0][0].data;
+
+    // Expected updated quantity: 10.5 + 5.25 = 15.75
+    expect(updateData.quantity.toNumber()).toBe(15.75);
+
+    // Expected weighted average price:
+    // ((10.5 * 150.50) + (5.25 * 160.20)) / 15.75 = 153.73333333333335
+    expect(Number(updateData.averagePrice.toFixed(4))).toBe(153.7333);
+  });
+
+  it("preserves average price (cost basis) and subtracts quantity on SELL", async () => {
+    const holding = mockHolding({ quantity: 10.75, averagePrice: new Prisma.Decimal("150.00") });
+    mockPrisma.holding.findFirst.mockResolvedValue(holding);
+
+    mockPrisma.$transaction.mockImplementation(async (promises: any) => {
+      return [
+        mockTransaction({ type: "SELL", quantity: 5.25 }),
+        mockHolding({ quantity: 5.5, averagePrice: new Prisma.Decimal("150.00") })
+      ];
+    });
+
+    const res = await request(app)
+      .post("/api/holdings/holding-001/transactions")
+      .set(authHeader())
+      .send({ type: "SELL", quantity: 5.25, price: 170.00 });
+
+    expect(res.status).toBe(201);
+
+    const updateData = mockPrisma.holding.update.mock.calls[0][0].data;
+    expect(updateData.quantity.toNumber()).toBe(5.5);
+    expect(updateData.averagePrice.toNumber()).toBe(150.00);
+  });
 });

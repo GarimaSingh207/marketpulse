@@ -42,19 +42,20 @@ model Holding {
   id           String        @id @default(cuid())
   portfolioId  String
   symbol       String
-  quantity     Float
+  quantity     Decimal
   averagePrice Decimal
   portfolio    Portfolio     @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
   @@index([portfolioId])
+  @@unique([portfolioId, symbol])
 }
 
 model Transaction {
   id        String          @id @default(cuid())
   holdingId String
   type      TransactionType
-  quantity  Float
+  quantity  Decimal
   price     Decimal
   createdAt DateTime        @default(now())
   holding   Holding         @relation(fields: [holdingId], references: [id], onDelete: Cascade)
@@ -79,4 +80,5 @@ model WatchlistStock {
   watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
 
   @@index([watchlistId])
+  @@unique([watchlistId, symbol])
 }

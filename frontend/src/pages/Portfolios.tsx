@@ -16,6 +16,20 @@ interface PortfolioWithValue extends Portfolio {
   liveValue?: number;
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 260, damping: 25 },
+  },
+};
+
+const gridVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+
 export default function Portfolios() {
   const { socket } = useSocket();
 
@@ -120,126 +134,173 @@ export default function Portfolios() {
 
   if (loading) return <Spinner text="Loading portfolios…" />;
 
+  // Aggregate summary stats
+  const totalValue = portfolios.reduce((sum, p) => sum + (p.liveValue || 0), 0);
+  const totalPositions = portfolios.reduce((sum, p) => sum + (p.holdings?.length || 0), 0);
+
   return (
-    <div className="portfolio-root">
-      {/* Page Header */}
-      <motion.div
-        className="flex justify-between items-center mb-8 pb-4 border-b border-outline-variant/10"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div>
-          <h1 className="font-headline-sm text-2xl font-bold tracking-tight text-on-surface">Portfolios</h1>
-          <p className="text-[11px] font-label-caps uppercase tracking-wider text-on-surface-variant mt-1">
-            Track valuations, aggregate live returns, and configure asset allocations.
-          </p>
-        </div>
-        <motion.button
-          whileHover={{ y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          className="bg-primary text-on-primary py-2.5 px-6 font-label-caps text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all rounded"
-          onClick={() => setShowCreateModal(true)}
-        >
-          <Plus size={16} strokeWidth={2.5} />
-          <span>Create Portfolio</span>
-        </motion.button>
-      </motion.div>
+    <div className="portfolio-full-bleed">
+      <div className="portfolio-root">
+        <div className="portfolio-inner">
 
-      {error && <ErrorBanner message={error} />}
-
-      {portfolios.length === 0 ? (
-        <EmptyState
-          icon={<Briefcase size={24} />}
-          title="No Active Portfolios"
-          message="Create a new portfolio shell to start recording buy and sell transactions."
-          action={
-            <button
-              className="bg-primary text-on-primary py-2 px-4 font-label-caps text-xs font-bold flex items-center gap-2 rounded hover:opacity-90 active:scale-95 transition-all"
+          {/* ── Page Header ─────────────────────────────────────────────── */}
+          <motion.div
+            className="portfolio-page-header"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div>
+              <h1 className="portfolio-page-title">Portfolios</h1>
+              <p className="portfolio-page-subtitle">
+                Track valuations, aggregate live returns, and configure asset allocations.
+              </p>
+            </div>
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="portfolio-btn-create"
               onClick={() => setShowCreateModal(true)}
             >
-              <Plus size={15} /> Get Started
-            </button>
-          }
-        />
-      ) : (
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={{
-            hidden: { opacity: 0 },
-            show: { opacity: 1, transition: { staggerChildren: 0.05 } },
-          }}
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-        >
-          {portfolios.map((p) => (
+              <Plus size={15} strokeWidth={2.5} />
+              <span>Create Portfolio</span>
+            </motion.button>
+          </motion.div>
+
+          {error && <ErrorBanner message={error} />}
+
+          {/* ── Summary Ribbon ──────────────────────────────────────────── */}
+          {portfolios.length > 0 && (
             <motion.div
-              key={p.id}
-              variants={{
-                hidden: { opacity: 0, y: 15 },
-                show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 25 } },
-              }}
-              whileHover={{ y: -4, scale: 1.01 }}
-              className="port-card flex flex-col justify-between min-h-[220px]"
+              className="portfolio-summary-ribbon"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded bg-zinc-900 border border-outline-variant/20 flex items-center justify-center text-primary shrink-0">
-                      <Briefcase size={16} />
+              <div className="portfolio-summary-card">
+                <p className="portfolio-summary-label">Total Portfolio Value</p>
+                <p className="portfolio-summary-value">
+                  ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+              <div className="portfolio-summary-card">
+                <p className="portfolio-summary-label">Active Portfolios</p>
+                <p className="portfolio-summary-value neutral">{portfolios.length}</p>
+              </div>
+              <div className="portfolio-summary-card">
+                <p className="portfolio-summary-label">Total Positions</p>
+                <p className="portfolio-summary-value neutral">{totalPositions}</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Portfolio Grid / Empty State ────────────────────────────── */}
+          {portfolios.length === 0 ? (
+            <EmptyState
+              icon={<Briefcase size={24} />}
+              title="No Active Portfolios"
+              message="Create a new portfolio shell to start recording buy and sell transactions."
+              action={
+                <button
+                  className="portfolio-btn-create"
+                  onClick={() => setShowCreateModal(true)}
+                >
+                  <Plus size={15} /> Get Started
+                </button>
+              }
+            />
+          ) : (
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={gridVariants}
+              className="portfolio-grid"
+            >
+              {portfolios.map((p) => (
+                <motion.div
+                  key={p.id}
+                  variants={cardVariants}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="port-card"
+                >
+                  {/* Card Header: icon + name + delete */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div className="port-card-icon">
+                          <Briefcase size={15} />
+                        </div>
+                        <div>
+                          <h3 className="port-card-name">{p.name}</h3>
+                          <span className="port-card-id">ID: {p.id.slice(0, 8)}</span>
+                        </div>
+                      </div>
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        style={{
+                          color: "var(--port-on-surface-variant)",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          transition: "color 0.2s, background 0.2s",
+                          lineHeight: 0,
+                        }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.color = "var(--port-error)";
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(255, 180, 171, 0.08)";
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.color = "var(--port-on-surface-variant)";
+                          (e.currentTarget as HTMLButtonElement).style.background = "none";
+                        }}
+                        onClick={() => setPortfolioToDelete({ id: p.id, name: p.name })}
+                        disabled={deletingId === p.id}
+                        aria-label={`Delete portfolio ${p.name}`}
+                      >
+                        <Trash2 size={14} />
+                      </motion.button>
                     </div>
-                    <div>
-                      <h3 className="font-body-md font-semibold text-on-surface">{p.name}</h3>
-                      <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">
-                        ID: {p.id.slice(0, 8)}
+
+                    {/* Valuation */}
+                    <div style={{ margin: "1rem 0" }}>
+                      <span className="port-card-valuation-label">Estimated Live Valuation</span>
+                      <p className="port-card-value">
+                        ${(p.liveValue || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+
+                    {/* Badges */}
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.75rem", flexWrap: "wrap" }}>
+                      <span className="port-badge port-badge-positions">
+                        {p.holdings?.length || 0} Positions
+                      </span>
+                      <span className="port-badge port-badge-alloc">
+                        <BarChart3 size={10} /> Allocations set
                       </span>
                     </div>
                   </div>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    className="text-on-surface-variant hover:text-error transition-all p-2 rounded hover:bg-surface-variant/30"
-                    onClick={() => setPortfolioToDelete({ id: p.id, name: p.name })}
-                    disabled={deletingId === p.id}
-                    aria-label={`Delete portfolio ${p.name}`}
-                  >
-                    <Trash2 size={15} />
-                  </motion.button>
-                </div>
 
-                <div className="my-4">
-                  <span className="text-on-surface-variant font-label-caps text-[9px] uppercase tracking-wider block">
-                    ESTIMATED LIVE VALUATION
-                  </span>
-                  <p className="text-2xl text-primary font-bold port-text-mono mt-1">
-                    ${(p.liveValue || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </p>
-                </div>
-
-                <div className="flex gap-2 items-center mt-3">
-                  <span className="text-[10px] font-label-caps bg-surface-variant/40 px-2.5 py-1 rounded text-on-surface">
-                    {p.holdings?.length || 0} Positions
-                  </span>
-                  <span className="text-[10px] font-label-caps bg-[#34d399]/10 px-2.5 py-1 rounded text-[#34d399] flex items-center gap-1">
-                    <BarChart3 size={11} /> Allocations set
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-outline-variant/10">
-                <Link
-                  to={`/portfolios/${p.id}`}
-                  className="w-full bg-transparent border border-outline-variant/20 hover:border-primary/45 hover:text-primary transition-all text-on-surface text-center py-2.5 px-4 font-label-caps text-xs font-bold flex items-center justify-center gap-2 rounded"
-                >
-                  <span>Manage Portfolio</span>
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
+                  {/* Card Footer: Manage link */}
+                  <div className="port-card-footer">
+                    <Link
+                      to={`/portfolios/${p.id}`}
+                      className="port-manage-link"
+                    >
+                      <span>Manage Portfolio</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
-      )}
+          )}
 
-      {/* Create Portfolio Modal */}
+        </div>
+      </div>
+
+      {/* ── Create Portfolio Modal ────────────────────────────────────────── */}
       <AnimatePresence>
         {showCreateModal && (
           <Modal title="Create New Portfolio" onClose={() => setShowCreateModal(false)}>
@@ -270,7 +331,7 @@ export default function Portfolios() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-primary text-on-primary py-2.5 px-5 font-label-caps text-xs font-bold rounded hover:opacity-90 active:scale-95 transition-all"
+                  className="portfolio-btn-create"
                   disabled={submitting}
                 >
                   {submitting ? "Creating..." : "Create Portfolio"}
@@ -281,7 +342,7 @@ export default function Portfolios() {
         )}
       </AnimatePresence>
 
-      {/* Confirm deletion dialog */}
+      {/* ── Confirm deletion dialog ───────────────────────────────────────── */}
       <ConfirmDialog
         open={portfolioToDelete !== null}
         title="Delete Portfolio"

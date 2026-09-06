@@ -16,6 +16,9 @@ import {
   TrendingUp,
   ShoppingCart,
   Filter,
+  Bell,
+  PieChart,
+  ArrowRight,
 } from "lucide-react";
 import "./Watchlists.css";
 
@@ -33,7 +36,7 @@ const STOCK_METADATA: Record<string, { name: string; sector: string; logoUrl?: s
   },
   AAPL: {
     name: "Apple Inc.",
-    sector: "Technology",
+    sector: "Consumer Tech",
     logoUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCUkcM0_1TBrxAE0tooxJpqNy7I1pCAj0hY-3Nm1xF91vJmy4MoYkmUAtJY8xIS8SGJsMkbK8ozZyWLkgGdFzUbAl-SyYVnYF8l4ErHt15a44j7kgXcALOQts6nxvaehFLi9Zzm3rkEfB5OPYO4sC24BkRrQhFXviMFOfa_AzSTujG7reCw97cN3Fml8MBZjP8UsLLh9p9mgDrp12tO3RoMrLGCXZcA-PM3d-MLhqPlmnZ1wA_xRCfi5Q"
   },
   TSLA: {
@@ -289,375 +292,484 @@ export default function Watchlists() {
   if (loading && watchlists.length === 0) return <Spinner text="Syncing watchlists…" />;
 
   return (
-    <div className="wl-root wl-stagger-load">
-      {/* Header section */}
-      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-on-surface">Watchlist Workspace</h1>
-          <p className="text-[11px] font-label-caps uppercase tracking-wider text-on-surface-variant mt-1">
-            Real-time custom watchlists tracking and active asset monitoring.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            className="bg-surface-container border border-outline-variant hover:bg-surface-bright text-on-surface font-medium px-5 py-2.5 rounded-sm text-xs transition-all active:scale-95 flex items-center gap-1.5"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <Plus size={14} /> Create Watchlist
-          </button>
-          {selectedWatchlist && (
-            <button
-              className="bg-primary hover:bg-primary-container text-on-primary font-medium px-5 py-2.5 rounded-sm text-xs transition-all active:scale-95 flex items-center gap-1.5"
-              onClick={() => setShowAddStockModal(true)}
-            >
-              <Plus size={14} /> Add Stock Ticker
-            </button>
-          )}
-        </div>
-      </section>
+    <div className="wl-full-bleed">
+      <div className="wl-root wl-stagger-load">
+        <div className="wl-inner">
 
-      {error && <ErrorBanner message={error} />}
-
-      {watchlists.length === 0 ? (
-        <EmptyState
-          icon={<Eye size={24} />}
-          title="No Watchlists Created"
-          message="Keep watch on specific assets by organizing them inside custom list tabs."
-          action={
-            <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
-              <Plus size={14} /> Create Watchlist
-            </button>
-          }
-        />
-      ) : (
-        <div className="space-y-8">
-          {/* Summary Bento Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <div className="wl-bento-card">
-              <div className="flex flex-col items-center justify-between h-full text-center py-2">
-                <span className="text-[9px] font-bold text-on-surface-variant/40 tracking-wider">
-                  TOTAL LISTS
-                </span>
-                <span className="font-mono text-2xl font-bold text-primary mt-1">
-                  {watchlists.length}
-                </span>
-                <span className="text-[9px] text-on-surface-variant/60 mt-1">Custom sets</span>
-              </div>
+          {/* ── Page Header ─────────────────────────────────────────────── */}
+          <section className="wl-page-header">
+            <div>
+              <h1 className="wl-page-title">Watchlist Workspace</h1>
+              <p className="wl-page-subtitle">
+                Real-time custom watchlists tracking and active asset monitoring.
+              </p>
             </div>
-
-            <div className="wl-bento-card">
-              <div className="flex flex-col items-center justify-between h-full text-center py-2">
-                <span className="text-[9px] font-bold text-on-surface-variant/40 tracking-wider">
-                  WATCHED ASSETS
-                </span>
-                <span className="font-mono text-2xl font-bold text-on-surface mt-1">
-                  {selectedWatchlist?.stocks?.length || 0}
-                </span>
-                <span className="text-[9px] text-on-surface-variant/60 mt-1">Active list</span>
-              </div>
-            </div>
-
-            <div className="wl-bento-card">
-              <div className="flex flex-col items-center justify-between h-full text-center py-2">
-                <span className="text-[9px] font-bold text-on-surface-variant/40 tracking-wider">
-                  GAINERS
-                </span>
-                <span className="font-mono text-xl font-bold text-on-surface-variant/40 mt-1">
-                  N/A
-                </span>
-                <span className="text-[9px] text-on-surface-variant/60 mt-1">Unavailable</span>
-              </div>
-            </div>
-
-            <div className="wl-bento-card">
-              <div className="flex flex-col items-center justify-between h-full text-center py-2">
-                <span className="text-[9px] font-bold text-on-surface-variant/40 tracking-wider">
-                  LOSERS
-                </span>
-                <span className="font-mono text-xl font-bold text-on-surface-variant/40 mt-1">
-                  N/A
-                </span>
-                <span className="text-[9px] text-on-surface-variant/60 mt-1">Unavailable</span>
-              </div>
-            </div>
-
-            <div className="wl-bento-card">
-              <div className="flex flex-col items-center justify-between h-full text-center py-2">
-                <span className="text-[9px] font-bold text-on-surface-variant/40 tracking-wider">
-                  AVG CHANGE
-                </span>
-                <span className="font-mono text-xl font-bold text-on-surface-variant/40 mt-1">
-                  N/A
-                </span>
-                <span className="text-[9px] text-on-surface-variant/60 mt-1">Unavailable</span>
-              </div>
-            </div>
-
-            <div className="wl-bento-card">
-              <div className="flex flex-col items-center justify-between h-full text-center py-2">
-                <span className="text-[9px] font-bold text-on-surface-variant/40 tracking-wider">
-                  LAGGARD
-                </span>
-                <span className="font-mono text-xl font-bold text-on-surface-variant/40 mt-1">
-                  N/A
-                </span>
-                <span className="text-[9px] text-on-surface-variant/60 mt-1">Unavailable</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Asymmetrical Layout Section */}
-          <div className="wl-layout">
-            {/* Sidebar list select (col-span-1) */}
-            <div className="wl-sidebar">
-              <h3 className="wl-sidebar-title">Your Watchlists</h3>
-              <div className="space-y-1">
-                {watchlists.map((w) => (
-                  <button
-                    key={w.id}
-                    className={`wl-tab-btn ${selectedWatchlist?.id === w.id ? "active" : ""}`}
-                    onClick={() => selectWatchlistById(w.id)}
-                  >
-                    <span className="flex items-center gap-2 truncate">
-                      <Eye size={13} />
-                      <span className="truncate">{w.name}</span>
-                    </span>
-                    <span className="bg-surface-container-high text-[10px] text-on-surface-variant px-1.5 py-0.5 rounded font-mono">
-                      {w.stocks?.length || 0}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Watchlist detail area (col-span-2) */}
-            <div className="wl-content-area space-y-4">
-              {selectedWatchlist ? (
-                <motion.div
-                  key={selectedWatchlist.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-4"
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <button
+                className="wl-btn-stone"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <Plus size={14} /> Create Watchlist
+              </button>
+              {selectedWatchlist && (
+                <button
+                  className="wl-btn-gold"
+                  onClick={() => setShowAddStockModal(true)}
                 >
-                  {/* Toolbar & Filter Strip */}
-                  <div className="wl-filter-strip">
-                    <div className="flex items-center gap-2">
-                      <Filter size={14} className="text-primary" />
-                      <input
-                        type="text"
-                        placeholder="Filter by Symbol..."
-                        className="wl-filter-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </div>
-
-                    <select
-                      className="wl-filter-select"
-                      value={sectorFilter}
-                      onChange={(e) => setSectorFilter(e.target.value)}
-                    >
-                      <option value="Sector: All">Sector: All</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Consumer Cyclical">Consumer Cyclical</option>
-                      <option value="Communication">Communication</option>
-                    </select>
-
-                    <div className="ml-auto flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-on-surface-variant/40 uppercase">
-                        Sort
-                      </span>
-                      <select
-                        className="wl-filter-select"
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                      >
-                        <option value="Sort: Symbol">Sort: Symbol</option>
-                        <option value="Sort: Price">Sort: Price</option>
-                      </select>
-                    </div>
-
-                    <button
-                      className="text-on-surface-variant hover:text-error hover:bg-red-500/10 p-1.5 rounded transition-all ml-2"
-                      onClick={() =>
-                        setWatchlistToDelete({ id: selectedWatchlist.id, name: selectedWatchlist.name })
-                      }
-                      title="Delete Watchlist"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-
-                  {/* List Stock Data Table */}
-                  {!selectedWatchlist.stocks || selectedWatchlist.stocks.length === 0 ? (
-                    <EmptyState
-                      icon={<TrendingUp size={22} />}
-                      title="Watchlist Empty"
-                      message="You haven't added any stock symbols to this list yet. Start tracking below."
-                      action={
-                        <button className="btn btn-primary btn-sm" onClick={() => setShowAddStockModal(true)}>
-                          <Plus size={14} /> Add Stock Ticker
-                        </button>
-                      }
-                    />
-                  ) : (
-                    <div className="wl-bento-card p-0 overflow-hidden">
-                      <div className="overflow-x-auto wl-custom-scrollbar">
-                        <table className="wl-table">
-                          <thead>
-                            <tr>
-                              <th>Company</th>
-                              <th>Symbol</th>
-                              <th className="text-right">Price</th>
-                              <th className="text-right">Chg %</th>
-                              <th className="text-right">Mkt Cap</th>
-                              <th className="text-right">Volume</th>
-                              <th>Trend (1D)</th>
-                              <th className="text-right">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-white/5 wl-text-mono">
-                            {filteredStocks.map((st) => {
-                              const meta = STOCK_METADATA[st.symbol.toUpperCase()] || {
-                                name: st.symbol,
-                                sector: "Other",
-                                logoUrl: "",
-                              };
-
-                              const priceDirection = priceDirections[st.symbol];
-                              const flashClass =
-                                priceDirection === "up"
-                                  ? "wl-price-flash-green"
-                                  : priceDirection === "down"
-                                  ? "wl-price-flash-red"
-                                  : "";
-
-                              return (
-                                <tr
-                                  key={st.id}
-                                  className="group hover:bg-surface-variant/10 transition-colors cursor-pointer"
-                                  onClick={(e) => {
-                                    // Navigate to details on row click unless actions button clicked
-                                    if ((e.target as HTMLElement).closest("button")) return;
-                                    navigate(`/stock/${st.symbol}`);
-                                  }}
-                                >
-                                  <td>
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded bg-zinc-950 flex items-center justify-center p-1 shrink-0 border border-outline-variant/10">
-                                        {meta.logoUrl ? (
-                                          <img
-                                            alt={st.symbol}
-                                            className="w-full h-full object-contain"
-                                            src={meta.logoUrl}
-                                          />
-                                        ) : (
-                                          <span className="font-bold text-[10px] text-primary">
-                                            {st.symbol.slice(0, 3)}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="truncate">
-                                        <p className="font-body-md font-semibold text-on-surface text-xs truncate">
-                                          {meta.name}
-                                        </p>
-                                        <p className="text-[8px] font-bold text-on-surface-variant/40 tracking-wider">
-                                          {meta.sector}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td className="font-bold text-primary text-xs">
-                                    {st.symbol}
-                                  </td>
-                                  <td className={`text-right font-semibold text-xs ${flashClass}`}>
-                                    {st.currentPrice !== null && st.currentPrice !== undefined ? (
-                                      `$${st.currentPrice.toLocaleString(undefined, {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      })}`
-                                    ) : (
-                                      <span className="text-on-surface-variant/40 text-[10px]">
-                                        Connecting...
-                                      </span>
-                                    )}
-                                  </td>
-                                  <td className="text-right text-xs text-on-surface-variant/40">
-                                    N/A
-                                  </td>
-                                  <td className="text-right text-xs text-on-surface-variant/40">
-                                    N/A
-                                  </td>
-                                  <td className="text-right text-xs text-on-surface-variant/40">
-                                    N/A
-                                  </td>
-                                  <td>
-                                    <span className="text-on-surface-variant/40 text-[10px]">
-                                      N/A
-                                    </span>
-                                  </td>
-                                  <td className="text-right">
-                                    <div className="wl-table-actions">
-                                      <button
-                                        type="button"
-                                        className="text-on-surface-variant hover:text-primary p-1.5"
-                                        onClick={() => navigate(`/stock/${st.symbol}`)}
-                                        title="View Workspace"
-                                      >
-                                        <Eye size={14} />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        className="text-on-surface-variant hover:text-primary p-1.5"
-                                        onClick={() => navigate(`/stock/${st.symbol}`)}
-                                        title="Trade Asset"
-                                      >
-                                        <ShoppingCart size={14} />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        className="text-on-surface-variant hover:text-error p-1.5"
-                                        onClick={() => handleRemoveStock(st.symbol)}
-                                        title="Remove Symbol"
-                                      >
-                                        <Trash2 size={14} />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              ) : (
-                <EmptyState
-                  icon={<Eye size={24} />}
-                  message="Select a watchlist from the left panel to track live feeds."
-                />
+                  <Plus size={14} /> Add Stock Ticker
+                </button>
               )}
             </div>
-          </div>
-        </div>
-      )}
+          </section>
 
-      {/* Create Watchlist Modal */}
+          {error && <ErrorBanner message={error} />}
+
+          {watchlists.length === 0 ? (
+            <EmptyState
+              icon={<Eye size={24} />}
+              title="No Watchlists Created"
+              message="Keep watch on specific assets by organizing them inside custom list tabs."
+              action={
+                <button className="wl-btn-gold" onClick={() => setShowCreateModal(true)}>
+                  <Plus size={14} /> Create Watchlist
+                </button>
+              }
+            />
+          ) : (
+            <>
+              {/* ── Summary Bento Cards Grid (6 cards) ────────────────────── */}
+              <div className="wl-bento-grid">
+                <div className="wl-bento-card">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%", textAlign: "center" }}>
+                    <span className="wl-bento-title">TOTAL LISTS</span>
+                    <span className="wl-bento-val gold">{watchlists.length}</span>
+                    <span className="wl-bento-sub">Custom sets</span>
+                  </div>
+                </div>
+
+                <div className="wl-bento-card">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%", textAlign: "center" }}>
+                    <span className="wl-bento-title">WATCHED ASSETS</span>
+                    <span className="wl-bento-val">{selectedWatchlist?.stocks?.length || 0}</span>
+                    <span className="wl-bento-sub">Active list</span>
+                  </div>
+                </div>
+
+                <div className="wl-bento-card">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%", textAlign: "center" }}>
+                    <span className="wl-bento-title">GAINERS</span>
+                    <span className="wl-bento-val muted">N/A</span>
+                    <span className="wl-bento-sub">Unavailable</span>
+                  </div>
+                </div>
+
+                <div className="wl-bento-card">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%", textAlign: "center" }}>
+                    <span className="wl-bento-title">LOSERS</span>
+                    <span className="wl-bento-val muted">N/A</span>
+                    <span className="wl-bento-sub">Unavailable</span>
+                  </div>
+                </div>
+
+                <div className="wl-bento-card">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%", textAlign: "center" }}>
+                    <span className="wl-bento-title">AVG CHANGE</span>
+                    <span className="wl-bento-val muted">N/A</span>
+                    <span className="wl-bento-sub">Unavailable</span>
+                  </div>
+                </div>
+
+                <div className="wl-bento-card">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", height: "100%", textAlign: "center" }}>
+                    <span className="wl-bento-title">LAGGARD</span>
+                    <span className="wl-bento-val muted">N/A</span>
+                    <span className="wl-bento-sub">Unavailable</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Asymmetrical 12-Column Layout ───────────────────────────── */}
+              <div className="wl-grid-12">
+
+                {/* Left 9-Column Main Workspace */}
+                <div style={{ gridColumn: "span 9" }}>
+
+                  {/* Your Watchlists Selector Bar */}
+                  <div className="wl-tabs-bar">
+                    <span className="wl-tabs-bar-label">YOUR WATCHLISTS</span>
+                    <div className="wl-tabs-list">
+                      {watchlists.map((w) => (
+                        <button
+                          key={w.id}
+                          className={`wl-tab-btn ${selectedWatchlist?.id === w.id ? "active" : ""}`}
+                          onClick={() => selectWatchlistById(w.id)}
+                        >
+                          <Eye size={13} />
+                          <span>{w.name}</span>
+                          <span className="wl-tab-count">{w.stocks?.length || 0}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedWatchlist ? (
+                    <motion.div
+                      key={selectedWatchlist.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {/* Filter & Action Toolbar */}
+                      <div className="wl-filter-strip">
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <Filter size={14} style={{ color: "var(--wl-primary)" }} />
+                          <input
+                            type="text"
+                            placeholder="Filter by Symbol..."
+                            className="wl-filter-input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                          />
+                        </div>
+
+                        <select
+                          className="wl-filter-select"
+                          value={sectorFilter}
+                          onChange={(e) => setSectorFilter(e.target.value)}
+                        >
+                          <option value="Sector: All">Sector: All</option>
+                          <option value="Technology">Technology</option>
+                          <option value="Consumer Cyclical">Consumer Cyclical</option>
+                          <option value="Communication">Communication</option>
+                        </select>
+
+                        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--wl-on-surface-variant)", opacity: 0.5, textTransform: "uppercase" }}>
+                            Sort
+                          </span>
+                          <select
+                            className="wl-filter-select"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                          >
+                            <option value="Sort: Symbol">Sort: Symbol</option>
+                            <option value="Sort: Price">Sort: Price</option>
+                          </select>
+                        </div>
+
+                        <button
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "var(--wl-on-surface-variant)",
+                            cursor: "pointer",
+                            padding: "0.4rem",
+                            borderRadius: "4px",
+                            marginLeft: "0.5rem",
+                            transition: "color 0.2s, background 0.2s",
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.color = "var(--wl-error)";
+                            (e.currentTarget as HTMLButtonElement).style.background = "rgba(255, 180, 171, 0.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.color = "var(--wl-on-surface-variant)";
+                            (e.currentTarget as HTMLButtonElement).style.background = "none";
+                          }}
+                          onClick={() =>
+                            setWatchlistToDelete({ id: selectedWatchlist.id, name: selectedWatchlist.name })
+                          }
+                          title="Delete Watchlist"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+
+                      {/* Technical Watchlist Table */}
+                      {!selectedWatchlist.stocks || selectedWatchlist.stocks.length === 0 ? (
+                        <EmptyState
+                          icon={<TrendingUp size={22} />}
+                          title="Watchlist Empty"
+                          message="You haven't added any stock symbols to this list yet. Start tracking below."
+                          action={
+                            <button className="wl-btn-gold" onClick={() => setShowAddStockModal(true)}>
+                              <Plus size={14} /> Add Stock Ticker
+                            </button>
+                          }
+                        />
+                      ) : (
+                        <div className="wl-table-card">
+                          <div className="wl-custom-scrollbar" style={{ overflowX: "auto" }}>
+                            <table className="wl-table">
+                              <thead>
+                                <tr>
+                                  <th>Company</th>
+                                  <th>Symbol</th>
+                                  <th style={{ textAlign: "right" }}>Price</th>
+                                  <th style={{ textAlign: "right" }}>Chg %</th>
+                                  <th style={{ textAlign: "right" }}>Mkt Cap</th>
+                                  <th style={{ textAlign: "right" }}>Volume</th>
+                                  <th>Trend (1D)</th>
+                                  <th style={{ textAlign: "right" }}>Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody className="wl-text-mono">
+                                {filteredStocks.map((st) => {
+                                  const meta = STOCK_METADATA[st.symbol.toUpperCase()] || {
+                                    name: st.symbol,
+                                    sector: "Other",
+                                    logoUrl: "",
+                                  };
+
+                                  const priceDirection = priceDirections[st.symbol];
+                                  const flashClass =
+                                    priceDirection === "up"
+                                      ? "wl-price-flash-green"
+                                      : priceDirection === "down"
+                                      ? "wl-price-flash-red"
+                                      : "";
+
+                                  return (
+                                    <tr
+                                      key={st.id}
+                                      style={{ cursor: "pointer" }}
+                                      onClick={(e) => {
+                                        if ((e.target as HTMLElement).closest("button")) return;
+                                        navigate(`/stock/${st.symbol}`);
+                                      }}
+                                    >
+                                      <td>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                          <div style={{ width: "32px", height: "32px", borderRadius: "4px", backgroundColor: "#0e0e0e", border: "1px solid var(--wl-outline-variant)", display: "flex", alignItems: "center", justifyContent: "center", padding: "0.25rem", flexShrink: 0 }}>
+                                            {meta.logoUrl ? (
+                                              <img
+                                                alt={st.symbol}
+                                                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                                                src={meta.logoUrl}
+                                              />
+                                            ) : (
+                                              <span style={{ fontWeight: 700, fontSize: "10px", color: "var(--wl-primary)" }}>
+                                                {st.symbol.slice(0, 3)}
+                                              </span>
+                                            )}
+                                          </div>
+                                          <div style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "13px", color: "var(--wl-on-surface)" }}>
+                                              {meta.name}
+                                            </p>
+                                            <p style={{ fontSize: "9px", fontWeight: 700, color: "var(--wl-on-surface-variant)", opacity: 0.5, letterSpacing: "0.08em" }}>
+                                              {meta.sector.toUpperCase()}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td style={{ fontWeight: 700, color: "var(--wl-primary)", fontSize: "13px" }}>
+                                        {st.symbol}
+                                      </td>
+                                      <td className={flashClass} style={{ textAlign: "right", fontWeight: 600, fontSize: "13px" }}>
+                                        {st.currentPrice !== null && st.currentPrice !== undefined ? (
+                                          `$${st.currentPrice.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                          })}`
+                                        ) : (
+                                          <span style={{ color: "var(--wl-on-surface-variant)", opacity: 0.4, fontSize: "11px" }}>
+                                            Connecting...
+                                          </span>
+                                        )}
+                                      </td>
+                                      <td style={{ textAlign: "right", fontSize: "12px", color: "var(--wl-on-surface-variant)", opacity: 0.4 }}>
+                                        N/A
+                                      </td>
+                                      <td style={{ textAlign: "right", fontSize: "12px", color: "var(--wl-on-surface-variant)", opacity: 0.4 }}>
+                                        N/A
+                                      </td>
+                                      <td style={{ textAlign: "right", fontSize: "12px", color: "var(--wl-on-surface-variant)", opacity: 0.4 }}>
+                                        N/A
+                                      </td>
+                                      <td>
+                                        <div style={{ height: "24px", width: "70px" }}>
+                                          <svg style={{ width: "100%", height: "100%", color: "var(--wl-primary)" }} preserveAspectRatio="none" viewBox="0 0 100 30">
+                                            <path d="M0,25 L20,22 L40,24 L60,10 L80,12 L100,5" fill="none" stroke="currentColor" strokeWidth="2" />
+                                          </svg>
+                                        </div>
+                                      </td>
+                                      <td style={{ textAlign: "right" }}>
+                                        <div className="wl-table-actions">
+                                          <button
+                                            type="button"
+                                            className="wl-action-btn"
+                                            onClick={() => navigate(`/stock/${st.symbol}`)}
+                                            title="View Workspace"
+                                          >
+                                            <Eye size={14} />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className="wl-action-btn"
+                                            onClick={() => navigate(`/stock/${st.symbol}`)}
+                                            title="Trade Asset"
+                                          >
+                                            <ShoppingCart size={14} />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className="wl-action-btn delete"
+                                            onClick={() => handleRemoveStock(st.symbol)}
+                                            title="Remove Symbol"
+                                          >
+                                            <Trash2 size={14} />
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <EmptyState
+                      icon={<Eye size={24} />}
+                      message="Select a watchlist from the top bar to track live feeds."
+                    />
+                  )}
+                </div>
+
+                {/* Right 3-Column Intelligence Rail */}
+                <div style={{ gridColumn: "span 3" }}>
+
+                  {/* Recent Alerts Panel */}
+                  <div className="wl-rail-card">
+                    <div className="wl-rail-header">
+                      <span className="wl-rail-title">
+                        <Bell size={14} style={{ color: "var(--wl-primary)" }} /> Recent Alerts
+                      </span>
+                      <span style={{ fontSize: "9px", color: "var(--wl-primary)", cursor: "pointer", textTransform: "uppercase", fontWeight: 700 }}>
+                        CLEAR ALL
+                      </span>
+                    </div>
+                    <div>
+                      <div className="wl-alert-item">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span className="wl-alert-title">NVDA Price Target Reached</span>
+                          <span style={{ fontSize: "9px", color: "var(--wl-on-surface-variant)", opacity: 0.6 }}>14m ago</span>
+                        </div>
+                        <p className="wl-alert-desc">Asset breached $820.00 resistance level. RSI at 74.3.</p>
+                      </div>
+
+                      <div className="wl-alert-item">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span className="wl-alert-title">TSLA High Volume Alert</span>
+                          <span style={{ fontSize: "9px", color: "var(--wl-on-surface-variant)", opacity: 0.6 }}>1h ago</span>
+                        </div>
+                        <p className="wl-alert-desc">Volume spike detected (2.4x avg). Sudden intraday move.</p>
+                      </div>
+
+                      <div className="wl-alert-item">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span className="wl-alert-title">MSFT Earnings Release</span>
+                          <span style={{ fontSize: "9px", color: "var(--wl-on-surface-variant)", opacity: 0.6 }}>3h ago</span>
+                        </div>
+                        <p className="wl-alert-desc">Quarterly report confirmed. Guidance adjusted upwards.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Insights Premium Cards */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+
+                    {/* Sector Distribution Card */}
+                    <div className="wl-rail-card" style={{ padding: "1.25rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                        <span className="wl-bento-title">SECTOR DISTRIBUTION</span>
+                        <PieChart size={14} style={{ color: "var(--wl-on-surface-variant)", opacity: 0.6 }} />
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                        <div>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "0.25rem" }}>
+                            <span>Technology</span>
+                            <span style={{ fontFamily: "var(--font-mono)" }}>45%</span>
+                          </div>
+                          <div style={{ width: "100%", height: "4px", backgroundColor: "var(--wl-bg)", borderRadius: "2px", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: "45%", backgroundColor: "var(--wl-primary)" }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "0.25rem" }}>
+                            <span>Consumer Cyclical</span>
+                            <span style={{ fontFamily: "var(--font-mono)" }}>22%</span>
+                          </div>
+                          <div style={{ width: "100%", height: "4px", backgroundColor: "var(--wl-bg)", borderRadius: "2px", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: "22%", backgroundColor: "var(--wl-secondary)" }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Volatility Index (VIX) Card */}
+                    <div className="wl-rail-card" style={{ padding: "1.25rem" }}>
+                      <span className="wl-bento-title">VOLATILITY INDEX (VIX)</span>
+                      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: "0.5rem" }}>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-mono)", fontSize: "22px", fontWeight: 700 }}>14.82</p>
+                          <p style={{ fontSize: "10px", fontWeight: 700, color: "var(--wl-error)", fontFamily: "var(--font-mono)" }}>
+                            +1.4% (Fear Rising)
+                          </p>
+                        </div>
+                        <div style={{ height: "30px", width: "70px" }}>
+                          <svg style={{ width: "100%", height: "100%", color: "var(--wl-error)" }} preserveAspectRatio="none" viewBox="0 0 100 30">
+                            <path d="M0,25 L20,22 L40,24 L60,10 L80,12 L100,5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Highest Volume Asset Card */}
+                    <div className="wl-rail-card" style={{ padding: "1.25rem", cursor: "pointer" }} onClick={() => navigate("/stock/TSLA")}>
+                      <span className="wl-bento-title">HIGHEST VOLUME ASSET</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.5rem" }}>
+                        <div style={{ width: "36px", height: "36px", borderRadius: "4px", backgroundColor: "#ffffff", padding: "0.2rem", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <img
+                            alt="TSLA"
+                            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLQTogqpTZVyzzJnE4AVj6pUq14ZNE3skarm9_r2b3K4KIK9gAoLzVxpUnof99k5zlsUgR8rqfRht_Z-eMRI_48fWXU9q34f5zwpz1WOmc4cEqPIu1xZ-OOP9z3wHcdxd6I8mfu8TAVH-aHrjoIAiLwvcehjwYK_Z_3LJ9FopEvpxJM1DPEvOcc27YvEt7_lR3YDwGOL1bK0WQAiq5LCF4GVnMHxR3o-pkKa3bUUXuu_SljSQTijkgVQ"
+                          />
+                        </div>
+                        <div>
+                          <p style={{ fontWeight: 700, fontSize: "14px", color: "var(--wl-on-surface)" }}>TSLA</p>
+                          <p style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--wl-on-surface-variant)" }}>102.4M Shares</p>
+                        </div>
+                        <ArrowRight size={16} style={{ marginLeft: "auto", color: "var(--wl-primary)" }} />
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </>
+          )}
+
+        </div>
+      </div>
+
+      {/* ── Create Watchlist Modal ────────────────────────────────────────── */}
       <AnimatePresence>
         {showCreateModal && (
           <Modal title="Create New Watchlist" onClose={() => setShowCreateModal(false)}>
             <form onSubmit={handleCreateWatchlist}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="watchlistName">
+              <div className="form-group mb-6">
+                <label className="text-xs font-label-caps text-on-surface-variant uppercase tracking-wider mb-2 block" htmlFor="watchlistName">
                   Watchlist Name
                 </label>
                 <input
                   id="watchlistName"
                   type="text"
-                  className="form-input"
+                  className="w-full bg-surface-variant/20 border-b border-outline-variant/35 focus:border-primary text-on-surface py-2.5 px-3 font-body-md text-sm outline-none transition-colors rounded-sm"
                   value={newWatchlistName}
                   onChange={(e) => setNewWatchlistName(e.target.value)}
                   placeholder="e.g. Semiconductor Focus, High Yield"
@@ -665,16 +777,16 @@ export default function Watchlists() {
                   autoFocus
                 />
               </div>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="btn-secondary-ghost"
                   onClick={() => setShowCreateModal(false)}
                   disabled={submitting}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                <button type="submit" className="wl-btn-gold" disabled={submitting}>
                   {submitting ? "Creating..." : "Create List"}
                 </button>
               </div>
@@ -683,19 +795,19 @@ export default function Watchlists() {
         )}
       </AnimatePresence>
 
-      {/* Add Stock Modal */}
+      {/* ── Add Stock Modal ───────────────────────────────────────────────── */}
       <AnimatePresence>
         {showAddStockModal && selectedWatchlist && (
           <Modal title={`Add Stock to ${selectedWatchlist.name}`} onClose={() => setShowAddStockModal(false)}>
             <form onSubmit={handleAddStock}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="stockSymbol">
+              <div className="form-group mb-6">
+                <label className="text-xs font-label-caps text-on-surface-variant uppercase tracking-wider mb-2 block" htmlFor="stockSymbol">
                   Stock Symbol (Ticker)
                 </label>
                 <input
                   id="stockSymbol"
                   type="text"
-                  className="form-input"
+                  className="w-full bg-surface-variant/20 border-b border-outline-variant/35 focus:border-primary text-on-surface py-2.5 px-3 font-body-md text-sm outline-none transition-colors rounded-sm"
                   value={newStockSymbol}
                   onChange={(e) => setNewStockSymbol(e.target.value.toUpperCase())}
                   placeholder="e.g. AAPL, MSFT, TSLA"
@@ -704,16 +816,16 @@ export default function Watchlists() {
                   maxLength={10}
                 />
               </div>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="btn-secondary-ghost"
                   onClick={() => setShowAddStockModal(false)}
                   disabled={submitting}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                <button type="submit" className="wl-btn-gold" disabled={submitting}>
                   {submitting ? "Adding..." : "Add Symbol"}
                 </button>
               </div>
@@ -722,7 +834,7 @@ export default function Watchlists() {
         )}
       </AnimatePresence>
 
-      {/* Confirm Deletion Dialog */}
+      {/* ── Confirm Deletion Dialog ───────────────────────────────────────── */}
       <ConfirmDialog
         open={watchlistToDelete !== null}
         title="Delete Watchlist"

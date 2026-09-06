@@ -3,32 +3,313 @@
    Scoped UI system for Institutional Terminal Portfolios and Portfolio Details
    ───────────────────────────────────────────────────────────────────────────── */
 
+/* ── Full-bleed wrapper: cancel app-content padding so portfolio fills full width ── */
+.portfolio-full-bleed {
+  margin: -2rem -2.5rem;
+  min-height: calc(100vh - var(--navbar-h, 56px));
+}
+
+/* ── Portfolio Root Container ─────────────────────────────────────────────── */
 .portfolio-root {
-  --port-bg: #131313;
-  --port-surface: #201f1f;
-  --port-surface-high: #2a2a2a;
-  --port-surface-low: #1c1b1b;
-  --port-surface-highest: #353534;
-  --port-surface-lowest: #0e0e0e;
+  --port-bg: #0d0e11;
+  --port-surface: #1a1b22;
+  --port-surface-high: #21222c;
+  --port-surface-low: #13141a;
+  --port-surface-highest: #272830;
+  --port-surface-lowest: #0a0b0e;
   --port-primary: #e8c177;
   --port-primary-container: #c8a45d;
-  --port-on-surface: #e5e2e1;
-  --port-on-surface-variant: #d1c5b4;
-  --port-outline: #9a8f80;
-  --port-outline-variant: rgba(77, 70, 57, 0.25);
-  --port-error: #ffb4ab;
-  --port-secondary: #bac3ff;
+  --port-on-surface: #e8e6e3;
+  --port-on-surface-variant: #b8b0a4;
+  --port-outline: #6e6860;
+  --port-outline-variant: rgba(255, 255, 255, 0.07);
+  --port-error: #f87171;
+  --port-secondary: #6366f1;
   --port-tertiary: #c6c7c2;
   --port-emerald: #34d399;
 
   background-color: var(--port-bg);
   color: var(--port-on-surface);
-  min-height: 100vh;
-  padding: 1.5rem 2.5rem 4rem 2.5rem;
-  max-width: 1600px;
-  margin: 0 auto;
+  min-height: 100%;
+  padding: 0;
+  width: 100%;
 }
 
+/* ── Inner content padding wrapper ───────────────────────────────────────── */
+.portfolio-inner {
+  padding: 2rem 3rem 4rem 3rem;
+}
+
+/* ── Page Header ─────────────────────────────────────────────────────────── */
+.portfolio-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--port-outline-variant);
+}
+
+.portfolio-page-title {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--port-on-surface);
+  line-height: 1.2;
+}
+
+.portfolio-page-subtitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--port-on-surface-variant);
+  margin-top: 0.35rem;
+  opacity: 0.75;
+}
+
+/* ── Create Portfolio Button ─────────────────────────────────────────────── */
+.portfolio-btn-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--port-primary);
+  color: #402d00;
+  padding: 0.65rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.portfolio-btn-create:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.portfolio-btn-create:active {
+  transform: scale(0.98);
+}
+
+/* ── Summary Ribbon ─────────────────────────────────────────────────────── */
+.portfolio-summary-ribbon {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.portfolio-summary-card {
+  flex: 1;
+  background-color: var(--port-surface-high);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 1.1rem 1.25rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portfolio-summary-card:hover {
+  border-color: rgba(232, 193, 119, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.portfolio-summary-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--port-on-surface-variant);
+  margin-bottom: 0.4rem;
+}
+
+.portfolio-summary-value {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--port-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.portfolio-summary-value.neutral {
+  color: var(--port-on-surface);
+}
+
+/* ── Portfolio Cards Grid ────────────────────────────────────────────────── */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .portfolio-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-inner {
+    padding: 1.5rem 1.5rem 4rem 1.5rem;
+  }
+
+  .portfolio-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .portfolio-summary-ribbon {
+    flex-direction: column;
+  }
+}
+
+/* ── Individual Portfolio Card ───────────────────────────────────────────── */
+.port-card {
+  background-color: var(--port-surface);
+  border-radius: 4px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.port-card:hover {
+  border-color: rgba(232, 193, 119, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(232, 193, 119, 0.06);
+}
+
+.port-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: #18181b;
+  border: 1px solid var(--port-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--port-primary);
+  flex-shrink: 0;
+}
+
+.port-card-name {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--port-on-surface);
+  line-height: 1.3;
+}
+
+.port-card-id {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--port-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.port-card-valuation-label {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--port-on-surface-variant);
+  display: block;
+}
+
+.port-card-value {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--port-primary);
+  margin-top: 0.2rem;
+  letter-spacing: -0.01em;
+}
+
+.port-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.port-badge-positions {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--port-on-surface);
+}
+
+.port-badge-alloc {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: var(--port-emerald);
+}
+
+.port-manage-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--port-on-surface);
+  border: 1px solid var(--port-outline-variant);
+  border-radius: 4px;
+  background-color: transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.port-manage-link:hover {
+  border-color: rgba(232, 193, 119, 0.45);
+  color: var(--port-primary);
+}
+
+.port-card-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--port-outline-variant);
+}
+
+.port-text-mono {
+  font-family: var(--font-mono);
+}
+
+.port-title-caps {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Stagger animation ───────────────────────────────────────────────────── */
 .stagger-load {
   opacity: 0;
   transform: translateY(10px);
@@ -83,32 +364,6 @@ tr:hover .sticky-col {
   background-color: var(--port-surface-high) !important;
 }
 
-.port-card {
-  background-color: var(--port-surface);
-  border-radius: 4px; /* Soft 4px (0.25rem) / 8px (0.5rem) from design system */
-  padding: 1.5rem;
-  border: 1px solid var(--port-outline-variant);
-  transition: all var(--duration-base) var(--ease-out);
-}
-
-.port-card:hover {
-  border-color: rgba(232, 193, 119, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-.port-text-mono {
-  font-family: var(--font-mono);
-}
-
-.port-title-caps {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 /* Custom Scrollbar */
 .port-custom-scrollbar::-webkit-scrollbar {
   width: 4px;
@@ -122,7 +377,7 @@ tr:hover .sticky-col {
   border-radius: 10px;
 }
 
-/* SVG diversifaction score custom gauge styling */
+/* SVG diversification score custom gauge styling */
 .risk-circle-bg {
   stroke: var(--port-surface-highest);
 }
@@ -143,6 +398,7 @@ tr:hover .sticky-col {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .btn-secondary-ghost:hover {

@@ -44,7 +44,7 @@ export default function Sidebar({
         {/* Brand */}
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon" aria-hidden="true">
-            <BarChart2 size={18} color="white" strokeWidth={2.5} />
+            <BarChart2 size={18} strokeWidth={2.5} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span className="sidebar-brand-text">
@@ -84,31 +84,12 @@ export default function Sidebar({
               >
                 {({ isActive }) => (
                   <>
-                    {/* Animated active background */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="sidebar-active-bg"
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          borderRadius: "inherit",
-                          background: "var(--accent-subtle)",
-                          border: "1px solid var(--accent-border)",
-                          zIndex: 0,
-                        }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 32,
-                        }}
-                      />
-                    )}
                     <span className="sidebar-link-icon" style={{ position: "relative", zIndex: 1 }}>
                       <Icon
-                        size={17}
+                        size={16}
                         strokeWidth={isActive ? 2.5 : 2}
                         style={{
-                          color: isActive ? "var(--accent-hover)" : "currentColor",
+                          color: isActive ? "var(--accent)" : "currentColor",
                           transition: "color 0.2s ease",
                         }}
                       />

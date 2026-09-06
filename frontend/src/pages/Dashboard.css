@@ -10,8 +10,8 @@
   left: 0;
   width: 100%;
   height: 32px;
-  background-color: #0e0e0e;
-  border-bottom: 1px solid rgba(77, 70, 57, 0.2);
+  background-color: #0a0b0e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -63,42 +63,57 @@
   color: #ffb4ab;
 }
 
+/* ── Full-bleed wrapper: cancel app-content padding so dashboard fills full width ─── */
+.dashboard-full-bleed {
+  margin: -2rem -2.5rem;
+  min-height: calc(100vh - var(--navbar-h, 56px));
+}
+
 /* ── Dashboard Root Container ─────────────────────────────────────────────── */
 .dashboard-root {
-  --dash-bg: #131313;
-  --dash-surface: #201f1f;
-  --dash-surface-high: #2a2a2a;
-  --dash-surface-low: #1c1b1b;
+  --dash-bg: #0d0e11;
+  --dash-surface: #13141a;
+  --dash-surface-high: #1a1b22;
+  --dash-surface-low: #10111a;
   --dash-primary: #e8c177;
   --dash-primary-container: #c8a45d;
-  --dash-on-surface: #e5e2e1;
-  --dash-on-surface-variant: #d1c5b4;
-  --dash-outline-variant: rgba(77, 70, 57, 0.25);
-  --dash-error: #ffb4ab;
-  --dash-secondary: #bac3ff;
+  --dash-on-surface: #e8e6e3;
+  --dash-on-surface-variant: #b8b0a4;
+  --dash-outline-variant: rgba(255, 255, 255, 0.07);
+  --dash-error: #f87171;
+  --dash-secondary: #6366f1;
 
   background-color: var(--dash-bg);
   color: var(--dash-on-surface);
-  min-height: 100vh;
-  padding: 1.5rem 2.5rem 4rem 2.5rem;
-  max-width: 1440px;
-  margin: 0 auto;
+  min-height: 100%;
+  padding: 0;
+  /* CRITICAL: fill full available width — no centering constraint */
+  width: 100%;
 }
 
 /* ── Top App Bar / Header ─────────────────────────────────────────────────── */
 .dashboard-appbar {
   position: sticky;
-  top: 32px;
+  top: 0;
   z-index: 40;
-  background-color: rgba(19, 19, 19, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--dash-outline-variant);
-  margin: -1.5rem -2.5rem 2rem -2.5rem;
-  padding: 1rem 2.5rem;
+  background-color: rgba(13, 14, 18, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* ── Welcome heading ─────────────────────────────────────────────────────────── */
+.dashboard-welcome {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dash-on-surface-variant);
+  letter-spacing: 0.02em;
+  margin-bottom: 1.25rem;
+  opacity: 0.7;
 }
 
 .dashboard-search-wrap {
@@ -217,17 +232,23 @@
   gap: 1.5rem;
 }
 
+/* Inner content wrapper — horizontal padding for all sections */
+.dashboard-inner {
+  padding: 1.5rem 3rem 4rem 3rem;
+}
+
 .bento-card {
-  background-color: var(--dash-surface);
-  border: 1px solid var(--dash-outline-variant);
+  background-color: var(--dash-surface-high);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  transition: transform 0.25s var(--ease-out), background-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s var(--ease-out), background-color 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .bento-card:hover {
-  background-color: #262525;
+  background-color: #20212c;
+  border-color: rgba(232, 193, 119, 0.18);
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(232, 193, 119, 0.06);
 }
 
 .bento-card-header {

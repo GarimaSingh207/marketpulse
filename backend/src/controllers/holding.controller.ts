@@ -42,7 +42,7 @@ export const addHolding = async (req: AuthRequest, res: Response): Promise<void>
       holdingId: holding.id,
       portfolioId: holding.portfolioId,
       symbol: holding.symbol,
-      quantity: holding.quantity,
+      quantity: Number(holding.quantity),
       averagePrice: Number(holding.averagePrice),
     });
 

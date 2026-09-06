@@ -4,21 +4,21 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .analytics-root {
-  --analytics-bg: #131313;
-  --analytics-surface: #131313;
-  --analytics-surface-low: #1c1b1b;
-  --analytics-surface-container: #201f1f;
-  --analytics-surface-high: #2a2a2a;
-  --analytics-surface-highest: #353534;
-  --analytics-surface-lowest: #0e0e0e;
+  --analytics-bg: #0d0e11;
+  --analytics-surface: #13141a;
+  --analytics-surface-low: #10111a;
+  --analytics-surface-container: #13141a;
+  --analytics-surface-high: #1a1b22;
+  --analytics-surface-highest: #21222c;
+  --analytics-surface-lowest: #0a0b0e;
   --analytics-primary: #e8c177;
   --analytics-primary-container: #c8a45d;
-  --analytics-on-surface: #e5e2e1;
-  --analytics-on-surface-variant: #d1c5b4;
-  --analytics-outline: #9a8f80;
-  --analytics-outline-variant: rgba(77, 70, 57, 0.3);
-  --analytics-error: #ffb4ab;
-  --analytics-secondary: #bac3ff;
+  --analytics-on-surface: #e8e6e3;
+  --analytics-on-surface-variant: #b8b0a4;
+  --analytics-outline: #6e6860;
+  --analytics-outline-variant: rgba(255, 255, 255, 0.07);
+  --analytics-error: #f87171;
+  --analytics-secondary: #6366f1;
   --analytics-tertiary: #c6c7c2;
   --analytics-emerald: #34d399;
 
@@ -100,9 +100,15 @@
 
 .analytics-card {
   background-color: var(--analytics-surface-high);
-  border: 1px solid var(--analytics-outline-variant);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 6px;
   overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.analytics-card:hover {
+  border-color: rgba(232, 193, 119, 0.18);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
 }
 
 /* ── Header App Bar & Search ───────────────────────────────────────────────── */
@@ -110,10 +116,10 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: rgba(19, 19, 19, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--analytics-outline-variant);
+  background-color: rgba(13, 14, 18, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   margin: -1.5rem -2.5rem 2rem -2.5rem;
   padding: 1rem 2.5rem;
   display: flex;

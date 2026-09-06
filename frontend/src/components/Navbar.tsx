@@ -79,9 +79,9 @@ export default function Navbar({ onToggleSidebar }: NavbarProps) {
       {/* Right */}
       <div className="navbar-right">
         {/* Market status indicator */}
-        <div className="navbar-status" aria-label="Market status: Live">
+        <div className="navbar-status" aria-label="Market status: Open">
           <div className="navbar-status-dot" aria-hidden="true" />
-          <span>Live</span>
+          <span>Market Open</span>
         </div>
 
         {/* Notification bell */}

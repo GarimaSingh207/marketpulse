@@ -4,20 +4,20 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .stock-details-root {
-  --mrkt-bg: #131313;
-  --mrkt-surface: #201f1f;
-  --mrkt-surface-high: #2a2a2a;
-  --mrkt-surface-low: #1c1b1b;
-  --mrkt-surface-highest: #353534;
-  --mrkt-surface-lowest: #0e0e0e;
+  --mrkt-bg: #0d0e11;
+  --mrkt-surface: #1a1b22;
+  --mrkt-surface-high: #21222c;
+  --mrkt-surface-low: #13141a;
+  --mrkt-surface-highest: #272830;
+  --mrkt-surface-lowest: #0a0b0e;
   --mrkt-primary: #e8c177;
   --mrkt-primary-container: #c8a45d;
-  --mrkt-on-surface: #e5e2e1;
-  --mrkt-on-surface-variant: #d1c5b4;
-  --mrkt-outline: #9a8f80;
-  --mrkt-outline-variant: rgba(77, 70, 57, 0.25);
-  --mrkt-error: #ffb4ab;
-  --mrkt-secondary: #bac3ff;
+  --mrkt-on-surface: #e8e6e3;
+  --mrkt-on-surface-variant: #b8b0a4;
+  --mrkt-outline: #6e6860;
+  --mrkt-outline-variant: rgba(255, 255, 255, 0.07);
+  --mrkt-error: #f87171;
+  --mrkt-secondary: #6366f1;
   --mrkt-tertiary: #c6c7c2;
   --mrkt-emerald: #34d399;
 
@@ -47,15 +47,15 @@
   background-color: var(--mrkt-surface);
   border-radius: 4px;
   padding: 1.5rem;
-  border: 1px solid var(--mrkt-outline-variant);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   transition: all var(--duration-base) var(--ease-out);
   position: relative;
   overflow: hidden;
 }
 
 .stock-bento-card:hover {
-  border-color: rgba(232, 193, 119, 0.3);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  border-color: rgba(232, 193, 119, 0.25);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
 }
 
 .stock-text-mono {
@@ -153,7 +153,44 @@
   padding: 2rem;
 }
 
+/* Grid layout overrides */
+.stock-grid-12,
+.grid-cols-12,
+.lg\:grid-cols-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.stock-col-8,
+.lg\:col-span-8,
+.col-span-8 {
+  grid-column: span 8 / span 8;
+}
+
+.stock-col-4,
+.lg\:col-span-4,
+.col-span-4 {
+  grid-column: span 4 / span 4;
+}
+
 /* responsive details */
+@media (max-width: 1024px) {
+  .stock-grid-12,
+  .grid-cols-12,
+  .lg\:grid-cols-12 {
+    grid-template-columns: 1fr;
+  }
+  .stock-col-8,
+  .lg\:col-span-8,
+  .col-span-8,
+  .stock-col-4,
+  .lg\:col-span-4,
+  .col-span-4 {
+    grid-column: span 1 / span 1;
+  }
+}
+
 @media (max-width: 768px) {
   .stock-details-root {
     padding: 1rem 1rem 3rem 1rem;
