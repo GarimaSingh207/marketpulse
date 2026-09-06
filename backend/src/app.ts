@@ -21,19 +21,25 @@ app.set("trust proxy", 1);
 app.use(helmet());
 
 // CORS: allow configured origins in production, any localhost in development
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173").split(",").map(o => o.trim());
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (curl, Postman, server-to-server)
       if (!origin) return callback(null, true);
-      // Allow the configured origin(s)
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Allow if exact match or if wildcard is specified
+      if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
       // In development also allow any localhost port
       if (process.env.NODE_ENV !== "production" && /^http:\/\/localhost:\d+$/.test(origin)) {
         return callback(null, true);
       }
-      callback(new Error("CORS: origin not allowed"));
+      callback(null, false);
     },
     credentials: true,
   })

@@ -10,11 +10,14 @@ export interface AuthenticatedSocket extends Socket {
 let io: SocketIOServer | null = null;
 
 export const initSocketIO = (server: HTTPServer): SocketIOServer => {
-  const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+  const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   io = new SocketIOServer(server, {
     cors: {
-      origin: allowedOrigin,
+      origin: allowedOrigins.includes("*") ? "*" : allowedOrigins,
       methods: ["GET", "POST"],
       credentials: true,
     },
