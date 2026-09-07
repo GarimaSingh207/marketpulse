@@ -4,8 +4,12 @@ import axios from "axios";
 // baseURL is intentionally empty — all paths like /api/auth/login are same-origin requests
 // that Nginx proxies to the backend container internally (no port 5000 exposed to the internet).
 // In local development, Vite's dev server handles requests directly to the backend.
+// Normalize VITE_API_URL: strip any trailing /api so we never produce
+// /api/api/... double-prefix. All call-site paths already begin with /api/.
+const rawBase = (import.meta.env.VITE_API_URL || "").replace(/\/api\/?$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "",
+  baseURL: rawBase,
   headers: {
     "Content-Type": "application/json",
   },
